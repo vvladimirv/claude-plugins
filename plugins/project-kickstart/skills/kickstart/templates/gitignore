@@ -1,0 +1,19 @@
+# Tajne i stvarni podaci – nikad u repo
+.env
+.env.*
+!.env.example
+data/
+*.local.*
+
+# Claude / agenti – lokalno stanje
+.claude/settings.local.json
+.agent-lock.json
+test-log.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Stack (dopuni)
