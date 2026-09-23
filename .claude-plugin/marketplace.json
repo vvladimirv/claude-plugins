@@ -10,7 +10,7 @@
     {
       "name": "project-kickstart",
       "description": "Start projekta: intervju, stack, arhitektura, blueprint i svi temeljni dokumenti (/kickstart, /pomoc)",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "source": "./plugins/project-kickstart",
       "category": "development"
     },

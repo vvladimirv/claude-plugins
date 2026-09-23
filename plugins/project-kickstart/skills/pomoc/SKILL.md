@@ -2,6 +2,7 @@
 name: pomoc
 description: Prikazuje podsjetnik rada sa projektima (šta je automatski, koje komande kad pokrenuti, gdje je šta, koji model za šta). Koristi kad korisnik kaže "/pomoc", "pomoć", "šta trebam raditi", "podsjeti me".
 model: haiku
+allowed-tools: [Read]
 ---
 
 # /pomoc
