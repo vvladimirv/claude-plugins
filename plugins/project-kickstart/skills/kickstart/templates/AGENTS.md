@@ -29,6 +29,6 @@
 7. **Podaci**: stvarni podaci i tajne nikad u repo. `.env` i `data/` su van gita, a u repou su samo izmišljeni primjeri u `fixtures/`.
 8. **Zavisnosti**: nova biblioteka traži kratak ADR u `docs/adr/` (zašto, koje su alternative).
 9. **Dokumenti**: jedna tema = jedan fajl. Ne pravi nove .md fajlove u korijenu. Završen plan ide u `docs/arhiva/`.
-10. **Paralelni rad**: jedan agent = jedan worktree = jedna grana. Ne radi u folderu u kojem radi drugi agent.
+10. **Paralelni rad**: jedan agent = jedan worktree = jedna grana. Ako u korijenu postoji `.agent-lock.json` sa `heartbeat` mlađim od 20 minuta, a nije tvoj, ne mijenjaj fajlove u ovom folderu. Radi u svom worktreeu (Codex: `../<projekat>-codex-<zadatak>`, grana `codex/<zadatak>`). Pre-commit odbija commit iz tuđe sesije.
 <!-- UPUTA: ako ima UI, dodaj:
 11. **UI**: boje, razmaci i fontovi samo iz fajla tokena. Ekrani se slažu od komponenti iz kataloga. UI izmjena prvo navede pogođene ekrane iz `docs/EKRANI.md`. -->

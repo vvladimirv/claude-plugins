@@ -1,7 +1,7 @@
 ---
 name: kickstart
-description: Pokreće ispravan start projekta. Vodi kroz intervju, rječnik pojmova, izbor stacka, arhitekturu i blueprint, pa generiše temeljne dokumente (AGENTS.md, CLAUDE.md, STATUS.md, docs/) i prvi git commit. Koristi kad korisnik započinje nov projekat, kaže "novi projekat", "kickstart", ili kad folder nema .claude/kickstart.json. Argument --postojeci za projekat koji već ima kod.
-argument-hint: <tema projekta> [--postojeci]
+description: Ispravan start projekta. Intervju, pojmovi, stack, arhitektura i blueprint, pa temeljni dokumenti, git hookovi i prvi commit. Za nov projekat; --postojeci za projekat sa kodom; --nadogradi za nove šablone.
+argument-hint: <tema projekta> | --postojeci | --nadogradi
 ---
 
 # /kickstart: ispravan start projekta
@@ -18,8 +18,14 @@ Korisnik uči kroz rad: uz svaku fazu u 1–2 rečenice objasni **zašto** ta fa
 
 1. Radni folder = trenutni direktorij projekta.
 2. Ako putanja sadrži `OneDrive`, `Dropbox` ili `Google Drive`: **upozori** da git i sync servis ne idu zajedno (pokvareni `.git`, konflikti). Predloži `C:\dev\<ime>` i pitaj da li nastaviti.
-3. Ako postoji `.claude/kickstart.json`: projekat je već pokrenut. Reci to i ponudi samo pregled dokumenata. Ne generiši ništa ponovo.
-4. Ako folder već ima kod (npr. `src/`, `package.json`, `*.py`, `index.html`) ili je proslijeđen `--postojeci`: radi u **režimu postojećeg projekta**:
+3. Ako je proslijeđen `--nadogradi`: idi na sekciju **Režim --nadogradi** na dnu.
+4. **Sesija je u drugom projektu, a tema je nova.** Trenutni folder već ima `.claude/kickstart.json` ili kod, a argument je nova tema (nije `--postojeci`):
+   - ne diraj trenutni folder,
+   - predloži novi folder `<korijen>/<ime-teme>` (korijen je prva linija iz `~/.claude/kickstart-korijeni.txt`, inače `C:\dev`) i potvrdi ime,
+   - napravi folder i nastavi sve faze tamo, sa **apsolutnim putanjama** u taj folder. Hookovi (kapija, brava) važe za ciljni folder,
+   - na kraju reci korisniku da otvori novu sesiju u tom folderu za rad na M1.
+5. Ako postoji `.claude/kickstart.json`, a argument nije nova tema: projekat je već pokrenut. Ponudi pregled dokumenata ili `--nadogradi`. Ne generiši ništa ponovo.
+6. Ako folder već ima kod (npr. `src/`, `package.json`, `*.py`, `index.html`) ili je proslijeđen `--postojeci`: radi u **režimu postojećeg projekta**:
    - prvo pročitaj postojeći kod i dokumente (README, CLAUDE.md, *.md u korijenu),
    - intervju skrati na ono što se ne vidi iz koda,
    - u fazi 5 **nikad ne prepisuj** postojeće fajlove. Pravi samo one koji fale, a za postojeće predloži izmjene kao diff.
@@ -108,10 +114,12 @@ Pročitaj sve šablone iz `templates/` i napravi fajlove u projektu. Popuni ih s
 | `claude-settings.json` | `.claude/settings.json` | uvijek (dopuni komandama za testove tog stacka) |
 | `gitignore` | `.gitignore` | uvijek (dopuni za stack) |
 | `gitattributes` | `.gitattributes` | uvijek (isti krajevi linija na svim računarima) |
+| `githooks/pre-commit` + `githooks/pre-commit.mjs` | `.githooks/` (oba) | uvijek (bez izmjena) |
+| `github-ci.yml` | `.github/workflows/ci.yml` | uvijek (ostavi blok izabranog stacka, E2E samo ako ima UI) |
 
 Zatim napravi **kostur foldera** iz faze 3: prazni folderi sa `.gitkeep`. Ne piši aplikacijski kod, to je posao milestone-a M1.
 
-Napravi i **`scripts/test`** (za Windows `scripts/test.ps1` ili Node skriptu `scripts/test.mjs`, prema stacku). Skripta pokrene brze testove sa tihim reporterom (npr. `pytest -q --tb=short`, `vitest run --reporter=dot`, `playwright test --reporter=line`), upiše pun izlaz u `test-log.txt` (dodaj ga u `.gitignore`), a na ekran ispiše samo sažetak i, ako testovi padnu, najviše 40 linija grešaka. Izlazni kod mora biti isti kao kod test runnera. *Zašto:* testovi ne troše tokene, ali njihov izlaz troši, kad ga agent čita.
+Napravi i **`scripts/test`** (za Windows `scripts/test.ps1` ili Node skriptu `scripts/test.mjs`, prema stacku). Skripta pokrene brze testove sa tihim reporterom (npr. `pytest -q --tb=short`, `vitest run --reporter=dot`, `playwright test --reporter=line`), upiše pun izlaz u `test-log.txt` (dodaj ga u `.gitignore`), a na ekran ispiše samo sažetak i, ako testovi padnu, najviše 40 linija grešaka. Izlazni kod mora biti isti kao kod test runnera. Kad još nema nijednog testa, skripta vraća 0 (npr. `vitest run --passWithNoTests`, a za pytest izlazni kod 5 znači "nema testova"), jer je pokreće i pre-commit. *Zašto:* testovi ne troše tokene, ali njihov izlaz troši, kad ga agent čita.
 
 Pravila za sadržaj:
 - `AGENTS.md` ima zajednička pravila za sve agente (Claude, Codex). `CLAUDE.md` ga samo uvozi (`@AGENTS.md`) i dodaje ono što je specifično za Claude. Oba zajedno ispod 80 linija.
@@ -120,7 +128,7 @@ Pravila za sadržaj:
 
 Na kraju napravi `.claude/kickstart.json`:
 ```json
-{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.2.0", "ui": <true|false>, "stack": "<kratko>" }
+{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.3.0", "ui": <true|false>, "stack": "<kratko>" }
 ```
 
 ## Faza 6: git start
@@ -128,10 +136,21 @@ Na kraju napravi `.claude/kickstart.json`:
 *Zašto:* commit je save point. Prvi commit je čist temelj na koji se uvijek možeš vratiti.
 
 1. Ako nema `.git`: `git init -b main`.
-2. `git add -A` i provjeri `git status`: u stagingu ne smije biti `.env`, `data/` ni stvarnih podataka.
-3. Commit: `chore: kickstart – temeljni dokumenti i struktura`.
-4. Pitaj da li napraviti GitHub repo (privatni). Ako `gh` nije instaliran, daj uputstvo za ručno pravljenje repoa i `git remote add origin …` + `git push -u origin main`. Ništa ne pushaj bez izričitog "da".
+2. Uključi git hookove: `git config core.hooksPath .githooks`.
+3. `git add -A`, zatim `git update-index --chmod=+x .githooks/pre-commit` (da radi i na Linuxu i Macu), pa provjeri `git status`: u stagingu ne smije biti `.env`, `data/` ni stvarnih podataka.
+4. Commit: `chore: kickstart – temeljni dokumenti i struktura`. Pre-commit se pokreće već ovdje. Ako odbije, popravi uzrok. Nikad ne koristi `--no-verify`.
+5. Pitaj da li napraviti GitHub repo (privatni). Ako `gh` nije instaliran, daj uputstvo za ručno pravljenje repoa i `git remote add origin …` + `git push -u origin main`. Ništa ne pushaj bez izričitog "da".
 
 ## Završna poruka
 
 Kratko, u tabeli: šta je napravljeno (fajlovi), šta je prvi zadatak iz M1 i koja je sljedeća komanda. Dodaj jednu liniju: "Podsjetnik rada: `/pomoc`".
+
+## Režim --nadogradi
+
+*Zašto:* plugin se razvija. Projekti pokrenuti starijim šablonima treba da dobiju nova pravila i fajlove, ali bez gubljenja vlastitog sadržaja.
+
+1. Pročitaj `.claude/kickstart.json`. Ako ne postoji, predloži `--postojeci` i stani.
+2. Pročitaj `templates/CHANGELOG-SABLONA.md`. Izdvoji sve verzije novije od `verzija_sablona` u projektu.
+3. Za svaku stavku napravi plan: **nov fajl** se pravi iz šablona i popunjava podacima projekta (stack i komande iz AGENTS.md i ADR 0001). **Postojeći fajl** dobija samo minimalan dodatak (diff), a postojeći tekst se ne mijenja.
+4. Pokaži plan kao listu diffova i čekaj OK.
+5. Primijeni, postavi `verzija_sablona` na trenutnu verziju i commituj: `chore: nadogradnja temelja <stara> → <nova>`.
