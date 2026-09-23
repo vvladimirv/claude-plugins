@@ -1,0 +1,17 @@
+{
+  "description": "project-memory: na startu sesije ubacuje STATUS.md i zadnje commitove u kontekst",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.js\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
