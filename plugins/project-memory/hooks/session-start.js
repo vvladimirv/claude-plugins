@@ -71,7 +71,7 @@ function main() {
 
   const isRepo = git(cwd, ['rev-parse', '--is-inside-work-tree']).trim() === 'true';
   const gitLog = isRepo ? git(cwd, ['log', '--oneline', '--no-decorate', `-${GIT_LOG_COUNT}`]) : '';
-  const uncommitted = isRepo ? git(cwd, ['status', '--porcelain']).split('\n').filter(Boolean).length : 0;
+  const uncommitted = isRepo ? git(cwd, ['status', '--porcelain', '-uall']).split('\n').filter(Boolean).length : 0;
 
   const context = buildContext({ statusText, gitLog, uncommitted });
   if (!context) return;
