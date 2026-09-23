@@ -10,6 +10,7 @@ const lock = require('./lib/lock');
 const size = require('./lib/size');
 const scope = require('./lib/scope');
 const session = require('./lib/session');
+const deps = require('./lib/deps');
 
 function safe(name, fn, fallback = null) {
   try {
@@ -57,7 +58,10 @@ function sessionStart(input, root) {
 
 const HANDLERS = {
   PreToolUse: preToolUse,
-  PostToolUse: (input, root) => context('PostToolUse', safe('size-post', () => size.postCheck(input, root))),
+  PostToolUse: (input, root) => context('PostToolUse', [
+    safe('size-post', () => size.postCheck(input, root)),
+    safe('deps', () => deps.postCheck(input, root)),
+  ].filter(Boolean).join('\n') || null),
   UserPromptSubmit: (input, root) => context('UserPromptSubmit', safe('scope-prompt', () => scope.promptCheck(input, root))),
   SessionStart: sessionStart,
   SessionEnd: (input, root) => safe('lock-release', () => lock.release(input, root)),
