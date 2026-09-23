@@ -1,18 +1,20 @@
 # Podsjetnik: rad sa projektima
 
-Oznake: ✅ radi sada · 🔜 dolazi u sljedećem talasu
+Oznake: ✅ radi sada · 🔜 dolazi u talasu C
 
 ## Tok rada
 | Kad | Automatski | Ti radiš |
 |---|---|---|
-| **Nov projekat** | 🔜 kapija te dočeka i predloži `/kickstart` | napravi folder u `C:\dev\<ime>`, otvori ga u Claude Codeu, pokreni ✅ `/kickstart <tema>` i odgovori na intervju |
-| **Postojeći projekat bez temelja** | — | ✅ `/kickstart --postojeci` (pravi samo dokumente koji fale, ništa ne prepisuje) |
-| **Start sesije** | ✅ STATUS.md + zadnjih 10 commitova u kontekstu | ništa |
-| **Tokom rada** | 🔜 brava, čuvar obima, limit fajlova, zaštita tajni | 🔜 `/nova-funkcija`, `/ui-izmjena`, `/adr` |
+| **Nov projekat** | ✅ kapija: u novom folderu u `C:\dev\` kod je blokiran dok ne uradiš kickstart | napravi folder u `C:\dev\<ime>`, otvori ga, pokreni `/kickstart <tema>` i odgovori na intervju |
+| **Postojeći projekat bez temelja** | ✅ jednom predloži kickstart, ali ne blokira | `/kickstart --postojeci` (pravi samo dokumente koji fale) |
+| **Start sesije** | ✅ STATUS.md, zadnjih 10 commitova, obim projekta, upozorenja (OneDrive, brava) | ništa |
+| **Tokom rada** | ✅ zaštita tajni · ✅ limit fajla (300 upozori, 500 blokira rast) · ✅ boje samo iz tokena · ✅ čuvar obima | `/nova-funkcija <ime>`, `/ui-izmjena <opis>` · 🔜 `/adr` |
+| **Zahtjev van obima** | ✅ Claude pita za vezu i nudi 4 izbora | povezano / proširenje obima / `/novi-projekat` / `/ideja` · izuzetak: "svjesno, nastavi" |
 | **Testovi** | ✅ `scripts/test` ispisuje samo sažetak | E2E i screenshot testovi idu u CI |
-| **Paralelni rad** | 🔜 brava blokira drugu sesiju u istom folderu | druga sesija ide u **worktree** (desktop app: opcija worktree; terminal: `claude --worktree`) |
-| **Kraj rada** | 🔜 podsjetnik na necommitovan rad | ✅ `/kraj-sesije` |
-| **Povremeno** | — | ✅ `/stanje` · 🔜 `/docs-audit`, `/kickstart --nadogradi` |
+| **Paralelni rad** | ✅ brava: u istom folderu piše samo jedna sesija (istekne nakon 20 min neaktivnosti) | druga sesija ide u **worktree**: `git worktree add ../<projekat>-<zadatak> -b <grana>` · `/preuzmi-lock` ako je prva sesija zatvorena |
+| **Kraj rada** | ✅ podsjetnik kad ima ≥ 10 necommitovanih fajlova ili su stariji od 2 h | `/kraj-sesije` |
+| **Povremeno** | — | `/stanje` · 🔜 `/docs-audit`, `/kickstart --nadogradi` |
+| **Hook smeta ili ima grešku** | — | `/pravila-pauza [minuta]` (tajne ostaju zaštićene) · `/pravila-pauza stop` · greške: `~/.claude/pravila.log` |
 
 ## Gdje je šta u projektu
 | Fajl | Samo za |
@@ -21,11 +23,14 @@ Oznake: ✅ radi sada · 🔜 dolazi u sljedećem talasu
 | `CLAUDE.md` | uvozi AGENTS.md + ono što je samo za Claude |
 | `STATUS.md` | trenutno stanje (≤ 30 linija, prepisuje se) |
 | `git log` | historija (ne piše se u .md) |
-| `docs/VIZIJA.md` | problem, **Obim**, **Van obima** |
+| `docs/VIZIJA.md` | problem, **Obim**, **Van obima** (čita ih čuvar obima) |
 | `docs/POJMOVI.md` | rječnik pojmova domene |
 | `docs/ARHITEKTURA.md` | moduli, folderi, slojevi |
 | `docs/INVENTAR-FUNKCIJA.md` | F-lista = ugovor (redizajn ne smije izgubiti funkciju) |
 | `docs/adr/` | odluke sa razlogom |
+| `.claude/granice.json` | (opciono) drugi limiti fajla: `{"upozorenje":300,"maks":500,"iskljuci":["legacy/**"]}` |
+| `.claude/zasticeno.txt` | (opciono) dodatni fajlovi koje agent ne smije dirati, jedan glob po liniji |
+| `.claude/bez-kickstarta` | (opciono) prazan fajl: folder svjesno bez kickstarta |
 
 ## Koji model za šta
 | Posao | Model | Effort |
@@ -43,4 +48,4 @@ Model i effort glavnog chata biraš ti. Skillovi i agenti iz plugina imaju svoj 
 5. Jedan agent = jedan folder (worktree) = jedna grana.
 
 ## Plugini
-Repo: `C:\dev\claude-plugins` · uputstvo za instalaciju i ažuriranje: `README.md` u tom repou.
+Repo: `C:\dev\claude-plugins` (GitHub: vvladimirv/claude-plugins) · instalacija i ažuriranje: `README.md` u tom repou.
