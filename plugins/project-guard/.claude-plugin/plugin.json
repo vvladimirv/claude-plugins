@@ -1,0 +1,9 @@
+{
+  "name": "project-guard",
+  "version": "0.1.0",
+  "description": "Pravila koja mašina provjerava: tajne, kapija kickstarta, brava sesija, limit fajlova, čuvar obima (/pravila-pauza, /preuzmi-lock, /novi-projekat, /ideja)",
+  "author": {
+    "name": "vvladimirv",
+    "email": "330362@gmail.com"
+  }
+}
