@@ -1,6 +1,6 @@
 ---
 name: pravilo-u-hook
-description: Pretvara pravilo napisano rečenicom (iz AGENTS.md ili razgovora) u nešto što mašina provjerava, a to je test, pre-commit provjera, podešavanje ili hook. Za pravila koja agent zaboravlja.
+description: Pretvara pravilo iz AGENTS.md u nešto što mašina provjerava: test, pre-commit, podešavanje ili hook.
 argument-hint: <pravilo ili broj pravila iz AGENTS.md>
 ---
 

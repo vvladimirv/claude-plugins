@@ -1,6 +1,6 @@
 ---
 name: docs-audit
-description: Pregled .md dokumenata projekta. Nalazi dokumente koji si proturječe, zastarjele planove, duplirane teme, predugačke STATUS i CLAUDE fajlove, pa predlaže arhivu ili spajanje.
+description: Pregled .md dokumenata: kontradikcije, zastarjeli planovi, duplikati, predugi STATUS; predlaže arhivu ili spajanje.
 model: sonnet
 allowed-tools: [Read, Glob, Grep, Bash]
 ---

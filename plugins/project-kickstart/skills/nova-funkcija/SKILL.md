@@ -1,6 +1,6 @@
 ---
 name: nova-funkcija
-description: Dodaje novu funkciju na pravo mjesto. Provjeri obim, dodijeli F-broj u inventaru, napravi folder funkcije po arhitekturi i test koji opisuje ponašanje. Koristi kad korisnik kaže "/nova-funkcija", "dodaj novu funkciju", "nova mogućnost", prije pisanja koda za novu funkcionalnost.
+description: Nova funkcija na pravo mjesto: provjera obima, F-broj u inventaru, folder po arhitekturi i test ponašanja prije koda.
 argument-hint: <ime funkcije> [kratak opis]
 model: sonnet
 ---

@@ -1,6 +1,6 @@
 ---
 name: kraj-sesije
-description: Ritual na kraju rada. Provjeri testove, osvježi STATUS.md i commituj rad u logičnim, malim commitovima. Koristi kad korisnik kaže "/kraj-sesije", "završavamo", "kraj za danas", "snimi sve".
+description: Kraj rada: testovi, STATUS.md i mali logični commitovi. Za "/kraj-sesije", "završavamo", "snimi sve".
 model: sonnet
 allowed-tools: [Read, Write, Edit, Bash, Glob, Grep]
 ---

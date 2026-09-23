@@ -1,6 +1,6 @@
 ---
 name: ui-izmjena
-description: Siguran tok za izmjenu izgleda. Prvo pogođeni ekrani i komponente, pa mockup i odobrenje korisnika, pa izmjena samo tih komponenti uz tokene, pa screenshot testovi i provjera da nijedna funkcija nije izgubljena. Koristi kad korisnik kaže "/ui-izmjena", "promijeni izgled", "redizajn", "novi dizajn ekrana".
+description: Siguran tok izmjene izgleda: pogođeni ekrani, mockup i OK, izmjena uz tokene, screenshot testovi, ux-recenzent. Za redizajn i promjenu izgleda.
 argument-hint: <šta treba promijeniti>
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: codex-worktree
-description: Pravi poseban git worktree i granu za Codex (ili drugi chat), da ne radi u istom folderu kao Claude. Sa "spoji" vraća gotov rad u main nakon zelenih testova i briše worktree.
+description: Poseban worktree i grana za Codex ili drugi chat; "spoji <zadatak>" vraća gotov rad u main.
 argument-hint: <zadatak> | spoji <zadatak>
 model: haiku
 allowed-tools: [Bash, Read, AskUserQuestion]

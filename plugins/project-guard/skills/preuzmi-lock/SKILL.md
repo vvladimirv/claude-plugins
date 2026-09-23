@@ -1,6 +1,6 @@
 ---
 name: preuzmi-lock
-description: Preuzima bravu projekta (.agent-lock.json) od druge sesije koja je zatvorena ili se srušila. Koristi kad korisnik kaže "/preuzmi-lock", "preuzmi bravu", ili kad brava blokira pisanje, a druga sesija više ne radi.
+description: Preuzima bravu projekta (.agent-lock.json) od zatvorene ili srušene sesije, uz potvrdu.
 model: haiku
 allowed-tools: [Read, Bash, AskUserQuestion]
 ---

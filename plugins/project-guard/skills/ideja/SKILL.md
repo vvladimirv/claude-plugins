@@ -1,6 +1,6 @@
 ---
 name: ideja
-description: Zapisuje ideju u globalnu listu ideja (C:\dev\ideje\IDEJE.md, poseban git repo), da se ne izgubi i da ne zagađuje trenutni projekat. Koristi kad korisnik kaže "/ideja", "zapamti ovu ideju", "samo zabilježi", ili izabere "samo zapamti" kod čuvara obima.
+description: Zapisuje ideju van obima u listu ideja (C:\dev\ideje, poseban repo), da se ne izgubi i ne zagađuje projekat.
 argument-hint: <ideja u jednoj ili dvije rečenice>
 model: haiku
 allowed-tools: [Read, Edit, Write, Bash]

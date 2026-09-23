@@ -1,6 +1,6 @@
 ---
 name: stanje
-description: Osvježava STATUS.md projekta, tj. trenutno stanje (šta radi, šta je sljedeće, blokeri), na osnovu git loga, STATUS-a i ove sesije. Koristi kad korisnik kaže "/stanje", "ažuriraj status", "gdje smo stali".
+description: Osvježava STATUS.md (šta radi, šta je sljedeće, blokeri) iz git loga i sesije. Za "/stanje", "gdje smo stali".
 model: haiku
 allowed-tools: [Read, Write, Edit, Bash, Glob]
 ---

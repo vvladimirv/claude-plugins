@@ -1,6 +1,6 @@
 ---
 name: pravila-pauza
-description: Privremeno isključuje blokirajuća pravila project-guard plugina (kapija, brava, limit fajlova, novi folderi), za sve projekte. Zaštita tajni ostaje uključena. Koristi kad korisnik kaže "/pravila-pauza", "pauziraj pravila", "hook me blokira greškom", ili "/pravila-pauza stop".
+description: Privremeno pauzira blokirajuća pravila project-guard (tajne ostaju zaštićene). "/pravila-pauza [min]" ili "stop".
 argument-hint: "[minuta, npr. 30] | stop"
 model: haiku
 allowed-tools: [Bash]

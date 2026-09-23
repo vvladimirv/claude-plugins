@@ -1,6 +1,6 @@
 ---
 name: novi-projekat
-description: Izdvaja temu koja ne pripada trenutnom projektu u nov projekat. Napravi folder u C:\dev\<ime> sa IDEJA.md (zahtjev + kontekst), a temelj kasnije postavlja /kickstart. Koristi kad čuvar obima ocijeni da je zahtjev nova tema, ili kad korisnik kaže "/novi-projekat", "ovo je poseban projekat".
+description: Tema van obima postaje nov projekat: folder u C:\dev\<ime> sa IDEJA.md, a temelj postavlja /kickstart.
 argument-hint: <tema ili ime projekta>
 model: haiku
 allowed-tools: [Read, Write, Bash, Glob, AskUserQuestion]
