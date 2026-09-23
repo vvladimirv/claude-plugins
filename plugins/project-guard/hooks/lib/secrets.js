@@ -8,8 +8,9 @@ const SAFE_ENV = /^\.env\.(example|sample|template|dist)$/i;
 const SECRET_NAMES = [
   /^\.env$/i,
   /^\.env\..+$/i,
-  /^secrets?(\..+)?$/i,
-  /^\.?credentials(\.json)?$/i,
+  // samo fajlovi sa podacima (secrets.json), ne kod koji se tako zove (secrets.js)
+  /^secrets?(\.(json|ya?ml|toml|env|txt|ini|cfg|conf))?$/i,
+  /^\.?credentials(\.(json|ya?ml|toml|txt|ini))?$/i,
   /\.(pem|key|p12|pfx)$/i,
   /^id_(rsa|ed25519|ecdsa)(\.pub)?$/i,
 ];

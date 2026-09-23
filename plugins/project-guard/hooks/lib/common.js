@@ -51,6 +51,25 @@ function kickstartRoots() {
   return [path.join(process.env.SystemDrive ? process.env.SystemDrive + path.sep : path.sep, 'dev')];
 }
 
+// Korijen projekta za fajl koji alat dira. Sesija može biti otvorena u jednom folderu, a pisati u drugi
+// projekat (npr. /kickstart za novu temu), pa pravila moraju važiti za ciljni projekat.
+function rootFor(input, sessionRoot) {
+  const t = input.tool_input || {};
+  const file = t.file_path || t.notebook_path;
+  if (!file) return sessionRoot;
+  const abs = path.resolve(sessionRoot, file);
+  if (isUnder(abs, sessionRoot)) return sessionRoot;
+  for (let dir = path.dirname(abs); ; dir = path.dirname(dir)) {
+    if (fs.existsSync(path.join(dir, '.git')) || fs.existsSync(path.join(dir, '.claude', 'kickstart.json'))) return dir;
+    if (path.dirname(dir) === dir) break;
+  }
+  for (const r of kickstartRoots()) {
+    const parts = isUnder(abs, r) ? path.relative(r, abs).split(path.sep) : [];
+    if (parts.length > 1) return path.join(r, parts[0]);
+  }
+  return sessionRoot;
+}
+
 // Prekidač: env CC_PRAVILA=off ili ~/.claude/pravila-pauza.json sa poljem "do" (ISO vrijeme).
 function isPaused(now = Date.now()) {
   if ((process.env.CC_PRAVILA || '').toLowerCase() === 'off') return true;
@@ -110,6 +129,6 @@ function dataDir() {
 }
 
 module.exports = {
-  CLAUDE_HOME, norm, isUnder, relToRoot, readJson, projectRoot, kickstartRoots, isPaused,
+  CLAUDE_HOME, norm, isUnder, relToRoot, readJson, projectRoot, rootFor, kickstartRoots, isPaused,
   limits, git, isGitRepo, countLines, globToRegex, logError, dataDir,
 };

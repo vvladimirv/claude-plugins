@@ -23,7 +23,7 @@ if (lock && Date.now() - Date.parse(lock.heartbeat) < 20 * 60 * 1000) {
 }
 
 // 2. Staged fajlovi: tajne i veličina.
-const SECRET_NAME = /(^|\/)(\.env(\.(?!example$|sample$|template$)[\w-]+)?|secrets?(\.[\w]+)?|\.?credentials(\.json)?|id_(rsa|ed25519|ecdsa))$|\.(pem|key|p12|pfx)$/i;
+const SECRET_NAME = /(^|\/)(\.env(\.(?!example$|sample$|template$)[\w-]+)?|secrets?(\.(json|ya?ml|toml|env|txt|ini|cfg|conf))?|\.?credentials(\.(json|ya?ml|toml|txt|ini))?|id_(rsa|ed25519|ecdsa))$|\.(pem|key|p12|pfx)$/i;
 const SECRET_TEXT = [
   /-----BEGIN (RSA |EC |DSA |OPENSSH |PGP )?PRIVATE KEY-----/,
   /\bAKIA[0-9A-Z]{16}\b/, /\bgh[pousr]_[A-Za-z0-9]{36,}\b/, /\bgithub_pat_[A-Za-z0-9_]{50,}/,

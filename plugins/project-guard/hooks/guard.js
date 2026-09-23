@@ -75,7 +75,9 @@ const HANDLERS = {
 function run(input) {
   const handler = HANDLERS[input.hook_event_name];
   if (!handler) return null;
-  return handler(input, common.projectRoot(input)) || null;
+  const sessionRoot = common.projectRoot(input);
+  const toolEvent = input.hook_event_name === 'PreToolUse' || input.hook_event_name === 'PostToolUse';
+  return handler(input, toolEvent ? common.rootFor(input, sessionRoot) : sessionRoot) || null;
 }
 
 if (require.main === module) {
