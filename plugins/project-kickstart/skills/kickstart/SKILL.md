@@ -63,7 +63,7 @@ Predloži:
 5. **Granice**: limit fajla 300 linija (upozorenje) / 500 (obavezna podjela). Gdje žive tajne (`.env`, nikad u repou), a gdje stvarni podaci (izvan repoa, u repou samo `fixtures/`).
 6. Ako ima UI: **dizajn sistem** (jedan fajl tokena, katalog komponenti) i lista ekrana.
 
-Prije nego pokažeš prijedlog, sam ga kritički provjeri i ispravi:
+Prije nego pokažeš prijedlog, pošalji ga agentu **`arhitekta`** (Agent tool; agent iz plugina project-kickstart) zajedno sa sažetkom iz faza 1–2. Ispravi sve 🔴 stavke, a korisniku pokaži prijedlog i kratko šta je arhitekta promijenio. Ako agent nije dostupan, sam provjeri:
 - Da li je išta složenije nego što MVP traži?
 - Da li svaka MVP funkcija ima svoje mjesto?
 - Da li postoji fajl za koji se već vidi da će postati monolit?

@@ -20,5 +20,6 @@ Zahtjev: `$ARGUMENTS`
 5. **Provjera:**
    - pokreni testove ponašanja za sve F-funkcije iz tabele (`scripts/test`),
    - pokreni screenshot testove pogođenih ekrana. Promijenjene snimke pokaži korisniku, a nove referentne snimke (baseline) usvoji **tek uz njegov OK**,
-   - svaka F-funkcija sa tih ekrana mora i dalje biti dostupna. Ako neka nestaje, to je odluka korisnika, i onda ide status `uklonjena` + ADR.
+   - svaka F-funkcija sa tih ekrana mora i dalje biti dostupna. Ako neka nestaje, to je odluka korisnika, i onda ide status `uklonjena` + ADR,
+   - pokreni agenta **`ux-recenzent`** (Agent tool; agent iz plugina project-kickstart) nad izmjenom. Sve 🔴 stavke ispravi prije commita.
 6. Ažuriraj `docs/EKRANI.md` ako se raspored promijenio, pa commit: `feat(ui): <šta>`.
