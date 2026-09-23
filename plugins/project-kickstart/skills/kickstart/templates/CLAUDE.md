@@ -6,4 +6,5 @@
 
 - Odgovaraj na bosanskom (ijekavica). Kod i identifikatori su na engleskom.
 - Na startu sesije pročitaj `STATUS.md`. Na kraju rada pokreni `/kraj-sesije`.
+- Nova funkcija: `/nova-funkcija <ime>` · izmjena izgleda: `/ui-izmjena <opis>` · ideja van obima: `/ideja`.
 - Podsjetnik rada: `/pomoc`.
