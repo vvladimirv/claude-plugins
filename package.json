@@ -1,0 +1,8 @@
+{
+  "name": "claude-plugins",
+  "private": true,
+  "description": "Lični Claude Code pluginovi (marketplace moji-pluginsi)",
+  "scripts": {
+    "test": "node --test \"plugins/**/*.test.js\""
+  }
+}

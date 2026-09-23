@@ -1,0 +1,25 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "moji-pluginsi",
+  "description": "Lični pluginovi za ispravan start i vođenje projekata sa Claude Codeom",
+  "owner": {
+    "name": "vvladimirv",
+    "email": "330362@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "project-kickstart",
+      "description": "Start projekta: intervju, stack, arhitektura, blueprint i svi temeljni dokumenti (/kickstart, /pomoc)",
+      "version": "0.1.0",
+      "source": "./plugins/project-kickstart",
+      "category": "development"
+    },
+    {
+      "name": "project-memory",
+      "description": "Kratka memorija agenta: STATUS.md i git log u kontekstu na startu sesije (/stanje, /kraj-sesije)",
+      "version": "0.1.0",
+      "source": "./plugins/project-memory",
+      "category": "development"
+    }
+  ]
+}
