@@ -107,6 +107,7 @@ Pročitaj sve šablone iz `templates/` i napravi fajlove u projektu. Popuni ih s
 | `fixtures/README.md` | `fixtures/README.md` | uvijek |
 | `claude-settings.json` | `.claude/settings.json` | uvijek (dopuni komandama za testove tog stacka) |
 | `gitignore` | `.gitignore` | uvijek (dopuni za stack) |
+| `gitattributes` | `.gitattributes` | uvijek (isti krajevi linija na svim računarima) |
 
 Zatim napravi **kostur foldera** iz faze 3: prazni folderi sa `.gitkeep`. Ne piši aplikacijski kod, to je posao milestone-a M1.
 
