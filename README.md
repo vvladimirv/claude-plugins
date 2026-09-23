@@ -17,9 +17,9 @@ claude plugin marketplace add vvladimirv/claude-plugins
 claude plugin install project-kickstart@moji-pluginsi
 claude plugin install project-memory@moji-pluginsi
 ```
-Zatim restartuj Claude Code (desktop app ili terminal sesiju).
+Zatim u `~/.claude/settings.json`, pod `extraKnownMarketplaces.moji-pluginsi`, dodaj `"autoUpdate": true`. Tako računar sam povlači nove verzije. Repo je privatan, pa git mora imati sačuvanu prijavu za github.com: Git Credential Manager (dolazi uz Git for Windows) ili `gh auth login` + `gh auth setup-git`.
 
-> Dok repo nije na GitHubu, umjesto `vvladimirv/claude-plugins` koristi lokalnu putanju `C:\dev\claude-plugins`.
+Na kraju restartuj Claude Code (desktop app ili terminal sesiju).
 
 Na drugom računaru možeš otvoriti Claude Code i reći: *"instaliraj moje plugine po README-u iz github.com/vvladimirv/claude-plugins"*.
 
