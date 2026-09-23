@@ -18,10 +18,14 @@ function isReadonlyCommand(cmd) {
     .every((seg) => READONLY.test(seg.replace(/^(\w+=\S*\s+)+/, '')));
 }
 
+// Izlazi iz brave (/preuzmi-lock, /pravila-pauza) moraju raditi i iz blokirane sesije.
+const ESCAPE = /\.agent-lock\.json|pravila-pauza/;
+
 function isWrite(input) {
   const tool = input.tool_name;
-  if (tool === 'Write' || tool === 'Edit' || tool === 'NotebookEdit') return true;
-  if (tool === 'Bash' || tool === 'PowerShell') return !isReadonlyCommand((input.tool_input || {}).command);
+  const t = input.tool_input || {};
+  if (tool === 'Write' || tool === 'Edit' || tool === 'NotebookEdit') return !ESCAPE.test(t.file_path || t.notebook_path || '');
+  if (tool === 'Bash' || tool === 'PowerShell') return !ESCAPE.test(t.command || '') && !isReadonlyCommand(t.command);
   return false;
 }
 

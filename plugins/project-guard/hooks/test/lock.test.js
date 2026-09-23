@@ -33,6 +33,10 @@ test('brava: prva sesija uzme bravu, druga ne može pisati ali može čitati', (
 
   const start = run({ hook_event_name: 'SessionStart', cwd: root, session_id: 'B' });
   assert.match(start.hookSpecificOutput.additionalContext, /druga sesija/);
+
+  // izlazi iz brave rade i iz blokirane sesije
+  assert.strictEqual(run(h.pre(root, 'Bash', { command: 'node -e "require(\'fs\').unlinkSync(\'.agent-lock.json\')"' }, 'B')), null);
+  assert.strictEqual(run(h.pre(root, 'Bash', { command: 'node -e "x" > ~/.claude/pravila-pauza.json' }, 'B')), null);
 });
 
 test('brava: .agent-lock.json je u .git/info/exclude', () => {
