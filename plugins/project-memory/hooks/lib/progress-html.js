@@ -25,16 +25,17 @@ function timeline(s) {
   if (pts.length < 2 || !s.imaRokove) return '<p class="hint">Vremenska linija se pojavi kad milestonei imaju rokove (<code>/kickstart --nadogradi</code>).</p>';
   const min = Math.min(...pts) - DAY;
   const max = Math.max(...pts) + DAY;
-  const x = (iso) => (((day(iso) - min) / (max - min)) * 100).toFixed(2);
+  // Procenti bez viewBox-a: krugovi ostaju okrugli, a tekst se ne rasteže. Lijevih 10% je za oznake.
+  const x = (iso) => (10 + ((day(iso) - min) / (max - min)) * 88).toFixed(2);
   const rows = s.milestones.map((m, i) => {
     const y = 18 + i * 26;
     const plan = m.rok ? `<circle cx="${x(m.rok)}%" cy="${y}" r="5" class="plan"><title>${m.id} rok ${m.rok}</title></circle>` : '';
     const moved = m.rokPrvi && m.rokPrvi !== m.rok ? `<circle cx="${x(m.rokPrvi)}%" cy="${y}" r="4" class="moved"><title>${m.id} prvobitni rok ${m.rokPrvi}</title></circle>` : '';
     const done = m.done ? `<circle cx="${x(m.done)}%" cy="${y}" r="5" class="done"><title>${m.id} gotovo ${m.done}</title></circle>` : '';
-    return `<text x="0" y="${y + 4}" class="lbl">${esc(m.id)}</text><line x1="4%" x2="100%" y1="${y}" y2="${y}" class="track"/>${moved}${plan}${done}`;
+    return `<text x="0" y="${y + 4}" class="lbl">${esc(m.id)}</text><line x1="10%" x2="98%" y1="${y}" y2="${y}" class="track"/>${moved}${plan}${done}`;
   }).join('');
   const h = 18 + s.milestones.length * 26;
-  return `<svg class="tl" viewBox="0 0 100 ${h}" preserveAspectRatio="none" style="height:${h}px" role="img" aria-label="Vremenska linija milestonea">
+  return `<svg class="tl" width="100%" height="${h}" role="img" aria-label="Vremenska linija milestonea">
 <line x1="${x(s.today)}%" x2="${x(s.today)}%" y1="0" y2="${h}" class="today"/>${rows}</svg>
 <div class="legend"><span><i class="c-plan"></i>rok</span><span><i class="c-done"></i>završeno</span><span><i class="c-moved"></i>prvobitni rok</span><span><i class="c-today"></i>danas ${esc(s.today)}</span></div>`;
 }
@@ -71,7 +72,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}td{padding:8px 6px;bord
 .b{font-weight:600;font-size:12px;padding:2px 8px;border-radius:10px;background:var(--line)}.b.ok{background:var(--ok);color:#fff}.b.warn{background:var(--warn);color:#fff}.b.bad{background:var(--bad);color:#fff}
 .mini{display:inline-block;width:80px;height:8px;border-radius:4px;background:var(--line);overflow:hidden;vertical-align:middle}.mini span{display:block;height:100%;background:var(--ok)}
 .tl{width:100%;overflow:visible}.track{stroke:var(--line);stroke-width:2;vector-effect:non-scaling-stroke}.today{stroke:var(--acc);stroke-dasharray:3 3;vector-effect:non-scaling-stroke}
-.plan{fill:var(--card);stroke:var(--fg);stroke-width:2;vector-effect:non-scaling-stroke}.done{fill:var(--ok)}.moved{fill:var(--line)}.lbl{font-size:11px;fill:var(--muted)}
+.plan{fill:var(--card);stroke:var(--fg);stroke-width:2;vector-effect:non-scaling-stroke}.done{fill:var(--ok)}.moved{fill:var(--line)}.lbl{font-size:12px;fill:var(--muted);font-weight:600}
 .c-plan{border:2px solid var(--fg);background:transparent!important}.c-done{background:var(--ok)}.c-moved{background:var(--line)}.c-today{background:var(--acc)}
 .hint{color:var(--muted);font-size:13px}.scroll{overflow-x:auto}
 </style></head><body><main>
