@@ -30,7 +30,24 @@ function readScope(root) {
   return { obim, van: section(md, 'Van obima') };
 }
 
+// Poslije /izdanje projekat je u održavanju: obim je zamrznut dok se ne isplanira nova verzija.
+function frozen(root) {
+  try {
+    const meta = JSON.parse(fs.readFileSync(path.join(root, '.claude', 'kickstart.json'), 'utf8'));
+    if (meta.faza !== 'odrzavanje') return null;
+    const izdanja = Array.isArray(meta.izdanja) ? meta.izdanja : [];
+    return (izdanja[izdanja.length - 1] || {}).verzija || 'izdanje';
+  } catch {
+    return null;
+  }
+}
+
+const FREEZE = (v) => `Projekat je izdat (${v}) i obim je zamrznut. Popravke bugova su slobodne. Nova funkcija ide u plan nove verzije `
+  + '(`/izdanje` → planiraj sljedeću verziju) ili u `/ideja`. Ne dodaji je usput.';
+
 function sessionMessage(root) {
+  const v = frozen(root);
+  if (v) return '## Čuvar obima: održavanje\n' + FREEZE(v);
   const s = readScope(root);
   if (!s) return null;
   return '## Čuvar obima (docs/VIZIJA.md)\n'
@@ -44,7 +61,10 @@ function sessionMessage(root) {
 function promptCheck(input, root) {
   const prompt = (input.prompt || '').trim();
   if (!prompt || prompt.startsWith('/') || /svjesno,?\s+nastavi/i.test(prompt)) return null;
-  if (!CHANGE.test(prompt) || !readScope(root)) return null;
+  if (!CHANGE.test(prompt)) return null;
+  const v = frozen(root);
+  if (v) return 'Čuvar obima: ' + FREEZE(v);
+  if (!readScope(root)) return null;
   return 'Čuvar obima: prije izmjena provjeri da li je ovaj zahtjev u Obimu iz docs/VIZIJA.md. Ako nije, pitaj za vezu i ponudi 4 izbora.';
 }
 
