@@ -1,6 +1,6 @@
 {
   "name": "project-memory",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Kratka memorija agenta: STATUS.md i git log u kontekstu na startu sesije (/stanje, /kraj-sesije, /docs-audit)",
   "author": {
     "name": "vvladimirv",

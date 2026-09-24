@@ -12,8 +12,8 @@ Sve navedeno radi (talasi A, B i C).
 | **Zahtjev van obima** | ✅ Claude pita za vezu i nudi 4 izbora | povezano / proširenje obima / `/novi-projekat` / `/ideja` · izuzetak: "svjesno, nastavi" |
 | **Nova biblioteka** | ✅ podsjetnik ako nijedan ADR ne spominje novu zavisnost | `/adr` (zašto baš ona, alternative) |
 | **Commit** | ✅ pre-commit (u projektima od kickstarta 0.3.0): brava, tajne, veličina fajla, brzi testovi. Važi i za Codex i za tebe iz terminala | nikad `--no-verify` |
-| **Testovi** | ✅ `scripts/test` ispisuje samo sažetak · CI na GitHubu pokreće pune, E2E i screenshot testove | — |
-| **Paralelni rad** | ✅ brava: u istom folderu piše samo jedna sesija (istekne nakon 20 min neaktivnosti) | druga sesija ili Codex ide u **worktree**: `/codex-worktree <zadatak>`, pa kad je gotovo `/codex-worktree spoji <zadatak>` · `/preuzmi-lock` ako je prva sesija zatvorena |
+| **Testovi** | ✅ `scripts/test` ispisuje samo sažetak · CI na GitHubu pokreće pune, E2E i screenshot testove · `/kraj-sesije`, `/ui-izmjena` i `/codex-worktree spoji` pokreću prvo što nađu: `scripts/test` → „Brzi testovi" iz AGENTS.md → `npm run test:fast` (inače pitaju) | — |
+| **Paralelni rad** | ✅ brava: u istom folderu piše samo jedna sesija (istekne nakon 20 min neaktivnosti) | druga sesija ili Codex ide u **worktree**: `/codex-worktree <zadatak>`, pa kad je gotovo `/codex-worktree spoji <zadatak>` (vraća rad u granu iz koje je worktree nastao) · `/preuzmi-lock` ako je prva sesija zatvorena |
 | **Kraj rada** | ✅ podsjetnik kad ima ≥ 10 necommitovanih fajlova ili su stariji od 2 h | `/kraj-sesije` |
 | **Povremeno** | — | `/stanje` · `/docs-audit` (red u dokumentima) · `/kickstart --nadogradi` (novi šabloni u starom projektu) · `/pravilo-u-hook` (pravilo koje se zaboravlja postaje provjera) |
 | **Hook smeta ili ima grešku** | — | `/pravila-pauza [minuta]` (tajne ostaju zaštićene) · `/pravila-pauza stop` · greške: `~/.claude/pravila.log` |
