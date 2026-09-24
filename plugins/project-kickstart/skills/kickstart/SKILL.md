@@ -83,7 +83,9 @@ Prije nego pokažeš prijedlog, pošalji ga agentu **`arhitekta`** (Agent tool; 
 
 Predloži:
 - **Inventar funkcija**: F-01, F-02… (ime, opis u jednoj rečenici, ekran ako ima UI, kako se testira).
-- **Milestones**: M1 (kostur koji se pokreće + prvi test), M2 … (svaki 1–3 dana rada, svaki završava nečim što radi).
+- **Milestones**: M1 (kostur koji se pokreće + prvi test), M2 … (svaki 1–3 radna dana, svaki završava nečim što radi).
+- **Tempo i rokovi** *(zašto: bez roka milestone je želja, a rad traje beskonačno)*: pitaj koliko sati sedmično korisnik radi na projektu i ima li krajnji rok. Radni dan računaj kao ~6 sati rada sa agentom. Iz tempa izračunaj `Rok` za svaki milestone i datum završetka MVP-a. Ako je krajnji rok raniji od prognoze, **smanji obim odmah**: predloži koje funkcije idu u `odloženo (v2)` (ne produžavaj rok tiho).
+- **Ciljnu liniju**: kad je MVP gotov (sekcija `## Cilj: MVP gotov` u BLUEPRINT.md), slijedi `/izdanje`.
 - **Prvih 5 zadataka** za M1.
 - **Definiciju "gotovo"**: testovi zeleni, STATUS.md ažuriran, commit.
 
