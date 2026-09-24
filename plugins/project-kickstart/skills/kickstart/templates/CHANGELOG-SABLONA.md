@@ -2,6 +2,14 @@
 
 Nova verzija ide na vrh. Svaka stavka kaže koji fajl u projektu i šta tačno treba dodati. Nadogradnja nikad ne prepisuje sadržaj projekta: samo dodaje ono što fali.
 
+## 0.4.1
+- **.github/workflows/ci.yml** (iz `github-ci.yml`):
+  - package manager po lockfile-u: pnpm (`pnpm/action-setup` + `pnpm install --frozen-lockfile`) ili npm (`npm ci`),
+  - artefakt palih E2E testova je `test-results/`, jer uz `--reporter=line` folder `playwright-report/` ne nastaje,
+  - E2E ide sa `--ignore-snapshots` dok u repou nema `*-linux.png` snimaka,
+  - ručno pokretanje "snimci" (`workflow_dispatch`) pravi Linux referentne snimke kao artefakt `linux-snimci`.
+  Postojeći ci.yml uporedi sa šablonom i predloži samo razlike.
+
 ## 0.4.0
 - **docs/BLUEPRINT.md**, tabela milestonea: dodati kolone `Rok` i `Status`. `Status` popuni iz inventara i git loga: `gotovo YYYY-MM-DD` (datum commita kojim je milestone završen), `u toku` ili `planirano`. `Rok` pitaj samo za preostale milestonee (tempo: sati sedmično).
 - **docs/BLUEPRINT.md**: nove sekcije `## Tempo` (početak, sati sedmično) i `## Cilj: MVP gotov` (iz šablona).
