@@ -8,11 +8,12 @@ const { isReadonlyCommand, LOCK } = require('../lib/lock');
 
 test('komande: čitanje prolazi, pisanje ne', () => {
   for (const c of ['git status', 'git log --oneline -5 && git diff', 'ls -la | grep x', 'cat a.txt 2>&1', 'npm test',
-    'node scripts/test.mjs', 'git worktree add ../p-x -b x', 'Get-ChildItem src', 'rg foo > /dev/null']) {
+    'node scripts/test.mjs', 'git worktree add ../p-x -b x', 'Get-ChildItem src', 'rg foo > /dev/null',
+    'git config "branch.codex/x.base" "15"', 'git config --get branch.codex/x.base']) {
     assert.ok(isReadonlyCommand(c), c);
   }
   for (const c of ['git commit -m x', 'rm -rf src', 'echo hi > a.txt', 'npm install react', 'git status && git push',
-    'sed -i s/a/b/ f', 'mv a b']) {
+    'sed -i s/a/b/ f', 'mv a b', 'git config core.hooksPath x']) {
     assert.ok(!isReadonlyCommand(c), c);
   }
 });
@@ -28,6 +29,9 @@ test('brava: prva sesija uzme bravu, druga ne može pisati ali može čitati', (
   assert.match(b.hookSpecificOutput.permissionDecisionReason, /worktree/);
   assert.strictEqual(h.decision(run(h.pre(root, 'Bash', { command: 'git commit -am x' }, 'B'))), 'deny');
   assert.strictEqual(run(h.pre(root, 'Bash', { command: 'git log' }, 'B')), null);
+  // /codex-worktree iz blokirane sesije: worktree i zapis bazne grane prolaze
+  const worktree = 'git worktree add ../p-codex-x -b codex/x && git config "branch.codex/x.base" "main"';
+  assert.strictEqual(run(h.pre(root, 'Bash', { command: worktree }, 'B')), null);
   assert.strictEqual(run(h.pre(root, 'Read', { file_path: file }, 'B')), null);
   assert.strictEqual(run(h.pre(root, 'Write', { file_path: file, content: 'z' }, 'A')), null);
 
