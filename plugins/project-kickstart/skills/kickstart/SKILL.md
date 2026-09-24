@@ -18,14 +18,18 @@ Korisnik uči kroz rad: uz svaku fazu u 1–2 rečenice objasni **zašto** ta fa
 
 1. Radni folder = trenutni direktorij projekta.
 2. Ako putanja sadrži `OneDrive`, `Dropbox` ili `Google Drive`: **upozori** da git i sync servis ne idu zajedno (pokvareni `.git`, konflikti). Predloži `C:\dev\<ime>` i pitaj da li nastaviti.
-3. Ako je proslijeđen `--nadogradi`: idi na sekciju **Režim --nadogradi** na dnu.
-4. **Sesija je u drugom projektu, a tema je nova.** Trenutni folder već ima `.claude/kickstart.json` ili kod, a argument je nova tema (nije `--postojeci`):
+3. **Izbor ciljnog projekta** (za `--nadogradi` i `--postojeci`). Ako trenutni folder nije taj projekat (za `--nadogradi` nema `.claude/kickstart.json`, a za `--postojeci` nema koda), **ne staj**:
+   - nađi kandidate: folderi direktno ispod korijena (prva linija iz `~/.claude/kickstart-korijeni.txt`, inače `C:\dev`). Za `--nadogradi` to su oni sa `.claude/kickstart.json` (uz `verzija_sablona`), a za `--postojeci` oni sa kodom, ali bez njega. Worktree (`.git` je fajl) označi sa "(worktree, grana X)",
+   - pitaj koji (AskUserQuestion). Najstarija verzija šablona ide prva,
+   - nastavi sa **apsolutnim putanjama** u taj folder. Hookovi (brava, kapija) važe za ciljni folder. Ako u tom folderu radi druga sesija, predloži njen worktree.
+4. Ako je proslijeđen `--nadogradi`: idi na sekciju **Režim --nadogradi** na dnu.
+5. **Sesija je u drugom projektu, a tema je nova.** Trenutni folder već ima `.claude/kickstart.json` ili kod, a argument je nova tema (nije `--postojeci`):
    - ne diraj trenutni folder,
    - predloži novi folder `<korijen>/<ime-teme>` (korijen je prva linija iz `~/.claude/kickstart-korijeni.txt`, inače `C:\dev`) i potvrdi ime,
    - napravi folder i nastavi sve faze tamo, sa **apsolutnim putanjama** u taj folder. Hookovi (kapija, brava) važe za ciljni folder,
    - na kraju reci korisniku da otvori novu sesiju u tom folderu za rad na M1.
-5. Ako postoji `.claude/kickstart.json`, a argument nije nova tema: projekat je već pokrenut. Ponudi pregled dokumenata ili `--nadogradi`. Ne generiši ništa ponovo.
-6. Ako folder već ima kod (npr. `src/`, `package.json`, `*.py`, `index.html`) ili je proslijeđen `--postojeci`: radi u **režimu postojećeg projekta**:
+6. Ako postoji `.claude/kickstart.json`, a argument nije nova tema: projekat je već pokrenut. Ponudi pregled dokumenata ili `--nadogradi`. Ne generiši ništa ponovo.
+7. Ako folder već ima kod (npr. `src/`, `package.json`, `*.py`, `index.html`) ili je proslijeđen `--postojeci`: radi u **režimu postojećeg projekta**:
    - prvo pročitaj postojeći kod i dokumente (README, CLAUDE.md, *.md u korijenu),
    - intervju skrati na ono što se ne vidi iz koda,
    - u fazi 5 **nikad ne prepisuj** postojeće fajlove. Pravi samo one koji fale, a za postojeće predloži izmjene kao diff.
@@ -130,7 +134,7 @@ Pravila za sadržaj:
 
 Na kraju napravi `.claude/kickstart.json`:
 ```json
-{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.4.0", "faza": "razvoj", "izdanja": [], "ui": <true|false>, "stack": "<kratko>" }
+{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.4.1", "faza": "razvoj", "izdanja": [], "ui": <true|false>, "stack": "<kratko>" }
 ```
 
 ## Faza 6: git start
@@ -151,7 +155,7 @@ Kratko, u tabeli: šta je napravljeno (fajlovi), šta je prvi zadatak iz M1 i ko
 
 *Zašto:* plugin se razvija. Projekti pokrenuti starijim šablonima treba da dobiju nova pravila i fajlove, ali bez gubljenja vlastitog sadržaja.
 
-1. Pročitaj `.claude/kickstart.json`. Ako ne postoji, predloži `--postojeci` i stani.
+1. Pročitaj `.claude/kickstart.json` ciljnog projekta (Faza 0, tačka 3). Ako ga nema ni u jednom kandidatu, predloži `--postojeci`.
 2. Pročitaj `templates/CHANGELOG-SABLONA.md`. Izdvoji sve verzije novije od `verzija_sablona` u projektu.
 3. Za svaku stavku napravi plan: **nov fajl** se pravi iz šablona i popunjava podacima projekta (stack i komande iz AGENTS.md i ADR 0001). **Postojeći fajl** dobija samo minimalan dodatak (diff), a postojeći tekst se ne mijenja.
 4. Pokaži plan kao listu diffova i čekaj OK.
