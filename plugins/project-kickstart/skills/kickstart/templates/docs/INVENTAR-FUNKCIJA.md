@@ -6,4 +6,6 @@
 |---|---|---|---|---|---|
 | F-01 | {{IME}}: {{OPIS_JEDNA_RECENICA}} | `src/features/{{folder}}/` | {{EKRAN_ILI_—}} | `{{putanja_testa}}` | planirano |
 
-Statusi: planirano · u izradi · radi · uklonjena (ADR)
+Statusi: planirano · u izradi · radi · odloženo (v2) · uklonjena (ADR)
+
+`odloženo (v2)` smanjuje obim MVP-a bez brisanja: funkcija ne ulazi u napredak MVP-a i čeka plan sljedeće verzije.

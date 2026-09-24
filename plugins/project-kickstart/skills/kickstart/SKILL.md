@@ -128,7 +128,7 @@ Pravila za sadržaj:
 
 Na kraju napravi `.claude/kickstart.json`:
 ```json
-{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.3.0", "ui": <true|false>, "stack": "<kratko>" }
+{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.4.0", "faza": "razvoj", "izdanja": [], "ui": <true|false>, "stack": "<kratko>" }
 ```
 
 ## Faza 6: git start
