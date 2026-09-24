@@ -3,6 +3,6 @@
   "private": true,
   "description": "Lični Claude Code pluginovi (marketplace moji-pluginsi)",
   "scripts": {
-    "test": "node --test \"plugins/**/*.test.js\""
+    "test": "node --test \"plugins/**/*.test.js\" \"test/*.test.js\""
   }
 }
