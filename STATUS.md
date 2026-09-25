@@ -10,7 +10,7 @@
 
 ## Sljedeće
 1. `budzet` (šabloni 0.4.1, MVP 11/11): M3 je vanjski korak (Cloudflare Pages + PWA na Androidu, rok 2026-09-27), pa `/izdanje` v1.0
-2. `budzet`: prvi CI run (2026-09-25) pao je prije starta joba (0 s, bez runnera i loga), a razlog piše na stranici runa (Actions → CI). Koraci iz ci.yml lokalno na Linuxu prolaze (Vitest 28/28, E2E 16/16)
+2. `budzet`: CI je ugašen, jer GitHub zbog naplate na nalogu ne pokreće jobove. Puni testovi idu lokalno (`pnpm test:all`, i u `/izdanje`), a koraci iz ci.yml na Linuxu prolaze. Kad se naplata sredi: Actions → CI → Enable workflow
 3. Instalirati plugine na laptopu (README → Instalacija)
 4. Skupljati nalaze iz stvarnog rada → male ispravke (verzija + push)
 
