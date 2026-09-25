@@ -42,6 +42,7 @@ Sve navedeno radi (talasi A–D).
 | Nov projekat, arhitektura, teški bug | Opus | visok |
 | Svakodnevno kodiranje po planu | Sonnet | srednji |
 | STATUS, commit poruke, sitnice | Haiku | nizak |
+
 Model i effort glavnog chata biraš ti. Skillovi i agenti iz plugina imaju svoj model upisan.
 
 ## 5 zlatnih pravila
