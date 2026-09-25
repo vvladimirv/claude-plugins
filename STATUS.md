@@ -10,9 +10,9 @@
 
 ## Sljedeće
 1. `budzet` (šabloni 0.4.1, MVP 11/11): M3 je vanjski korak (Cloudflare Pages + PWA na Androidu, rok 2026-09-27), pa `/izdanje` v1.0
-2. `budzet`: prvi CI run (2026-09-25) pao je prije starta joba (0 s, bez runnera i loga). Razlog piše na stranici runa (Actions → CI), a ci.yml još nije provjeren u CI-ju
+2. `budzet`: prvi CI run (2026-09-25) pao je prije starta joba (0 s, bez runnera i loga), a razlog piše na stranici runa (Actions → CI). Koraci iz ci.yml lokalno na Linuxu prolaze (Vitest 28/28, E2E 16/16)
 3. Instalirati plugine na laptopu (README → Instalacija)
 4. Skupljati nalaze iz stvarnog rada → male ispravke (verzija + push)
 
 ## Blokeri / otvorena pitanja
-- nema
+- Pre-commit sa `scripts/test.ps1` na Linuxu i Macu zove `powershell` (tamo je `pwsh`), pa odbije svaki commit porukom "nije prošao". Prijedlog: `pwsh` + tačna poruka, a kickstart uvijek pravi `scripts/test.mjs`. Čeka odluku
