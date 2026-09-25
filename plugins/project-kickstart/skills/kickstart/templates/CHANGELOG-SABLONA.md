@@ -4,6 +4,8 @@ Nova verzija ide na vrh. Svaka stavka kaže koji fajl u projektu i šta tačno t
 
 ## 0.4.2
 - **.githooks/pre-commit** mora biti izvršan: git ga na Linuxu i Macu bez toga preskoči, pa commit prođe bez provjera. Provjeri `git ls-files -s .githooks/pre-commit`: mod mora biti `100755`. Ako nije: `git update-index --chmod=+x .githooks/pre-commit`, a na Linuxu i Macu i `chmod +x .githooks/pre-commit`. Ako je hook dodan na Windowsu (kickstart ili nadogradnja na 0.3.0+), mod je već `100755`.
+- **.githooks/pre-commit.mjs**, blok "3. Brzi testovi": `.ps1` na Linuxu i Macu ide preko `pwsh`, a kad se test skripta ne može pokrenuti, poruka to kaže (ranije je pisalo "nije prošao"). Prenesi izmjenu iz šablona, a ostale provjere u fajlu ne diraj.
+- **scripts/test.mjs**: ako projekat ima samo `scripts/test.ps1`, predloži `scripts/test.mjs` sa istim ponašanjem (pre-commit ga bira prije `.ps1`) i komandu `node scripts/test.mjs` u AGENTS.md. `.ps1` obriši tek uz OK.
 
 ## 0.4.1
 - **.github/workflows/ci.yml** (iz `github-ci.yml`):

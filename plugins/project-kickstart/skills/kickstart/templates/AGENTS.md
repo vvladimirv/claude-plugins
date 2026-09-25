@@ -16,7 +16,7 @@
 
 ## Komande
 - Pokretanje: `{{KOMANDA_POKRETANJE}}`
-- Brzi testovi (< 5 min, tihi izlaz): `scripts/test` <!-- UPUTA: tačna komanda za ovaj OS/stack, npr. `node scripts/test.mjs` -->
+- Brzi testovi (< 5 min, tihi izlaz): `node scripts/test.mjs`
 - Puni testovi + E2E (CI): `{{KOMANDA_PUNI_TESTOVI}}`
 
 ## Pravila
