@@ -1,6 +1,6 @@
 # Podsjetnik: rad sa projektima
 
-Sve navedeno radi (talasi A, B i C).
+Sve navedeno radi (talasi A–D).
 
 ## Tok rada
 | Kad | Automatski | Ti radiš |
