@@ -1,7 +1,7 @@
 {
   "name": "project-memory",
-  "version": "0.2.1",
-  "description": "Kratka memorija agenta: STATUS.md i git log u kontekstu na startu sesije (/stanje, /kraj-sesije, /docs-audit)",
+  "version": "0.3.0",
+  "description": "Memorija i napredak: STATUS.md, git log i napredak po blueprintu na startu sesije (/stanje, /kraj-sesije, /napredak, /izdanje, /docs-audit)",
   "author": {
     "name": "vvladimirv",
     "email": "330362@gmail.com"

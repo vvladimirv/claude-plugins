@@ -55,3 +55,8 @@ test('pravi git repo: hook vraća SessionStart JSON', () => {
   assert.match(res.hookSpecificOutput.additionalContext, /chore: prvi/);
   assert.match(res.hookSpecificOutput.additionalContext, /1 izmijenjenih fajlova/);
 });
+
+test('napredak iz blueprinta ulazi u kontekst', () => {
+  const ctx = buildContext({ statusText: '', gitLog: '', uncommitted: 0, progress: '## Napredak\nNapredak: MVP gotov' });
+  assert.match(ctx, /Napredak: MVP gotov/);
+});

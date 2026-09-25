@@ -5,6 +5,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
+const { sessionText } = require('./lib/progress');
 
 const MAX_STATUS_LINES = 40;
 const MAX_STATUS_CHARS = 3000;
@@ -22,8 +23,9 @@ function trimStatus(text) {
   return cut ? out + '\n… (skraćeno: STATUS.md je predugačak, treba ga skratiti na ≤ 30 linija)' : out;
 }
 
-function buildContext({ statusText, gitLog, uncommitted }) {
+function buildContext({ statusText, gitLog, uncommitted, progress }) {
   const parts = [];
+  if (progress) parts.push(progress);
   if (statusText) {
     parts.push('## STATUS.md (trenutno stanje projekta)\n' + trimStatus(statusText));
   }
@@ -73,7 +75,13 @@ function main() {
   const gitLog = isRepo ? git(cwd, ['log', '--oneline', '--no-decorate', `-${GIT_LOG_COUNT}`]) : '';
   const uncommitted = isRepo ? git(cwd, ['status', '--porcelain', '-uall']).split('\n').filter(Boolean).length : 0;
 
-  const context = buildContext({ statusText, gitLog, uncommitted });
+  let progress = null;
+  try {
+    progress = sessionText(cwd);
+  } catch (err) {
+    logError(err);
+  }
+  const context = buildContext({ statusText, gitLog, uncommitted, progress });
   if (!context) return;
 
   process.stdout.write(JSON.stringify({

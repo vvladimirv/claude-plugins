@@ -92,3 +92,17 @@ test('proces: guard.js vraća ispravan JSON i ne pada na lošem ulazu', () => {
   assert.strictEqual(JSON.parse(out).hookSpecificOutput.permissionDecision, 'deny');
   assert.strictEqual(execFileSync('node', [guard], { env, encoding: 'utf8', input: 'nije json' }), '');
 });
+
+test('obim: poslije izdanja (faza odrzavanje) nove funkcije su zamrznute', () => {
+  const root = h.project({
+    files: {
+      'docs/VIZIJA.md': VIZIJA,
+      '.claude/kickstart.json': JSON.stringify({ status: 'gotovo', faza: 'odrzavanje', izdanja: [{ verzija: 'v1.0', datum: '2026-09-24' }] }),
+    },
+  });
+  const ask = (prompt) => run({ hook_event_name: 'UserPromptSubmit', cwd: root, session_id: 'A', prompt });
+  assert.match(ask('dodaj izvoz u PDF').hookSpecificOutput.additionalContext, /izdat \(v1\.0\) i obim je zamrznut/);
+  assert.strictEqual(ask('zašto je ovo sporo?'), null);
+  const start = run({ hook_event_name: 'SessionStart', cwd: root, session_id: 'A' });
+  assert.match(start.hookSpecificOutput.additionalContext, /održavanje/);
+});
