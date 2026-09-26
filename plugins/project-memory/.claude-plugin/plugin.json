@@ -1,6 +1,6 @@
 {
   "name": "project-memory",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Memorija i napredak: STATUS.md, git log i napredak po blueprintu na startu sesije (/stanje, /kraj-sesije, /napredak, /izdanje, /docs-audit)",
   "author": {
     "name": "vvladimirv",
