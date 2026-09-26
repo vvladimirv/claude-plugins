@@ -7,14 +7,15 @@ Sve navedeno radi (talasi A–D).
 |---|---|---|
 | **Nov projekat** | ✅ kapija: u novom folderu u `C:\dev\` kod je blokiran dok ne uradiš kickstart | napravi folder u `C:\dev\<ime>`, otvori ga, pokreni `/kickstart <tema>` i odgovori na intervju |
 | **Postojeći projekat bez temelja** | ✅ jednom predloži kickstart, ali ne blokira | `/kickstart --postojeci` (pravi samo dokumente koji fale) |
-| **Start sesije** | ✅ STATUS.md, zadnjih 10 commitova, obim projekta, upozorenja (OneDrive, brava) | ništa |
+| **Start sesije** | ✅ STATUS.md, zadnjih 10 commitova, obim projekta, upozorenja (OneDrive, brava, repo iza GitHuba) | otvori sesiju **u folderu projekta**, ne u drugom folderu |
+| **Repo se promijenio ispod sesije** | ✅ repo iza GitHuba: pisanje čeka `git pull` · druga sesija commitovala: prva izmjena staje jednom, uz listu commitova | `git pull --ff-only`, pročitaj šta je novo, pa nastavi |
 | **Tokom rada** | ✅ zaštita tajni · ✅ limit fajla (300 upozori, 500 blokira rast) · ✅ boje samo iz tokena · ✅ čuvar obima | `/nova-funkcija <ime>`, `/ui-izmjena <opis>` (uz agenta ux-recenzent), `/adr <odluka>` |
 | **Zahtjev van obima** | ✅ Claude pita za vezu i nudi 4 izbora | povezano / proširenje obima / `/novi-projekat` / `/ideja` · izuzetak: "svjesno, nastavi" |
 | **Nova biblioteka** | ✅ podsjetnik ako nijedan ADR ne spominje novu zavisnost | `/adr` (zašto baš ona, alternative) |
 | **Commit** | ✅ pre-commit (u projektima od kickstarta 0.3.0): brava, tajne, veličina fajla, brzi testovi. Važi i za Codex i za tebe iz terminala | nikad `--no-verify` |
 | **Testovi** | ✅ `scripts/test` ispisuje samo sažetak · CI na GitHubu pokreće pune, E2E i screenshot testove · `/kraj-sesije`, `/ui-izmjena` i `/codex-worktree spoji` pokreću prvo što nađu: `scripts/test` → „Brzi testovi" iz AGENTS.md → `npm run test:fast` (inače pitaju) | — |
-| **Paralelni rad** | ✅ brava: u istom folderu piše samo jedna sesija (istekne nakon 20 min neaktivnosti) | druga sesija ili Codex ide u **worktree**: `/codex-worktree <zadatak>`, pa kad je gotovo `/codex-worktree spoji <zadatak>` (vraća rad u granu iz koje je worktree nastao) · `/preuzmi-lock` ako je prva sesija zatvorena |
-| **Kraj rada** | ✅ podsjetnik kad ima ≥ 10 necommitovanih fajlova ili su stariji od 2 h | `/kraj-sesije` (kad milestone završi: `Status` → `gotovo YYYY-MM-DD` u BLUEPRINT.md) |
+| **Paralelni rad** | ✅ brava: u istom folderu piše samo jedna sesija (istekne nakon 20 min neaktivnosti) | druga sesija ili Codex ide u **worktree**: `/codex-worktree <zadatak>`. Kad je gotovo, `/codex-worktree spoji <zadatak>` napravi **PR** (pregledaš diff i klikneš Merge na GitHubu), a ponovljeni `spoji` počisti worktree. Bez GitHuba se spaja lokalno. · `/preuzmi-lock` ako je prva sesija zatvorena |
+| **Kraj rada** | ✅ podsjetnik kad ima ≥ 10 necommitovanih fajlova ili su stariji od 2 h · sesija vezana za PR se sama arhivira kad se PR spoji | `/kraj-sesije`: testovi, STATUS, commit, push (uz tvoje da), pa ponudi **zatvaranje sesije** kad je sve commitovano (kad milestone završi: `Status` → `gotovo YYYY-MM-DD` u BLUEPRINT.md) |
 | **Napredak** | ✅ na startu sesije linija: milestone, % funkcija, kašnjenje, prognoza MVP-a | `/napredak` (terminal) · `/napredak html` (vizuelni pregled) · kad se kasni: smanji obim (`odloženo (v2)`), novi rok ili nastavi |
 | **MVP gotov** | ✅ Claude predloži izdanje umjesto novih funkcija | `/izdanje`: CHANGELOG, tag v1.0, obim se zamrzava (održavanje). Nova verzija samo kroz plan sa rokovima |
 | **Povremeno** | — | `/stanje` · `/docs-audit` (red u dokumentima) · `/kickstart --nadogradi` (novi šabloni u starom projektu) · `/pravilo-u-hook` (pravilo koje se zaboravlja postaje provjera) |
