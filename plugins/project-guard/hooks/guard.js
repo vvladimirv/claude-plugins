@@ -11,6 +11,7 @@ const size = require('./lib/size');
 const scope = require('./lib/scope');
 const session = require('./lib/session');
 const deps = require('./lib/deps');
+const sync = require('./lib/sync');
 
 function safe(name, fn, fallback = null) {
   try {
@@ -29,7 +30,7 @@ function preToolUse(input, root) {
   const secret = safe('secrets', () => secrets.check(input, root));
   if (secret) return deny(secret);
   if (common.isPaused()) return null;
-  for (const [name, fn] of [['gate', gate.check], ['size', size.preCheck], ['lock', lock.check]]) {
+  for (const [name, fn] of [['gate', gate.check], ['size', size.preCheck], ['sync', sync.check], ['lock', lock.check]]) {
     const reason = safe(name, () => fn(input, root));
     if (reason) return deny(reason);
   }
@@ -50,6 +51,7 @@ function sessionStart(input, root) {
     safe('location', () => session.locationMessage(root)),
     common.isPaused() ? '## Pravila\nBlokirajuća pravila su pauzirana (`/pravila-pauza`). Zaštita tajni radi.' : null,
     safe('gate', () => gate.sessionMessage(root)),
+    safe('sync', () => sync.sessionMessage(input, root)),
     safe('lock', () => lock.sessionMessage(root, input.session_id)),
     safe('scope', () => scope.sessionMessage(root)),
   ].filter(Boolean);
@@ -58,10 +60,13 @@ function sessionStart(input, root) {
 
 const HANDLERS = {
   PreToolUse: preToolUse,
-  PostToolUse: (input, root) => context('PostToolUse', [
-    safe('size-post', () => size.postCheck(input, root)),
-    safe('deps', () => deps.postCheck(input, root)),
-  ].filter(Boolean).join('\n') || null),
+  PostToolUse: (input, root) => {
+    safe('sync-post', () => sync.afterTool(input, root));
+    return context('PostToolUse', [
+      safe('size-post', () => size.postCheck(input, root)),
+      safe('deps', () => deps.postCheck(input, root)),
+    ].filter(Boolean).join('\n') || null);
+  },
   UserPromptSubmit: (input, root) => context('UserPromptSubmit', safe('scope-prompt', () => scope.promptCheck(input, root))),
   SessionStart: sessionStart,
   SessionEnd: (input, root) => safe('lock-release', () => lock.release(input, root)),

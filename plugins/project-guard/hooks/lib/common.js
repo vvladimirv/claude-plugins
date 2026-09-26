@@ -53,13 +53,25 @@ function kickstartRoots() {
 
 // Korijen projekta za fajl koji alat dira. Sesija može biti otvorena u jednom folderu, a pisati u drugi
 // projekat (npr. /kickstart za novu temu), pa pravila moraju važiti za ciljni projekat.
+// Folder u kojem shell komanda stvarno radi: `cd X && …`, `Set-Location X; …` ili `git -C X …`.
+function commandDir(cmd) {
+  const q = '(?:"([^"]+)"|\'([^\']+)\'|([^\\s;&|]+))';
+  const m = cmd.match(new RegExp(`^\\s*(?:cd|Set-Location|pushd)\\s+${q}`, 'i')) || cmd.match(new RegExp(`\\bgit\\s+-C\\s+${q}`));
+  if (!m) return null;
+  let p = m[1] || m[2] || m[3];
+  const msys = p.match(/^\/([a-z])(\/.*)?$/i); // Git Bash: /c/dev/x → C:/dev/x
+  if (msys && IS_WIN) p = `${msys[1]}:${msys[2] || '/'}`;
+  return p.replace(/^~(?=[\\/]|$)/, os.homedir());
+}
+
 function rootFor(input, sessionRoot) {
   const t = input.tool_input || {};
-  const file = t.file_path || t.notebook_path;
+  const dirFromCmd = t.command ? commandDir(t.command) : null;
+  const file = t.file_path || t.notebook_path || dirFromCmd;
   if (!file) return sessionRoot;
   const abs = path.resolve(sessionRoot, file);
   if (isUnder(abs, sessionRoot)) return sessionRoot;
-  for (let dir = path.dirname(abs); ; dir = path.dirname(dir)) {
+  for (let dir = dirFromCmd ? abs : path.dirname(abs); ; dir = path.dirname(dir)) {
     if (fs.existsSync(path.join(dir, '.git')) || fs.existsSync(path.join(dir, '.claude', 'kickstart.json'))) return dir;
     if (path.dirname(dir) === dir) break;
   }
@@ -129,6 +141,6 @@ function dataDir() {
 }
 
 module.exports = {
-  CLAUDE_HOME, norm, isUnder, relToRoot, readJson, projectRoot, rootFor, kickstartRoots, isPaused,
+  CLAUDE_HOME, norm, isUnder, relToRoot, readJson, projectRoot, rootFor, commandDir, kickstartRoots, isPaused,
   limits, git, isGitRepo, countLines, globToRegex, logError, dataDir,
 };
