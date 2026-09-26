@@ -5,12 +5,12 @@
 ## Radi
 - `project-kickstart` 0.4.5: `/kickstart` (+ `--postojeci`, `--nadogradi`, iz drugog foldera pita za ciljni projekat), faza 4 računa rokove iz tempa, `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`, šabloni 0.4.2 (rokovi, status, cilj MVP, pre-commit i `scripts/test.mjs` i na Linuxu/Macu, CI za pnpm/npm + Linux snimci)
 - `project-memory` 0.3.2: SessionStart kontekst + linija napretka, `/stanje`, `/kraj-sesije` (push uz da, pa ponudi zatvaranje sesije), `/napredak [html]`, `/izdanje`, `/docs-audit`
-- `project-guard` 0.4.1: tajne, kapija, brava (i za `cd X &&` / `git -C X`), **sinhronizacija** (repo iza GitHuba → pisanje čeka pull; tuđi commit → jednom stani), limit fajlova, tokeni, čuvar obima + zamrzavanje, zavisnosti = ADR, Stop podsjetnik, `/codex-worktree` (PR tok ili lokalni merge u baznu granu)
+- `project-guard` 0.4.2: tajne, kapija, brava (i za `cd X &&` / `git -C X`; čitanje preko `gh pr list/view`, `sed -n`, `git -C X log` ne uzima bravu), **sinhronizacija** (repo iza GitHuba → pisanje čeka pull; tuđi commit → jednom stani), limit fajlova, tokeni, čuvar obima + zamrzavanje, zavisnosti = ADR, Stop podsjetnik, `/codex-worktree` (PR tok ili lokalni merge u baznu granu)
 - Brzi testovi u `/kraj-sesije`, `/ui-izmjena` i `/codex-worktree spoji`: `scripts/test*` → AGENTS.md → `npm run test:fast`, inače pitaju
 - 49 testova (prolaze i na Linuxu), GitHub + auto-update
 
 ## Sljedeće
-1. INHome: kad stigne guard 0.3.1, iz `CLAUDE.md` ukloniti napomenu o ručnom spajanju za `/codex-worktree`
+1. INHome: napomena za `/codex-worktree` u `CLAUDE.md` je skraćena (commit `a0612ea8` na `15`), čeka push i PR u `main`
 2. `budzet` (šabloni 0.4.1, MVP 11/11): M3 je vanjski korak (Cloudflare Pages + PWA na Androidu, rok 2026-09-27), pa `/izdanje` v1.0
 3. `budzet`: CI je ugašen, jer GitHub zbog naplate na nalogu ne pokreće jobove. Puni testovi idu lokalno (`pnpm test:all`, i u `/izdanje`), a koraci iz ci.yml na Linuxu prolaze. Kad se naplata sredi: Actions → CI → Enable workflow
 4. Instalirati plugine na laptopu (README → Instalacija)
