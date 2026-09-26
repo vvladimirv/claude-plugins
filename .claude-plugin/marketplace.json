@@ -10,7 +10,7 @@
     {
       "name": "project-kickstart",
       "description": "Start projekta: intervju, stack, arhitektura, blueprint, dokumenti, pre-commit i CI (/kickstart, /nova-funkcija, /ui-izmjena, /adr, /pomoc; agenti arhitekta i ux-recenzent)",
-      "version": "0.4.2",
+      "version": "0.4.4",
       "source": "./plugins/project-kickstart",
       "category": "development"
     },

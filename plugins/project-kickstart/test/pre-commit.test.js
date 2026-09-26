@@ -20,6 +20,8 @@ function repo() {
   const root = path.join(BASE, `r${++n}`);
   fs.mkdirSync(path.join(root, '.githooks'), { recursive: true });
   for (const f of ['pre-commit', 'pre-commit.mjs']) fs.copyFileSync(path.join(HOOKS, f), path.join(root, '.githooks', f));
+  // Kao faza 6 kickstarta: bez izvršnog bita git na Linuxu i Macu preskoči hook.
+  fs.chmodSync(path.join(root, '.githooks', 'pre-commit'), 0o755);
   const g = (...a) => execFileSync('git', a, { cwd: root, stdio: 'ignore' });
   g('init', '-q', '-b', 'main');
   g('config', 'user.email', 't@t');
@@ -85,4 +87,13 @@ test('testovi: crveni scripts/test.mjs odbija commit, zeleni ga pušta', () => {
   const r = repo();
   assert.match(commit(r, { 'scripts/test.mjs': 'process.exit(1)\n' }).err, /Testovi/);
   assert.ok(commit(r, { 'scripts/test.mjs': 'process.exit(0)\n' }).ok);
+});
+
+// Na Windowsu PowerShell uvijek postoji, pa se slučaj bez PowerShella provjerava samo na Linuxu i Macu bez pwsh.
+const noPwsh = process.platform !== 'win32' && spawnSync('pwsh', ['-NoProfile', '-Command', 'exit 0']).error !== undefined;
+
+test('testovi: scripts/test.ps1 bez PowerShella kaže da se ne može pokrenuti', { skip: !noPwsh && 'treba Linux ili Mac bez pwsh' }, () => {
+  const err = commit(repo(), { 'scripts/test.ps1': 'exit 0\n' }).err;
+  assert.match(err, /se ne može pokrenuti \(nema `pwsh`/);
+  assert.doesNotMatch(err, /nije prošao/);
 });

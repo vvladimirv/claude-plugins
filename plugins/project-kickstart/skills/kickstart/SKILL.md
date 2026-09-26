@@ -125,7 +125,7 @@ Pročitaj sve šablone iz `templates/` i napravi fajlove u projektu. Popuni ih s
 
 Zatim napravi **kostur foldera** iz faze 3: prazni folderi sa `.gitkeep`. Ne piši aplikacijski kod, to je posao milestone-a M1.
 
-Napravi i **`scripts/test`** (za Windows `scripts/test.ps1` ili Node skriptu `scripts/test.mjs`, prema stacku). Skripta pokrene brze testove sa tihim reporterom (npr. `pytest -q --tb=short`, `vitest run --reporter=dot`, `playwright test --reporter=line`), upiše pun izlaz u `test-log.txt` (dodaj ga u `.gitignore`), a na ekran ispiše samo sažetak i, ako testovi padnu, najviše 40 linija grešaka. Izlazni kod mora biti isti kao kod test runnera. Kad još nema nijednog testa, skripta vraća 0 (npr. `vitest run --passWithNoTests`, a za pytest izlazni kod 5 znači "nema testova"), jer je pokreće i pre-commit. *Zašto:* testovi ne troše tokene, ali njihov izlaz troši, kad ga agent čita.
+Napravi i **`scripts/test.mjs`**, Node skriptu za svaki stack: Node je već potreban za git hookove, pa ista skripta radi na Windowsu, Linuxu i Macu (`.ps1` bi na Linuxu i Macu tražio `pwsh`). Skripta pokrene brze testove sa tihim reporterom (npr. `pytest -q --tb=short`, `vitest run --reporter=dot`, `playwright test --reporter=line`), upiše pun izlaz u `test-log.txt` (dodaj ga u `.gitignore`), a na ekran ispiše samo sažetak i, ako testovi padnu, najviše 40 linija grešaka. Izlazni kod mora biti isti kao kod test runnera. Kad još nema nijednog testa, skripta vraća 0 (npr. `vitest run --passWithNoTests`, a za pytest izlazni kod 5 znači "nema testova"), jer je pokreće i pre-commit. *Zašto:* testovi ne troše tokene, ali njihov izlaz troši, kad ga agent čita.
 
 Pravila za sadržaj:
 - `AGENTS.md` ima zajednička pravila za sve agente (Claude, Codex). `CLAUDE.md` ga samo uvozi (`@AGENTS.md`) i dodaje ono što je specifično za Claude. Oba zajedno ispod 80 linija.
@@ -134,7 +134,7 @@ Pravila za sadržaj:
 
 Na kraju napravi `.claude/kickstart.json`:
 ```json
-{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.4.1", "faza": "razvoj", "izdanja": [], "ui": <true|false>, "stack": "<kratko>" }
+{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.4.2", "faza": "razvoj", "izdanja": [], "ui": <true|false>, "stack": "<kratko>" }
 ```
 
 ## Faza 6: git start
@@ -143,7 +143,7 @@ Na kraju napravi `.claude/kickstart.json`:
 
 1. Ako nema `.git`: `git init -b main`.
 2. Uključi git hookove: `git config core.hooksPath .githooks`.
-3. `git add -A`, zatim `git update-index --chmod=+x .githooks/pre-commit` (da radi i na Linuxu i Macu), pa provjeri `git status`: u stagingu ne smije biti `.env`, `data/` ni stvarnih podataka.
+3. `git add -A`, zatim `git update-index --chmod=+x .githooks/pre-commit` (hook je tada izvršan i u klonu na Linuxu i Macu). Na Linuxu i Macu uradi i `chmod +x .githooks/pre-commit`: git preskoči hook bez izvršnog bita, pa commit prođe bez provjera. Zatim provjeri `git status`: u stagingu ne smije biti `.env`, `data/` ni stvarnih podataka.
 4. Commit: `chore: kickstart – temeljni dokumenti i struktura`. Pre-commit se pokreće već ovdje. Ako odbije, popravi uzrok. Nikad ne koristi `--no-verify`.
 5. Pitaj da li napraviti GitHub repo (privatni). Ako `gh` nije instaliran, daj uputstvo za ručno pravljenje repoa i `git remote add origin …` + `git push -u origin main`. Ništa ne pushaj bez izričitog "da".
 

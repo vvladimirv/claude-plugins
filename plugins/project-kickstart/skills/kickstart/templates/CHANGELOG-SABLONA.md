@@ -2,6 +2,11 @@
 
 Nova verzija ide na vrh. Svaka stavka kaže koji fajl u projektu i šta tačno treba dodati. Nadogradnja nikad ne prepisuje sadržaj projekta: samo dodaje ono što fali.
 
+## 0.4.2
+- **.githooks/pre-commit** mora biti izvršan: git ga na Linuxu i Macu bez toga preskoči, pa commit prođe bez provjera. Provjeri `git ls-files -s .githooks/pre-commit`: mod mora biti `100755`. Ako nije: `git update-index --chmod=+x .githooks/pre-commit`, a na Linuxu i Macu i `chmod +x .githooks/pre-commit`. Ako je hook dodan na Windowsu (kickstart ili nadogradnja na 0.3.0+), mod je već `100755`.
+- **.githooks/pre-commit.mjs**, blok "3. Brzi testovi": `.ps1` na Linuxu i Macu ide preko `pwsh`, a kad se test skripta ne može pokrenuti, poruka to kaže (ranije je pisalo "nije prošao"). Prenesi izmjenu iz šablona, a ostale provjere u fajlu ne diraj.
+- **scripts/test.mjs**: ako projekat ima samo `scripts/test.ps1`, predloži `scripts/test.mjs` sa istim ponašanjem (pre-commit ga bira prije `.ps1`) i komandu `node scripts/test.mjs` u AGENTS.md. `.ps1` obriši tek uz OK.
+
 ## 0.4.1
 - **.github/workflows/ci.yml** (iz `github-ci.yml`):
   - package manager po lockfile-u: pnpm (`pnpm/action-setup` + `pnpm install --frozen-lockfile`) ili npm (`npm ci`),
@@ -17,7 +22,7 @@ Nova verzija ide na vrh. Svaka stavka kaže koji fajl u projektu i šta tačno t
 - **.claude/kickstart.json**: dodati `"faza": "razvoj"` i `"izdanja": []`. Ako je projekat već izdat (postoji git tag `v*`), upiši izdanje i `"faza": "odrzavanje"`.
 
 ## 0.3.0
-- **Nov:** `.githooks/pre-commit` + `.githooks/pre-commit.mjs` (iz `githooks/`). Zatim `git config core.hooksPath .githooks` i `git update-index --chmod=+x .githooks/pre-commit`.
+- **Nov:** `.githooks/pre-commit` + `.githooks/pre-commit.mjs` (iz `githooks/`). Zatim `git config core.hooksPath .githooks` i `git update-index --chmod=+x .githooks/pre-commit`, a na Linuxu i Macu i `chmod +x .githooks/pre-commit`.
 - **Nov:** `.github/workflows/ci.yml` (iz `github-ci.yml`, prilagođen stacku).
 - **AGENTS.md**, pravilo 10 (Paralelni rad): dodati rečenicu o `.agent-lock.json` i Codex worktreeu.
 - **AGENTS.md**, pravilo 5 (Testovi): brzi testovi idu preko `scripts/test`, a E2E i screenshot testovi u CI (ako fali).

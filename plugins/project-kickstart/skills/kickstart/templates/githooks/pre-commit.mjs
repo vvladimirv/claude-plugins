@@ -58,10 +58,15 @@ for (const f of staged) {
 // 3. Brzi testovi (crveno = stop).
 const testScript = ['scripts/test.mjs', 'scripts/test.js', 'scripts/test.ps1', 'scripts/test'].find((s) => fs.existsSync(path.join(root, s)));
 if (!problems.length && testScript) {
-  const cmd = testScript.endsWith('.ps1') ? ['powershell', ['-NoProfile', '-File', testScript]]
+  // PowerShell se na Windowsu zove `powershell`, a na Linuxu i Macu `pwsh`.
+  const ps = process.platform === 'win32' ? 'powershell' : 'pwsh';
+  const cmd = testScript.endsWith('.ps1') ? [ps, ['-NoProfile', '-File', testScript]]
     : testScript.endsWith('js') ? ['node', [testScript]] : ['sh', [testScript]];
   const r = spawnSync(cmd[0], cmd[1], { cwd: root, stdio: 'inherit' });
-  if (r.status !== 0) problems.push(`Testovi: ${testScript} nije prošao. Popravi prije commita.`);
+  if (r.error) {
+    const why = r.error.code === 'ENOENT' ? `nema \`${cmd[0]}\` na ovom računaru` : r.error.message;
+    problems.push(`Testovi: ${testScript} se ne može pokrenuti (${why}). Testove pokreći preko scripts/test.mjs (Node radi svuda).`);
+  } else if (r.status !== 0) problems.push(`Testovi: ${testScript} nije prošao. Popravi prije commita.`);
 }
 
 if (problems.length) {
