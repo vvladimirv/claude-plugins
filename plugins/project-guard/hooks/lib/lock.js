@@ -8,15 +8,17 @@ const { readJson, isGitRepo, git } = require('./common');
 const LOCK = '.agent-lock.json';
 const STALE_MS = 20 * 60 * 1000;
 
-// Komande koje ne diraju fajlove projekta. Worktree, grana i njena bazna grana (/codex-worktree) su samo git zapisi.
-const READONLY = /^(git\s+(status|log|diff|show|branch|remote|rev-parse|ls-files|blame|fetch|worktree|stash\s+list|config\s+(--get|["']?branch\.\S+\.base))\b|git\s*$|ls|dir|cat|type|head|tail|less|more|grep|rg|find|pwd|cd|echo|wc|which|where|sort|node\s+(--version|--test)|npm\s+(test|run\s+test|ls|--version)|pytest|python3?\s+-m\s+pytest|py\s+-m\s+pytest|\.?[\\/]?scripts[\\/]test\S*|node\s+scripts[\\/]test\S*|claude\s+plugin\s+(list|validate|details)|Get-(ChildItem|Content|Location|Item|Command|Date)|Select-String|Select-Object|Measure-Object|Test-Path|Write-Output)\b/i;
+// Komande koje ne diraju fajlove projekta. Worktree, grana i njena bazna grana (/codex-worktree) su samo git zapisi,
+// a gh komande ovdje samo čitaju GitHub.
+const READONLY = /^(git\s+(status|log|diff|show|branch|remote|rev-parse|ls-files|blame|fetch|worktree|stash\s+list|config\s+(--get|["']?branch\.\S+\.base))\b|git\s*$|gh\s+(auth\s+status|(pr|issue|run|release|repo|workflow)\s+(list|view|status|checks|diff))|ls|dir|cat|type|head|tail|less|more|grep|rg|find|pwd|cd|echo|wc|which|where|sort|uniq|cut|tr|date|sed\s+-n\b(?!.*\s-i)|node\s+(--version|--test)|npm\s+(test|run\s+test|ls|--version)|pytest|python3?\s+-m\s+pytest|py\s+-m\s+pytest|\.?[\\/]?scripts[\\/]test\S*|node\s+scripts[\\/]test\S*|claude\s+plugin\s+(list|validate|details)|Get-(ChildItem|Content|Location|Item|Command|Date)|Select-String|Select-Object|Measure-Object|Test-Path|Write-Output)\b/i;
 const HARMLESS_REDIRECT = /\d?>\s*&\d|\d?>\s*(\/dev\/null|\$null|nul)\b/gi;
+const GIT_DIR = /^git\s+-C\s+("[^"]*"|'[^']*'|\S+)\s*/i;
 
 function isReadonlyCommand(cmd) {
   if (!cmd || !cmd.trim()) return true;
   if (cmd.replace(HARMLESS_REDIRECT, '').includes('>')) return false;
   return cmd.split(/&&|\|\||;|\||\n/).map((s) => s.trim()).filter(Boolean)
-    .every((seg) => READONLY.test(seg.replace(/^(\w+=\S*\s+)+/, '')));
+    .every((seg) => READONLY.test(seg.replace(/^(\w+=\S*\s+)+/, '').replace(GIT_DIR, 'git ')));
 }
 
 // Izlazi iz brave (/preuzmi-lock, /pravila-pauza) moraju raditi i iz blokirane sesije.

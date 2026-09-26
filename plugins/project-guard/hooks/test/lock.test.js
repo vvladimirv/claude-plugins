@@ -9,11 +9,14 @@ const { isReadonlyCommand, LOCK } = require('../lib/lock');
 test('komande: čitanje prolazi, pisanje ne', () => {
   for (const c of ['git status', 'git log --oneline -5 && git diff', 'ls -la | grep x', 'cat a.txt 2>&1', 'npm test',
     'node scripts/test.mjs', 'git worktree add ../p-x -b x', 'Get-ChildItem src', 'rg foo > /dev/null',
-    'git config "branch.codex/x.base" "15"', 'git config --get branch.codex/x.base']) {
+    'git config "branch.codex/x.base" "15"', 'git config --get branch.codex/x.base',
+    'git -C "../p-codex-x" status --short', 'gh pr list --state all --json number', 'gh pr view codex/x --json state,url',
+    'gh auth status', 'sed -n 1,80p a.md | tr a b', 'ls | sort | uniq', 'cut -d, -f1 a.csv', 'date']) {
     assert.ok(isReadonlyCommand(c), c);
   }
   for (const c of ['git commit -m x', 'rm -rf src', 'echo hi > a.txt', 'npm install react', 'git status && git push',
-    'sed -i s/a/b/ f', 'mv a b', 'git config core.hooksPath x']) {
+    'sed -i s/a/b/ f', 'mv a b', 'git config core.hooksPath x', 'git -C ../p commit -m x', 'sed -n s/a/b/p f -i',
+    'gh pr create --base main', 'gh pr merge 5']) {
     assert.ok(!isReadonlyCommand(c), c);
   }
 });
