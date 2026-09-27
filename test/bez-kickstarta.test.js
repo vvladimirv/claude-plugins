@@ -8,7 +8,8 @@ const path = require('path');
 
 const PLUGINS = path.join(__dirname, '..', 'plugins');
 const LABEL = '**Prvo, projekat bez kickstarta:**';
-const STATUS_CLAUSE = ', a `STATUS.md` ne postoji';
+// /stanje i /kraj-sesije prvo pitaju za STATUS.md: uslov na kraju rečenice haiku je u probi previdio.
+const STATUS_FIRST = 'ako `STATUS.md` postoji, ovaj pasus preskoči i radi normalno. Ako ne postoji, a projekat';
 const STOP = ['docs-audit', 'napredak', 'izdanje', 'nova-funkcija', 'ui-izmjena', 'adr'];
 const STOP_WITHOUT_STATUS = ['stanje', 'kraj-sesije'];
 const GUARDED = [...STOP, ...STOP_WITHOUT_STATUS];
@@ -40,8 +41,8 @@ test('bez-kickstarta: pogođeni skillovi prvo provjere marker, istom uputom', ()
     assert.ok(all[name], `nema skilla ${name}`);
     const p = firstParagraph(all[name]);
     assert.ok(p && p.startsWith(LABEL), `${name}: prvi pasus ispod naslova nije provjera markera`);
-    assert.strictEqual(p.includes(STATUS_CLAUSE), STOP_WITHOUT_STATUS.includes(name), `${name}: uslov "STATUS.md ne postoji"`);
-    return p.replace(STATUS_CLAUSE, '');
+    assert.strictEqual(p.includes(STATUS_FIRST), STOP_WITHOUT_STATUS.includes(name), `${name}: uslov za STATUS.md`);
+    return p.replace(STATUS_FIRST, 'ako projekat');
   });
   guards.forEach((g, i) => assert.strictEqual(g, guards[0], `${GUARDED[i]}: uputa nije ista kao u ${GUARDED[0]}`));
   assert.match(guards[0], /ništa ne pravi .*`STATUS\.md`.*`CHANGELOG\.md`.*`docs\/\*`.*`\.claude\/kickstart\.json`/);

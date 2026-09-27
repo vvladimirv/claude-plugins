@@ -7,7 +7,7 @@ allowed-tools: [Read, Write, Edit, Bash, Glob]
 
 # /stanje: osvježi STATUS.md
 
-**Prvo, projekat bez kickstarta:** ako projekat ima fajl `.claude/bez-kickstarta`, a `STATUS.md` ne postoji, ovu komandu ovdje ne izvršavaj i ništa ne pravi (ni `STATUS.md`, ni `CHANGELOG.md`, ni `docs/*`, ni `.claude/kickstart.json`). Reci korisniku da projekat ima svoj sistem dokumenata i da pravila rada nađe u `AGENTS.md`/`CLAUDE.md` projekta. Ako ta pravila kažu kako se ovaj posao ovdje radi, navedi to u jednoj rečenici. Zatim stani.
+**Prvo, projekat bez kickstarta:** ako `STATUS.md` postoji, ovaj pasus preskoči i radi normalno. Ako ne postoji, a projekat ima fajl `.claude/bez-kickstarta`, ovu komandu ovdje ne izvršavaj i ništa ne pravi (ni `STATUS.md`, ni `CHANGELOG.md`, ni `docs/*`, ni `.claude/kickstart.json`). Reci korisniku da projekat ima svoj sistem dokumenata i da pravila rada nađe u `AGENTS.md`/`CLAUDE.md` projekta. Ako ta pravila kažu kako se ovaj posao ovdje radi, navedi to u jednoj rečenici. Zatim stani.
 
 *Zašto:* STATUS.md je kratka memorija agenta. Ako je zastario, sljedeća sesija kreće od pogrešne tačke. Ako postane dnevnik, niko ga ne čita.
 
