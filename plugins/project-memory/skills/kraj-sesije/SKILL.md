@@ -7,6 +7,8 @@ allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion]
 
 # /kraj-sesije: snimi save point
 
+**Prvo, projekat bez kickstarta:** ako projekat ima fajl `.claude/bez-kickstarta`, a `STATUS.md` ne postoji, ovu komandu ovdje ne izvršavaj i ništa ne pravi (ni `STATUS.md`, ni `CHANGELOG.md`, ni `docs/*`, ni `.claude/kickstart.json`). Reci korisniku da projekat ima svoj sistem dokumenata i da pravila rada nađe u `AGENTS.md`/`CLAUDE.md` projekta. Ako ta pravila kažu kako se ovaj posao ovdje radi, navedi to u jednoj rečenici. Zatim stani.
+
 *Zašto:* necommitovan rad je rad bez save pointa. Ako sutra nešto krene po zlu, nema se na šta vratiti. Rad koji nije pushovan ne vidi ni druga sesija ni drugi računar. Svaka sesija završava čistim stanjem i zatvara se kad je posao gotov.
 
 1. **Pregled:** `git status --short` i `git diff --stat`. Ako nema izmjena, preskoči na korak 6 (push i zatvaranje). Ako je grana iza GitHuba (`git status -sb` pokazuje `behind`), prvo `git pull --rebase`.
