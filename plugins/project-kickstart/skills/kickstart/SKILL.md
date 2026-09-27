@@ -19,17 +19,18 @@ Korisnik uči kroz rad: uz svaku fazu u 1–2 rečenice objasni **zašto** ta fa
 1. Radni folder = trenutni direktorij projekta.
 2. Ako putanja sadrži `OneDrive`, `Dropbox` ili `Google Drive`: **upozori** da git i sync servis ne idu zajedno (pokvareni `.git`, konflikti). Predloži `C:\dev\<ime>` i pitaj da li nastaviti.
 3. **Izbor ciljnog projekta** (za `--nadogradi` i `--postojeci`). Ako trenutni folder nije taj projekat (za `--nadogradi` nema `.claude/kickstart.json`, a za `--postojeci` nema koda), **ne staj**:
-   - nađi kandidate: folderi direktno ispod korijena (prva linija iz `~/.claude/kickstart-korijeni.txt`, inače `C:\dev`). Za `--nadogradi` to su oni sa `.claude/kickstart.json` (uz `verzija_sablona`), a za `--postojeci` oni sa kodom, ali bez njega. Worktree (`.git` je fajl) označi sa "(worktree, grana X)",
+   - nađi kandidate: folderi direktno ispod korijena (prva linija iz `~/.claude/kickstart-korijeni.txt`, inače `C:\dev`). Za `--nadogradi` to su oni sa `.claude/kickstart.json` (uz `verzija_sablona`), a za `--postojeci` oni sa kodom, ali bez njega. Folderi sa `.claude/bez-kickstarta` nisu kandidati. Worktree (`.git` je fajl) označi sa "(worktree, grana X)",
    - pitaj koji (AskUserQuestion). Najstarija verzija šablona ide prva,
    - nastavi sa **apsolutnim putanjama** u taj folder. Hookovi (brava, kapija) važe za ciljni folder. Ako u tom folderu radi druga sesija, predloži njen worktree.
-4. Ako je proslijeđen `--nadogradi`: idi na sekciju **Režim --nadogradi** na dnu.
-5. **Sesija je u drugom projektu, a tema je nova.** Trenutni folder već ima `.claude/kickstart.json` ili kod, a argument je nova tema (nije `--postojeci`):
+4. **Folder svjesno bez kickstarta.** Ako ciljni folder ima `.claude/bez-kickstarta`, projekat ima svoj sistem dokumenata: tamo ništa ne pravi i stani. Reci korisniku da su pravila rada tog projekta u njegovom `AGENTS.md`/`CLAUDE.md`, a da za prelazak na kickstart prvo treba obrisati `.claude/bez-kickstarta`. Ne nudi druge izbore i ne briši marker sam. Izuzetak je nova tema (tačka 6): ona ide u nov folder.
+5. Ako je proslijeđen `--nadogradi`: idi na sekciju **Režim --nadogradi** na dnu.
+6. **Sesija je u drugom projektu, a tema je nova.** Trenutni folder već ima `.claude/kickstart.json`, `.claude/bez-kickstarta` ili kod, a argument je nova tema (nije `--postojeci`):
    - ne diraj trenutni folder,
    - predloži novi folder `<korijen>/<ime-teme>` (korijen je prva linija iz `~/.claude/kickstart-korijeni.txt`, inače `C:\dev`) i potvrdi ime,
    - napravi folder i nastavi sve faze tamo, sa **apsolutnim putanjama** u taj folder. Hookovi (kapija, brava) važe za ciljni folder,
    - na kraju reci korisniku da otvori novu sesiju u tom folderu za rad na M1.
-6. Ako postoji `.claude/kickstart.json`, a argument nije nova tema: projekat je već pokrenut. Ponudi pregled dokumenata ili `--nadogradi`. Ne generiši ništa ponovo.
-7. Ako folder već ima kod (npr. `src/`, `package.json`, `*.py`, `index.html`) ili je proslijeđen `--postojeci`: radi u **režimu postojećeg projekta**:
+7. Ako postoji `.claude/kickstart.json`, a argument nije nova tema: projekat je već pokrenut. Ponudi pregled dokumenata ili `--nadogradi`. Ne generiši ništa ponovo.
+8. Ako folder već ima kod (npr. `src/`, `package.json`, `*.py`, `index.html`) ili je proslijeđen `--postojeci`: radi u **režimu postojećeg projekta**:
    - prvo pročitaj postojeći kod i dokumente (README, CLAUDE.md, *.md u korijenu),
    - intervju skrati na ono što se ne vidi iz koda,
    - u fazi 5 **nikad ne prepisuj** postojeće fajlove. Pravi samo one koji fale, a za postojeće predloži izmjene kao diff.

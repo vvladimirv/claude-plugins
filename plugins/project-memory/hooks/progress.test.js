@@ -3,6 +3,7 @@ const assert = require('node:assert');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { execFileSync } = require('child_process');
 const { parseBlueprint, parseInventory, summarize, line, sessionText } = require('./lib/progress');
 const { render } = require('./lib/progress-html');
 const { text } = require('./progress-cli');
@@ -84,6 +85,20 @@ test('sessionText: kašnjenje traži odluku, MVP gotov traži izdanje, održavan
   assert.strictEqual(sessionText(root, '2026-09-26'), '## Napredak\nv1.0 izdat (2026-09-25) · održavanje.');
 
   assert.strictEqual(sessionText(project({ 'README.md': 'x' }), '2026-09-25'), null);
+});
+
+test('bez-kickstarta: nema linije napretka na startu sesije, a /napredak kaže zašto', () => {
+  const root = project({ 'docs/BLUEPRINT.md': BP, 'docs/INVENTAR-FUNKCIJA.md': INV });
+  const cli = () => execFileSync('node', [path.join(__dirname, 'progress-cli.js'), '--root', root], { encoding: 'utf8' });
+  assert.match(sessionText(root, '2026-09-25'), /Napredak/);
+  assert.match(cli(), /Milestone/);
+
+  fs.mkdirSync(path.join(root, '.claude'), { recursive: true });
+  fs.writeFileSync(path.join(root, '.claude', 'bez-kickstarta'), '');
+  assert.strictEqual(sessionText(root, '2026-09-25'), null);
+  const out = cli();
+  assert.match(out, /svoj sistem dokumenata/);
+  assert.doesNotMatch(out, /Milestone|`\/izdanje|`\/kickstart/);
 });
 
 test('tekst i HTML: brojke su tu, HTML nema vanjskih resursa', () => {

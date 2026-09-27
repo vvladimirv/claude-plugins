@@ -51,6 +51,11 @@ function kickstartRoots() {
   return [path.join(process.env.SystemDrive ? process.env.SystemDrive + path.sep : path.sep, 'dev')];
 }
 
+// `.claude/bez-kickstarta`: projekat svjesno nema kickstart temelj, nego svoj sistem dokumenata.
+function noKickstart(root) {
+  return fs.existsSync(path.join(root, '.claude', 'bez-kickstarta'));
+}
+
 // Korijen projekta za fajl koji alat dira. Sesija može biti otvorena u jednom folderu, a pisati u drugi
 // projekat (npr. /kickstart za novu temu), pa pravila moraju važiti za ciljni projekat.
 // Folder u kojem shell komanda stvarno radi: `cd X && …`, `Set-Location X; …` ili `git -C X …`.
@@ -141,6 +146,6 @@ function dataDir() {
 }
 
 module.exports = {
-  CLAUDE_HOME, norm, isUnder, relToRoot, readJson, projectRoot, rootFor, commandDir, kickstartRoots, isPaused,
+  CLAUDE_HOME, norm, isUnder, relToRoot, readJson, projectRoot, rootFor, commandDir, kickstartRoots, noKickstart, isPaused,
   limits, git, isGitRepo, countLines, globToRegex, logError, dataDir,
 };

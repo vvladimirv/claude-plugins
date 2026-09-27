@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { load, line } = require('./lib/progress');
+const { load, line, noKickstart } = require('./lib/progress');
 const { render } = require('./lib/progress-html');
 
 function bar(pct, width = 10) {
@@ -42,6 +42,11 @@ function text(s) {
 function main(argv) {
   const arg = (name) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : null; };
   const root = path.resolve(arg('--root') || process.env.CLAUDE_PROJECT_DIR || process.cwd());
+  if (noKickstart(root)) {
+    console.log('Projekat ima svoj sistem dokumenata (`.claude/bez-kickstarta`): napredak po blueprintu se ovdje ne računa. '
+      + 'Pravila rada su u AGENTS.md/CLAUDE.md projekta.');
+    return;
+  }
   const s = load(root);
   if (!s) {
     console.log('Nema docs/BLUEPRINT.md ni docs/INVENTAR-FUNKCIJA.md: projekat nema blueprint (`/kickstart`).');

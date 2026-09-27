@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { relToRoot, git, dataDir, readJson } = require('./common');
+const { relToRoot, git, dataDir, readJson, noKickstart } = require('./common');
 
 const MANIFEST = /(^|\/)(package\.json|requirements[\w.-]*\.txt|pyproject\.toml|Cargo\.toml)$/i;
 const ROOT_MANIFESTS = ['package.json', 'requirements.txt', 'pyproject.toml', 'Cargo.toml'];
@@ -88,7 +88,9 @@ function postCheck(input, root) {
   if (!fresh.length) return null;
   state[key] = [...seen, ...fresh];
   fs.writeFileSync(stateFile, JSON.stringify(state));
-  return `📦 Nova zavisnost bez ADR-a: ${fresh.join(', ')}. Prije nastavka napiši kratak ADR (\`/adr\`): `
+  // U projektu bez kickstarta /adr stane, pa odluka ide po pravilima projekta.
+  const how = noKickstart(root) ? 'zapiši odluku po pravilima projekta (AGENTS.md/CLAUDE.md)' : 'napiši kratak ADR (`/adr`)';
+  return `📦 Nova zavisnost bez ADR-a: ${fresh.join(', ')}. Prije nastavka ${how}: `
     + 'zašto baš ta biblioteka, koje su alternative i može li bez nje.';
 }
 

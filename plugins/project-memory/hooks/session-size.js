@@ -6,6 +6,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const { noKickstart } = require('./lib/progress');
 
 const TAIL_BYTES = 256 * 1024;
 const LEVELS = [100000, 150000];
@@ -65,6 +66,11 @@ function writeLevel(sessionId, level) {
   fs.writeFileSync(stateFile(sessionId), String(level));
 }
 
+// U projektu bez kickstarta i bez STATUS.md /kraj-sesije stane, pa se rad snima po pravilima projekta.
+function ownDocs(root) {
+  return Boolean(root) && noKickstart(root) && !fs.existsSync(path.join(root, 'STATUS.md'));
+}
+
 // Upozori jednom po pragu. Poslije /compact kontekst padne, pa se pragovi ponovo računaju.
 function check(input) {
   const prompt = (input.prompt || '').trim();
@@ -79,13 +85,16 @@ function check(input) {
   writeLevel(input.session_id, level);
 
   const k = Math.round(tokens / 1000);
+  const own = ownDocs(input.cwd || process.env.CLAUDE_PROJECT_DIR);
   return {
     systemMessage: `Razgovor je velik (~${k}k tokena), pa je svaka poruka sada skuplja. `
-      + 'Kad završiš ovaj korak, otkucaj /kraj-sesije i otvori novu sesiju. Stanje projekta se prenosi samo.',
+      + (own ? 'Kad završiš ovaj korak, snimi rad po pravilima projekta (AGENTS.md/CLAUDE.md) i otvori novu sesiju.'
+        : 'Kad završiš ovaj korak, otkucaj /kraj-sesije i otvori novu sesiju. Stanje projekta se prenosi samo.'),
     hookSpecificOutput: {
       hookEventName: 'UserPromptSubmit',
       additionalContext: `Kontekst je ~${k}k tokena. Kad završiš trenutni korak, u „➡️ Sljedeće:“ predloži `
-        + '/kraj-sesije i novu sesiju (stanje ide preko STATUS.md).',
+        + (own ? 'kraj rada po pravilima projekta (AGENTS.md/CLAUDE.md) i novu sesiju.'
+          : '/kraj-sesije i novu sesiju (stanje ide preko STATUS.md).'),
     },
   };
 }

@@ -7,6 +7,8 @@ model: sonnet
 
 # /nova-funkcija
 
+**Prvo, projekat bez kickstarta:** ako projekat ima fajl `.claude/bez-kickstarta`, ovu komandu ovdje ne izvršavaj i ništa ne pravi (ni `STATUS.md`, ni `CHANGELOG.md`, ni `docs/*`, ni `.claude/kickstart.json`). Reci korisniku da projekat ima svoj sistem dokumenata i da pravila rada nađe u `AGENTS.md`/`CLAUDE.md` projekta. Ako ta pravila kažu kako se ovaj posao ovdje radi, navedi to u jednoj rečenici. Zatim stani.
+
 *Zašto:* agent najlakše dopisuje kod u fajl koji je već otvoren, i tako nastaju monoliti. Nova funkcija zato uvijek dobija svoj folder, svoj F-broj i svoj test prije prve linije koda.
 
 Zahtjev: `$ARGUMENTS`

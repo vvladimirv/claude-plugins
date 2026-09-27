@@ -7,6 +7,8 @@ allowed-tools: [Read, Glob, Grep, Bash]
 
 # /docs-audit: red u dokumentima
 
+**Prvo, projekat bez kickstarta:** ako projekat ima fajl `.claude/bez-kickstarta`, ovu komandu ovdje ne izvršavaj i ništa ne pravi (ni `STATUS.md`, ni `CHANGELOG.md`, ni `docs/*`, ni `.claude/kickstart.json`). Reci korisniku da projekat ima svoj sistem dokumenata i da pravila rada nađe u `AGENTS.md`/`CLAUDE.md` projekta. Ako ta pravila kažu kako se ovaj posao ovdje radi, navedi to u jednoj rečenici. Zatim stani.
+
 *Zašto:* dokumenti se gomilaju (inhome je imao 24 .md fajla u korijenu), pa si počnu proturječiti. Agent tada čita pogrešan i radi po starom planu. Pravilo je jedna tema = jedan fajl, a završen plan ide u arhivu.
 
 1. **Popis:** svi `*.md` fajlovi van `node_modules`, `.git` i `docs/arhiva/`, sa brojem linija i datumom zadnjeg commita (`git log -1 --format=%cs -- <fajl>`).

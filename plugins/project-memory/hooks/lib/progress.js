@@ -139,6 +139,11 @@ function readDoc(root, rel) {
   }
 }
 
+// Projekat sa `.claude/bez-kickstarta` ima svoj sistem dokumenata: napredak po blueprintu se tu ne računa.
+function noKickstart(root) {
+  return fs.existsSync(path.join(root, '.claude', 'bez-kickstarta'));
+}
+
 function load(root, today = iso(Date.now())) {
   const bp = readDoc(root, 'docs/BLUEPRINT.md');
   const inv = readDoc(root, 'docs/INVENTAR-FUNKCIJA.md');
@@ -152,6 +157,7 @@ function load(root, today = iso(Date.now())) {
 
 // Tekst za kontekst sesije: jedna linija + uputa kad treba odluka.
 function sessionText(root, today) {
+  if (noKickstart(root)) return null;
   const s = load(root, today);
   if (!s || (!s.ukupnoM && !s.ukupnoF)) return null;
   if (s.faza === 'odrzavanje' && s.izdanje) return `## Napredak\n${s.izdanje.verzija} izdat (${s.izdanje.datum}) · održavanje.`;
@@ -166,4 +172,4 @@ function sessionText(root, today) {
   return '## Napredak\n' + out.join('\n');
 }
 
-module.exports = { parseBlueprint, parseInventory, parseStart, summarize, line, load, sessionText };
+module.exports = { parseBlueprint, parseInventory, parseStart, summarize, line, load, sessionText, noKickstart };

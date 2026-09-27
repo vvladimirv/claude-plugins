@@ -1,9 +1,10 @@
 // Čuvar obima: jedan projekat = jedna tema. Procjenu "je li u obimu" radi Claude;
 // hook samo drži obim u kontekstu i mehanički hvata nove foldere koji nisu u planu.
+// Projekat sa `.claude/bez-kickstarta` ima svoj sistem dokumenata, pa tamo čuvar ne radi ništa.
 
 const fs = require('fs');
 const path = require('path');
-const { relToRoot } = require('./common');
+const { relToRoot, noKickstart } = require('./common');
 
 const CHANGE = /(^|[\s,.;:!?"'(])(dodaj|napravi|kreiraj|ubaci|implementiraj|izmijeni|promijeni|prepravi|obriš|izbriš|ukloni|popravi|refaktor|preimenuj|instaliraj|integriš|poveži|napiši|sredi|add|create|implement|build|make|write|change|remove|delete|fix|refactor|install|integrate)/i;
 const STANDARD_TOP = new Set(['docs', '.claude', 'src', 'app', 'lib', 'tests', 'test', 'e2e', 'scripts', 'fixtures', 'public', 'static', 'assets', '.github', '.githooks']);
@@ -23,6 +24,7 @@ function section(md, title) {
 }
 
 function readScope(root) {
+  if (noKickstart(root)) return null;
   const md = readDoc(root, 'docs/VIZIJA.md');
   if (!md) return null;
   const obim = section(md, 'Obim');
@@ -31,7 +33,9 @@ function readScope(root) {
 }
 
 // Poslije /izdanje projekat je u održavanju: obim je zamrznut dok se ne isplanira nova verzija.
+// Projekat bez kickstarta se ne zamrzava ni kad ima kickstart.json sa fazom održavanja.
 function frozen(root) {
+  if (noKickstart(root)) return null;
   try {
     const meta = JSON.parse(fs.readFileSync(path.join(root, '.claude', 'kickstart.json'), 'utf8'));
     if (meta.faza !== 'odrzavanje') return null;
@@ -70,7 +74,7 @@ function promptCheck(input, root) {
 
 // PreToolUse (Write): nov top-level folder ili nova funkcija koja nije u planu → pitaj korisnika.
 function newFolderCheck(input, root) {
-  if (input.tool_name !== 'Write') return null;
+  if (input.tool_name !== 'Write' || noKickstart(root)) return null;
   const rel = relToRoot((input.tool_input || {}).file_path, root);
   if (!rel || !rel.includes('/')) return null;
   const top = rel.split('/')[0];
