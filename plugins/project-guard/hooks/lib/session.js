@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { git, isGitRepo, dataDir, readJson } = require('./common');
+const { git, isGitRepo, dataDir, readJson, noKickstart } = require('./common');
 
 const SYNC_DIRS = /onedrive|dropbox|google drive|icloud/i;
 const UI_FILE = /\.(css|scss|sass|less|jsx|tsx|vue|svelte|html?)$/i;
@@ -42,6 +42,12 @@ function uncommitted(root, now) {
   return { count: files.length, ageMs: now - oldest, ui: files.some((f) => UI_FILE.test(f)) };
 }
 
+// U projektu bez kickstarta i bez STATUS.md /kraj-sesije stane, pa podsjetnik upućuje na pravila projekta.
+function saveHint(root) {
+  return noKickstart(root) && !fs.existsSync(path.join(root, 'STATUS.md'))
+    ? 'commit po pravilima projekta (AGENTS.md/CLAUDE.md)' : '`/kraj-sesije`';
+}
+
 // Stop: podsjetnik korisniku, najviše jednom po sesiji za isti nivo.
 function stopReminder(input, root, now = Date.now()) {
   const u = uncommitted(root, now);
@@ -55,7 +61,7 @@ function stopReminder(input, root, now = Date.now()) {
   fs.writeFileSync(stateFile, JSON.stringify(state));
   const hours = Math.floor(u.ageMs / 3600000);
   let msg = `💾 Necommitovano: ${u.count} fajlova` + (hours >= 2 ? `, najstarija izmjena prije ${hours} h` : '')
-    + '. Snimi save point: `/kraj-sesije`.';
+    + `. Snimi save point: ${saveHint(root)}.`;
   if (u.ui) msg += ' Mijenjan je UI: prije commita pokreni screenshot testove.';
   return msg;
 }

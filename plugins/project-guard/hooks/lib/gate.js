@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { isUnder, norm, relToRoot, kickstartRoots } = require('./common');
+const { isUnder, norm, relToRoot, kickstartRoots, noKickstart } = require('./common');
 const { toolTarget } = require('./secrets');
 
 const ALLOWED = [
@@ -19,8 +19,7 @@ function inScope(root) {
 }
 
 function hasMarker(root) {
-  return fs.existsSync(path.join(root, '.claude', 'kickstart.json'))
-    || fs.existsSync(path.join(root, '.claude', 'bez-kickstarta'));
+  return fs.existsSync(path.join(root, '.claude', 'kickstart.json')) || noKickstart(root);
 }
 
 // Čita .git direktno (bez pokretanja gita, ~150 ms manje na Windowsu).
