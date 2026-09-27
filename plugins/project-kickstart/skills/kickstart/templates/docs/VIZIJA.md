@@ -1,6 +1,6 @@
 # Vizija
 
-<!-- UPUTA: Sekcije "Obim" i "Van obima" čitaju i hookovi. Zadrži tačno te naslove, kratke stavke, ukupno ≤ 10 linija. -->
+<!-- UPUTA: Sekcije "Obim" i "Van obima" čitaju i hookovi. Zadrži tačno te naslove, kratke stavke, ukupno ≤ 12 linija. "Gdje se koristi" čita /objavi. -->
 
 ## Problem
 {{KOJI_PROBLEM_RJESAVA}}
@@ -16,6 +16,9 @@
 ## Van obima
 - {{SVJESNO_NE_1}}
 - {{SVJESNO_NE_2}}
+
+## Gdje se koristi
+{{RACUNAR_MREZA_ILI_INTERNET_I_UREDJAJI}}
 
 ## Uspjeh znači
 {{MJERLJIV_ISHOD_MVP}}

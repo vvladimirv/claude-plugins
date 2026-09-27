@@ -45,7 +45,7 @@ Postavi najviše 8 pitanja, grupisano (AskUserQuestion, do 4 po pozivu). Ne pita
 4. Gdje radi: web, mobitel (PWA), desktop, skripta/CLI, servis?
 5. Podaci: odakle dolaze, da li su lični ili osjetljivi, gdje se čuvaju?
 6. Ko ga koristi: samo ti, mala grupa ili javno? Treba li prijava?
-7. Deploy i okruženje: lokalno, server, hosting? Jedan ili više računara?
+7. Gdje se koristi: samo na ovom računaru, na kućnoj mreži (i telefon u kući) ili na internetu? Nije svaka aplikacija za internet: kad je koristi jedna osoba, a podaci su lični, preporuči ovaj računar. Odgovor ide u VIZIJA.md → `## Gdje se koristi` (čita ga `/objavi`).
 8. Ima li rok ili ograničenje (budžet, postojeći sistem s kojim se povezuje)?
 
 Zatim predloži **rječnik pojmova**: 5–12 ključnih pojmova domene sa definicijom od jedne rečenice i engleskim imenom za kod (npr. "Račun (Invoice): …"). Korisnik ga potvrdi ili ispravi.
@@ -134,7 +134,7 @@ Pravila za sadržaj:
 
 Na kraju napravi `.claude/kickstart.json`:
 ```json
-{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.4.2", "faza": "razvoj", "izdanja": [], "ui": <true|false>, "stack": "<kratko>" }
+{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.4.3", "faza": "razvoj", "izdanja": [], "ui": <true|false>, "stack": "<kratko>" }
 ```
 
 ## Faza 6: git start
