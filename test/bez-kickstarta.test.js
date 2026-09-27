@@ -10,11 +10,11 @@ const PLUGINS = path.join(__dirname, '..', 'plugins');
 const LABEL = '**Prvo, projekat bez kickstarta:**';
 // /stanje i /kraj-sesije prvo pitaju za STATUS.md: uslov na kraju rečenice haiku je u probi previdio.
 const STATUS_FIRST = 'ako `STATUS.md` postoji, ovaj pasus preskoči i radi normalno. Ako ne postoji, a projekat';
-const STOP = ['docs-audit', 'napredak', 'izdanje', 'nova-funkcija', 'ui-izmjena', 'adr'];
+const STOP = ['docs-audit', 'napredak', 'izdanje', 'objavi', 'nova-funkcija', 'ui-izmjena', 'adr'];
 const STOP_WITHOUT_STATUS = ['stanje', 'kraj-sesije'];
 const GUARDED = [...STOP, ...STOP_WITHOUT_STATUS];
 // Rade i u projektu sa svojim sistemom dokumenata. /kickstart ima svoj korak u Fazi 0.
-const KEEP = ['ideja', 'novi-projekat', 'pravila-pauza', 'preuzmi-lock', 'codex-worktree', 'pravilo-u-hook', 'pomoc'];
+const KEEP = ['vrati', 'ideja', 'novi-projekat', 'pravila-pauza', 'preuzmi-lock', 'codex-worktree', 'pravilo-u-hook', 'pomoc'];
 
 function skills() {
   const out = {};

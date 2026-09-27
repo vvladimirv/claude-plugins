@@ -20,7 +20,9 @@ function transcript(lines) {
 }
 
 function runHook(input) {
-  const out = execFileSync('node', [HOOK], { input: JSON.stringify(input), encoding: 'utf8' });
+  const env = { ...process.env };
+  delete env.CLAUDE_PROJECT_DIR; // projekat je samo input.cwd, ne sesija iz koje se testovi pokreću
+  const out = execFileSync('node', [HOOK], { input: JSON.stringify(input), encoding: 'utf8', env });
   return out ? JSON.parse(out) : null;
 }
 
@@ -56,4 +58,23 @@ test('bez transkripta ili uz /kraj-sesije: nema izlaza', () => {
   assert.strictEqual(runHook({ session_id: 'x', transcript_path: path.join(os.tmpdir(), 'nema-ga.jsonl') }), null);
   const big = transcript([usageLine(100, 120000)]);
   assert.strictEqual(runHook({ session_id: 'y-' + Date.now(), transcript_path: big, prompt: '/kraj-sesije' }), null);
+});
+
+test('bez-kickstarta: bez STATUS.md prijedlog je kraj rada po pravilima projekta, ne /kraj-sesije', () => {
+  const big = transcript([usageLine(100, 120000)]);
+  const project = (files) => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'pm-size-p-'));
+    for (const rel of files) {
+      fs.mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
+      fs.writeFileSync(path.join(root, rel), '');
+    }
+    return root;
+  };
+  const ask = (cwd) => runHook({ session_id: 'z-' + process.pid + '-' + Math.random(), transcript_path: big, prompt: 'nastavi', cwd });
+
+  const own = ask(project(['.claude/bez-kickstarta']));
+  assert.match(own.systemMessage, /po pravilima projekta \(AGENTS\.md\/CLAUDE\.md\)/);
+  assert.doesNotMatch(own.systemMessage + own.hookSpecificOutput.additionalContext, /kraj-sesije|STATUS\.md/);
+  assert.match(ask(project(['.claude/bez-kickstarta', 'STATUS.md'])).systemMessage, /\/kraj-sesije/);
+  assert.match(ask(project([])).systemMessage, /\/kraj-sesije/);
 });

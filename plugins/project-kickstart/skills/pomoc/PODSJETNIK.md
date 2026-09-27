@@ -56,7 +56,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | `docs/adr/` | odluke sa razlogom |
 | `.claude/granice.json` | (opciono) drugi limiti fajla: `{"upozorenje":300,"maks":500,"iskljuci":["legacy/**"]}` |
 | `.claude/zasticeno.txt` | (opciono) dodatni fajlovi koje agent ne smije dirati, jedan glob po liniji |
-| `.claude/bez-kickstarta` | (opciono) projekat ima svoj sistem dokumenata, a pravila rada su u njegovom AGENTS.md/CLAUDE.md. Nema kapije ni čuvara obima. `/kickstart`, `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/docs-audit`, `/napredak` i `/izdanje` tu staju i ništa ne prave, a `/stanje` i `/kraj-sesije` rade samo ako `STATUS.md` postoji. Tajne, limit fajla, brava i sinhronizacija rade i dalje |
+| `.claude/bez-kickstarta` | (opciono) projekat ima svoj sistem dokumenata, a pravila rada su u njegovom AGENTS.md/CLAUDE.md. Nema kapije ni čuvara obima. `/kickstart`, `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/docs-audit`, `/napredak`, `/objavi` i `/izdanje` tu staju i ništa ne prave, a `/stanje` i `/kraj-sesije` rade samo ako `STATUS.md` postoji. Tajne, limit fajla, brava i sinhronizacija rade i dalje |
 
 ## Koji model za šta
 | Posao | Model | Effort |
