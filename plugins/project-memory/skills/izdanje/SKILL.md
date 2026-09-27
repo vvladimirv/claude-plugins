@@ -17,6 +17,7 @@ Verzija: `$ARGUMENTS` (ako je prazno: `v1.0` za prvo izdanje, inače sljedeća m
    - Ako MVP nije gotov: pokaži šta fali. Ponudi da se nedovršene funkcije prebace u `odloženo (v2)` (uz ADR), ili stani.
    - Pokreni brze testove (`scripts/test`) i pune testove (npr. `npm run test:all`, ako postoje). Crveno znači stop.
    - `git status` mora biti čist.
+   - Ako `README.md` nema sekciju `## Kako se koristi`, aplikacija još nije objavljena tamo gdje se koristi. Predloži prvo `/objavi`, ali ne blokiraj.
 2. **CHANGELOG.md** u korijenu (napravi ako ne postoji). Nova sekcija na vrhu: `## <verzija> (YYYY-MM-DD)`, sa stavkama iz `git log <zadnji tag>..HEAD`, grupisanim u *Novo* (feat), *Popravke* (fix) i *Ostalo*, na bosanskom i kratko. Uvijek navedi F-funkcije.
 3. **Dokumenti:**
    - `docs/BLUEPRINT.md`: na kraj dodaj `✅ <verzija> izdata YYYY-MM-DD`,
