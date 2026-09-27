@@ -6,7 +6,7 @@ Sve navedeno radi (talasi A–D).
 | Kad | Automatski | Ti radiš |
 |---|---|---|
 | **Nov projekat** | ✅ kapija: u novom folderu u `C:\dev\` kod je blokiran dok ne uradiš kickstart | napravi folder u `C:\dev\<ime>`, otvori ga, pokreni `/kickstart <tema>` i odgovori na intervju |
-| **Postojeći projekat bez temelja** | ✅ jednom predloži kickstart, ali ne blokira | `/kickstart --postojeci` (pravi samo dokumente koji fale) |
+| **Postojeći projekat bez temelja** | ✅ jednom predloži kickstart, ali ne blokira | `/kickstart --postojeci` (pravi samo dokumente koji fale) · projekat sa svojim sistemom dokumenata: `.claude/bez-kickstarta` (vidi ispod) |
 | **Start sesije** | ✅ STATUS.md, zadnjih 10 commitova, obim projekta, upozorenja (OneDrive, brava, repo iza GitHuba) | otvori sesiju **u folderu projekta**, ne u drugom folderu |
 | **Repo se promijenio ispod sesije** | ✅ repo iza GitHuba: pisanje čeka `git pull` · druga sesija commitovala: prva izmjena staje jednom, uz listu commitova | `git pull --ff-only`, pročitaj šta je novo, pa nastavi |
 | **Tokom rada** | ✅ zaštita tajni · ✅ limit fajla (300 upozori, 500 blokira rast) · ✅ boje samo iz tokena · ✅ čuvar obima | `/nova-funkcija <ime>`, `/ui-izmjena <opis>` (uz agenta ux-recenzent), `/adr <odluka>` |
@@ -35,7 +35,7 @@ Sve navedeno radi (talasi A–D).
 | `docs/adr/` | odluke sa razlogom |
 | `.claude/granice.json` | (opciono) drugi limiti fajla: `{"upozorenje":300,"maks":500,"iskljuci":["legacy/**"]}` |
 | `.claude/zasticeno.txt` | (opciono) dodatni fajlovi koje agent ne smije dirati, jedan glob po liniji |
-| `.claude/bez-kickstarta` | (opciono) prazan fajl: folder svjesno bez kickstarta |
+| `.claude/bez-kickstarta` | (opciono) projekat ima svoj sistem dokumenata, a pravila rada su u njegovom AGENTS.md/CLAUDE.md. Nema kapije ni čuvara obima. `/kickstart`, `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/docs-audit`, `/napredak` i `/izdanje` tu staju i ništa ne prave, a `/stanje` i `/kraj-sesije` rade samo ako `STATUS.md` postoji. Tajne, limit fajla, brava i sinhronizacija rade i dalje |
 
 ## Koji model za šta
 | Posao | Model | Effort |
