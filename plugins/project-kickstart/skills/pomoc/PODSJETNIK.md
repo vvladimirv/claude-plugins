@@ -2,6 +2,22 @@
 
 Sve navedeno radi (talasi A–D).
 
+## Komande koje kucaš
+Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Sljedeće:` i tu je tvoj sljedeći korak.
+
+| Kad | Kucaš |
+|---|---|
+| Nov projekat (jednom) | napravi folder `C:\dev\<ime>`, otvori ga, pa `/kickstart <o čemu je aplikacija>` |
+| Početak svakog rada | otvori folder projekta, pa `nastavi` ili `šta je sljedeće?` |
+| Nova mogućnost aplikacije | napiši šta hoćeš (ili `/nova-funkcija <ime>`) |
+| Promjena izgleda | `/ui-izmjena <šta promijeniti>` |
+| Vidi koliko ste odmakli | `/napredak html` |
+| Ideja za nešto drugo | `/ideja <opis>` |
+| Ne razumiješ upozorenje | `objasni mi ovo upozorenje i riješi ga` |
+| Izgubio si se | `ne znam šta sad, vodi me` ili `/pomoc` |
+| Prva verzija gotova | `/izdanje` (Claude ga sam predloži) |
+| **Kraj svakog rada** | `/kraj-sesije` |
+
 ## Tok rada
 | Kad | Automatski | Ti radiš |
 |---|---|---|

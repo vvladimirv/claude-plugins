@@ -10,14 +10,14 @@
     {
       "name": "project-kickstart",
       "description": "Start projekta: intervju, stack, arhitektura, blueprint, dokumenti, pre-commit i CI (/kickstart, /nova-funkcija, /ui-izmjena, /adr, /pomoc; agenti arhitekta i ux-recenzent)",
-      "version": "0.4.5",
+      "version": "0.4.6",
       "source": "./plugins/project-kickstart",
       "category": "development"
     },
     {
       "name": "project-memory",
       "description": "Memorija i napredak: STATUS.md, git log i napredak po blueprintu na startu sesije (/stanje, /kraj-sesije, /napredak, /izdanje, /docs-audit)",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "source": "./plugins/project-memory",
       "category": "development"
     },
