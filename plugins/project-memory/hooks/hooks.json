@@ -1,5 +1,5 @@
 {
-  "description": "project-memory: na startu sesije ubacuje STATUS.md i zadnje commitove u kontekst",
+  "description": "project-memory: na startu sesije ubacuje STATUS.md i zadnje commitove u kontekst; upozori kad razgovor postane velik",
   "hooks": {
     "SessionStart": [
       {
@@ -8,6 +8,17 @@
           {
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.js\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/session-size.js\"",
             "timeout": 10
           }
         ]
