@@ -56,6 +56,12 @@ test('pravi git repo: hook vraća SessionStart JSON', () => {
   assert.match(res.hookSpecificOutput.additionalContext, /1 izmijenjenih fajlova/);
 });
 
+test('uz stanje projekta ide i pravilo o sljedećem koraku', () => {
+  const ctx = buildContext({ statusText: '# STATUS', gitLog: '', uncommitted: 0 });
+  assert.match(ctx, /Vođenje korisnika/);
+  assert.match(ctx, /Sljedeće:/);
+});
+
 test('napredak iz blueprinta ulazi u kontekst', () => {
   const ctx = buildContext({ statusText: '', gitLog: '', uncommitted: 0, progress: '## Napredak\nNapredak: MVP gotov' });
   assert.match(ctx, /Napredak: MVP gotov/);

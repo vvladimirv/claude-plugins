@@ -11,6 +11,12 @@ const MAX_STATUS_LINES = 40;
 const MAX_STATUS_CHARS = 3000;
 const GIT_LOG_COUNT = 10;
 
+// Korisnik nije programer: projekat ga vodi korak po korak, pa svaki završen korak kaže šta je sljedeće.
+const GUIDE = '## Vođenje korisnika\n'
+  + 'Korisnik nije programer i želi da ga projekat vodi. Kad završiš korak ili čekaš korisnika, zadnja linija odgovora je '
+  + '`➡️ Sljedeće:` sa jednom konkretnom stvari: komanda koju kuca (npr. `/kraj-sesije`), šta da proba i kako, '
+  + 'ili odluka koju treba donijeti. Bez žargona; nov pojam objasni u pola rečenice.';
+
 function trimStatus(text) {
   let lines = text.replace(/\r\n/g, '\n').trim().split('\n');
   let cut = lines.length > MAX_STATUS_LINES;
@@ -36,6 +42,7 @@ function buildContext({ statusText, gitLog, uncommitted, progress }) {
     parts.push(`## Necommitovano\n${uncommitted} izmijenjenih fajlova od prošle sesije. Pitaj korisnika da li ih prvo commitovati.`);
   }
   if (parts.length === 0) return '';
+  parts.push(GUIDE);
   return '# Memorija projekta (project-memory)\n\n' + parts.join('\n\n');
 }
 
