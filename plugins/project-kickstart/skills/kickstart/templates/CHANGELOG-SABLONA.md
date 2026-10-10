@@ -2,6 +2,9 @@
 
 Nova verzija ide na vrh. Svaka stavka kaže koji fajl u projektu i šta tačno treba dodati. Nadogradnja nikad ne prepisuje sadržaj projekta: samo dodaje ono što fali.
 
+## 0.4.4
+- **AGENTS.md**, sekcija `## Pravila`: novo pravilo **Isti problem drugdje** (tekst iz šablona), poslije pravila o paralelnom radu. Ako projekat ima UI pravilo, ono ide poslije novog i dobija sljedeći broj. Ako projekat već ima isto pravilo drugim riječima (u AGENTS.md ili CLAUDE.md), ne dodaji drugo.
+
 ## 0.4.3
 - **docs/VIZIJA.md**: nova sekcija `## Gdje se koristi` između `## Van obima` i `## Uspjeh znači`, sa jednom linijom: samo na ovom računaru, na kućnoj mreži ili na internetu, i na kojim uređajima. Popuni je iz ADR-ova o hostingu i ARHITEKTURA.md. Ako nije jasno, pitaj korisnika. Čita je `/objavi`.
 
