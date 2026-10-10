@@ -30,5 +30,6 @@
 8. **Zavisnosti**: nova biblioteka traži kratak ADR u `docs/adr/` (zašto, koje su alternative).
 9. **Dokumenti**: jedna tema = jedan fajl. Ne pravi nove .md fajlove u korijenu. Završen plan ide u `docs/arhiva/`.
 10. **Paralelni rad**: jedan agent = jedan worktree = jedna grana. Ako u korijenu postoji `.agent-lock.json` sa `heartbeat` mlađim od 20 minuta, a nije tvoj, ne mijenjaj fajlove u ovom folderu. Radi u svom worktreeu (Codex: `../<projekat>-codex-<zadatak>`, grana `codex/<zadatak>`). Pre-commit odbija commit iz tuđe sesije.
+11. **Isti problem drugdje**: kad popraviš grešku ili nespretan prikaz, pretraži projekat za isti obrazac (isti upit, ista vrsta liste, isti parametar). Mjesta sa istim uzrokom popravi u istom koraku, svako sa svojim testom. Mjesta koja samo liče navedi korisniku da odluči. U odgovoru reci šta je pretraženo i šta je nađeno, i kad nije nađeno ništa.
 <!-- UPUTA: ako ima UI, dodaj:
-11. **UI**: boje, razmaci i fontovi samo iz fajla tokena. Ekrani se slažu od komponenti iz kataloga. UI izmjena prvo navede pogođene ekrane iz `docs/EKRANI.md`. -->
+12. **UI**: boje, razmaci i fontovi samo iz fajla tokena. Ekrani se slažu od komponenti iz kataloga. UI izmjena prvo navede pogođene ekrane iz `docs/EKRANI.md`. -->
