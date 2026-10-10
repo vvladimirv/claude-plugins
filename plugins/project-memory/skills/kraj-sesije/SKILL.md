@@ -21,7 +21,11 @@ allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion]
 8. **Zatvaranje sesije:** ako je `git status` čist (sve je commitovano), pitaj (AskUserQuestion): **"Posao je gotov. Da zatvorim ovu sesiju?"** sa opcijama "Da, zatvori" / "Ne, ostavi otvorenu".
    - **Da:** u desktop aplikaciji arhiviraj ovu sesiju alatom za arhiviranje sesija (`session_id: "self"`, razlog: "kraj-sesije: sve commitovano"). Arhiviranje zaustavi sesiju i oslobodi bravu, a sesija se kasnije može otvoriti iz liste arhiviranih. Razgovor tu završava, pa završna poruka (korak 7) mora biti prije toga.
    - Ako alat za arhiviranje nije dostupan (terminal), reci korisniku da sesiju zatvori sa `/exit`.
-   - Ako ima necommitovanog rada, ne nudi zatvaranje, nego reci šta je ostalo.
+   - **Ne, ostavi otvorenu:** oslobodi bravu ove sesije, da druga sesija u istom folderu ne čeka do 20 min. Iz korijena projekta pokreni doslovno (briše bravu samo ako je ova sesija drži; sljedeće pisanje u ovoj sesiji uzima je opet):
+     ```bash
+     node -e "const fs=require('fs'),f='.agent-lock.json';try{const l=JSON.parse(fs.readFileSync(f,'utf8'));if(l.session_id==='${CLAUDE_SESSION_ID}'){fs.unlinkSync(f);console.log('brava oslobođena')}else{console.log('brava je tuđa, nije dirana')}}catch(e){console.log(e.code==='ENOENT'?'brave nema':'brava nije dirana: '+e.message)}"
+     ```
+   - Ako ima necommitovanog rada, ne nudi zatvaranje, nego reci šta je ostalo. Brava ostaje, jer štiti nesnimljene izmjene.
 
 ## Brzi testovi
 Traži u folderu koji testiraš i uzmi prvo što postoji:
