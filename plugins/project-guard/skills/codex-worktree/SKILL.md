@@ -27,8 +27,8 @@ Argument: `$ARGUMENTS`
    - kad Codex završi i commituje, ovdje pokreni `/codex-worktree spoji <zadatak>`. Rad se vraća u `<bazna grana>`.
 
 ## Spajanje (`spoji <zadatak>`)
-0. **Postoji li već PR?** Ako repo ima `origin` na GitHubu i `gh` radi (`gh auth status`): `gh pr view "codex/<zadatak>" --json state,url`.
-   - `MERGED`: idi na **Poslije spajanja PR-a** ispod.
+0. **Postoji li već PR?** Ako repo ima `origin` na GitHubu i `gh` radi (`gh auth status`): `gh pr view "codex/<zadatak>" --json state,url,headRefOid`.
+   - `MERGED`: idi na **Poslije spajanja PR-a** ispod i zapamti `headRefOid` (zadnji commit grane u PR-u).
    - `OPEN`: pokaži link i reci da PR čeka tvoj pregled i Merge na GitHubu. Stani.
    - nema PR-a: nastavi.
 1. `git -C "../<projekat>-codex-<zadatak>" status --short`: ako ima necommitovanog rada, stani i reci korisniku.
@@ -46,8 +46,10 @@ Argument: `$ARGUMENTS`
 
 ## Poslije spajanja PR-a
 1. Ako je `git status` čist: `git switch <baza>` i `git pull --ff-only`, da spojeni rad stigne lokalno.
-2. `git worktree remove "../<projekat>-codex-<zadatak>"`, pa `git branch -d "codex/<zadatak>"`. Ako `-d` odbije, pokaži zašto i ne koristi `-D` bez pitanja.
-3. Obriši granu i na GitHubu, ako je još tu: `git push origin --delete "codex/<zadatak>"`. Greška znači da ju je GitHub već obrisao.
+2. `git worktree remove "../<projekat>-codex-<zadatak>"`, pa `git branch -d "codex/<zadatak>"`.
+   - Ako `-d` odbije ("not fully merged"), to je očekivano kad je PR spojen squashom ili rebaseom: na `<baza>` se upisuju novi commitovi umjesto originalnih sa grane, pa git granu ne vidi kao spojenu. Provjeri da na grani nema ničega izvan PR-a: `git rev-parse "codex/<zadatak>"` mora biti isto što i `headRefOid` iz koraka 0 sekcije **Spajanje**. Ako jeste, sav rad je u spojenom PR-u i `git branch -D "codex/<zadatak>"` je siguran.
+   - Ako nije isto (ili `headRefOid` nemaš), pokaži `git log --oneline -5 "codex/<zadatak>"` i ne koristi `-D` bez pitanja.
+3. Obriši granu i na GitHubu, ako je još tu: `git push origin --delete "codex/<zadatak>"`. Greška znači da ju je GitHub već obrisao (postavka repoa *Automatically delete head branches* to radi sama).
 4. Reci korisniku da zatvori prozor tog zadatka u Codex aplikaciji. Claude sesije vezane za PR se arhiviraju same.
 
 ## Brzi testovi
