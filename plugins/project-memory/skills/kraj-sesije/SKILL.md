@@ -1,8 +1,8 @@
 ---
 name: kraj-sesije
-description: Kraj rada: testovi, STATUS.md, mali logični commitovi, push i zatvaranje sesije. Za "/kraj-sesije", "završavamo", "snimi sve".
+description: Kraj rada: testovi, STATUS.md, mali logični commitovi, push, pa nova sesija sa sljedećim zadatkom ili zatvaranje. Za "/kraj-sesije", "završavamo", "snimi sve".
 model: sonnet
-allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion]
+allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, ToolSearch, mcp__ccd_session__spawn_task, mcp__ccd_session_mgmt__archive_session]
 ---
 
 # /kraj-sesije: snimi save point
@@ -11,14 +11,23 @@ allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion]
 
 *Zašto:* necommitovan rad je rad bez save pointa. Ako sutra nešto krene po zlu, nema se na šta vratiti. Rad koji nije pushovan ne vidi ni druga sesija ni drugi računar. Svaka sesija završava čistim stanjem i zatvara se kad je posao gotov.
 
-1. **Pregled:** `git status --short` i `git diff --stat`. Ako nema izmjena, preskoči na korak 6 (push i zatvaranje). Ako je grana iza GitHuba (`git status -sb` pokazuje `behind`), prvo `git pull --rebase`.
+1. **Pregled:** `git status --short` i `git diff --stat`. Ako nema izmjena, preskoči na korak 6 (push, nova sesija i zatvaranje). Ako je grana iza GitHuba (`git status -sb` pokazuje `behind`), prvo `git pull --rebase`.
 2. **Sigurnost:** u izmjenama ne smije biti `.env`, `data/`, stvarnih podataka ni ključeva. Ako ih vidiš, stani i pitaj.
 3. **Testovi:** pokreni brze testove (vidi **Brzi testovi** ispod). Ako testovi padnu, **ne commituj**. Pokaži sažetak greške i pitaj korisnika: popraviti sada ili commitovati kao WIP na posebnu granu.
 4. **STATUS.md:** osvježi ga po pravilima iz `/stanje` (prepiši, ≤ 30 linija, samo sadašnjost).
 5. **Commitovi:** grupiši izmjene u logične cjeline (jedna cjelina = jedan commit). Poruke idu po Conventional Commits, opis na bosanskom, npr. `feat(budzet): unos troška`. STATUS.md ide u zadnji commit.
 6. **Push:** ako repo ima `origin`, a grana ima commitove koji nisu na GitHubu, pitaj da li da pushujem. Push samo uz izričito "da".
 7. **Završna poruka** (kratko): commitovi (hash + poruka), stanje testova, da li je pushovano i prva stavka iz "Sljedeće" za sutra.
-8. **Zatvaranje sesije:** ako je `git status` čist (sve je commitovano), pitaj (AskUserQuestion): **"Posao je gotov. Da zatvorim ovu sesiju?"** sa opcijama "Da, zatvori" / "Ne, ostavi otvorenu".
+8. **Nova sesija sa sljedećim zadatkom:** samo ako je sve prije uspjelo: testovi prošli, `git status` čist i push urađen (ili repo nema `origin`). Ako su testovi pali, commit nije uspio, push nije uspio ili ga je korisnik odbio, ili „Sljedeće" u STATUS.md nema nijednu stavku, ovaj korak preskoči i idi na korak 9.
+   - Uzmi prvu stavku iz „Sljedeće" u STATUS.md (bez rednog broja). Za pitanje je skrati na jednu rečenicu, a u prompt ide cijela.
+   - Pitaj (AskUserQuestion): **"Zatvaram ovu sesiju i pripremam novu sa zadatkom: <stavka>?"** sa opcijama "Da, nova sesija" (preporučeno, prva) / "Ne, samo završi".
+   - **Da, nova sesija:**
+     1. Ako alati nisu učitani, učitaj ih: ToolSearch `select:mcp__ccd_session__spawn_task,mcp__ccd_session_mgmt__archive_session`.
+     2. Ako postoji `mcp__ccd_session__spawn_task` (desktop aplikacija), pozovi ga: `title` je zadatak kao naredba (< 60 znakova), `tldr` jedna-dvije rečenice bez žargona, `cwd` je korijen projekta (`git rev-parse --show-toplevel`; ako je sesija u worktreeu, korijen glavnog repoa, tj. folder iznad `git rev-parse --path-format=absolute --git-common-dir`). `prompt` mora stajati sam za sebe: `Pročitaj STATUS.md i nastavi: <cijela stavka>`, pa bitan kontekst iz ove sesije (grana, zadnji commit, šta je urađeno, otvorena pitanja i odluke korisnika). Bez tajni i ključeva.
+     3. Tek kad je kartica napravljena, reci jednom rečenicom: „Kartica za novu sesiju je ispod, jedan klik je otvara." Zatim arhiviraj ovu sesiju alatom za arhiviranje (`session_id: "self"`, razlog: "kraj-sesije: nova sesija pripremljena"). Arhiviranje zaustavi sesiju i oslobodi bravu. Ako alata za arhiviranje nema, reci korisniku da ovu sesiju zatvori sa `/exit`.
+     4. Ako `spawn_task` ne postoji (terminal, druga okruženja) ili javi grešku, ne arhiviraj i ne prijavljuj grešku. Ispiši gotov prompt u bloku koda (isti tekst kao u tački 2) i reci: „Otvori novu sesiju u ovom folderu i zalijepi ovo. Ovu zatvori sa `/exit`."
+   - **Ne, samo završi:** idi na korak 9, kao do sada.
+9. **Zatvaranje sesije:** ako je `git status` čist (sve je commitovano), pitaj (AskUserQuestion): **"Posao je gotov. Da zatvorim ovu sesiju?"** sa opcijama "Da, zatvori" / "Ne, ostavi otvorenu".
    - **Da:** u desktop aplikaciji arhiviraj ovu sesiju alatom za arhiviranje sesija (`session_id: "self"`, razlog: "kraj-sesije: sve commitovano"). Arhiviranje zaustavi sesiju i oslobodi bravu, a sesija se kasnije može otvoriti iz liste arhiviranih. Razgovor tu završava, pa završna poruka (korak 7) mora biti prije toga.
    - Ako alat za arhiviranje nije dostupan (terminal), reci korisniku da sesiju zatvori sa `/exit`.
    - **Ne, ostavi otvorenu:** oslobodi bravu ove sesije, da druga sesija u istom folderu ne čeka do 20 min. Iz korijena projekta pokreni doslovno (briše bravu samo ako je ova sesija drži; sljedeće pisanje u ovoj sesiji uzima je opet):

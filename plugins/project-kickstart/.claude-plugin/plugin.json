@@ -1,6 +1,6 @@
 {
   "name": "project-kickstart",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "description": "Start projekta: intervju, stack, arhitektura, blueprint, dokumenti, pre-commit i CI (/kickstart, /nova-funkcija, /ui-izmjena, /adr, /pomoc; agenti arhitekta i ux-recenzent)",
   "author": {
     "name": "vvladimirv",
