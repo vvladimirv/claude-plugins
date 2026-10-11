@@ -1,14 +1,14 @@
 # STATUS
 
-**Ažurirano:** 2026-10-10 · **Talas:** D završen, ispravke po nalazima iz rada
+**Ažurirano:** 2026-10-11 · **Talas:** D završen, ispravke po nalazima iz rada
 
 ## Radi
-- `project-kickstart` 0.4.10: `/kickstart` (+ `--postojeci`, `--nadogradi`, iz drugog foldera pita za ciljni projekat), faza 4 računa rokove iz tempa, `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`, šabloni 0.4.4 (pravilo "isti problem drugdje", VIZIJA → Gdje se koristi, rokovi, status, cilj MVP, pre-commit i `scripts/test.mjs` i na Linuxu/Macu, CI za pnpm/npm + Linux snimci)
-- `project-memory` 0.4.2: SessionStart kontekst + linija napretka + pravilo „➡️ Sljedeće:“ (vodi korisnika korak po korak), upozorenje na veliku sesiju (~100k i ~150k tokena), `/vrati` (stash ili revert, uvijek povratno), `/objavi` (računar, kućna mreža ili internet), `/stanje`, `/kraj-sesije` (push uz da, pa ponudi zatvaranje sesije; ako je ostaviš otvorenu, oslobodi bravu), `/napredak [html]`, `/izdanje`, `/docs-audit`
+- `project-kickstart` 0.4.11: `/kickstart` (+ `--postojeci`, `--nadogradi`, iz drugog foldera pita za ciljni projekat), faza 4 računa rokove iz tempa, `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`, šabloni 0.4.4 (pravilo "isti problem drugdje", VIZIJA → Gdje se koristi, rokovi, status, cilj MVP, pre-commit i `scripts/test.mjs` i na Linuxu/Macu, CI za pnpm/npm + Linux snimci)
+- `project-memory` 0.4.3: SessionStart kontekst + linija napretka + pravilo „➡️ Sljedeće:“ (vodi korisnika korak po korak), upozorenje na veliku sesiju (~100k i ~150k tokena), `/vrati` (stash ili revert, uvijek povratno), `/objavi` (računar, kućna mreža ili internet), `/stanje`, `/kraj-sesije` (push uz da, pa ponudi novu sesiju sa prvom stavkom iz „Sljedeće" ili zatvaranje; ako je ostaviš otvorenu, oslobodi bravu), `/napredak [html]`, `/izdanje`, `/docs-audit`
 - `project-guard` 0.4.4: tajne, kapija, brava (i za `cd X &&` / `git -C X`; čitanje preko `gh pr list/view`, `sed -n`, `git -C X log` ne uzima bravu), **sinhronizacija** (repo iza GitHuba → pisanje čeka pull; tuđi commit → jednom stani), limit fajlova, tokeni, čuvar obima + zamrzavanje, zavisnosti = ADR, Stop podsjetnik, `/codex-worktree` (PR tok ili lokalni merge u baznu granu; čišćenje grane radi i poslije squash spajanja, preko `headRefOid`)
 - `.claude/bez-kickstarta` (projekat sa svojim sistemom dokumenata): nema kapije ni čuvara obima, `/kickstart`, `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/docs-audit`, `/napredak`, `/objavi` i `/izdanje` staju, a `/stanje` i `/kraj-sesije` rade samo uz postojeći STATUS.md
 - Brzi testovi u `/kraj-sesije`, `/ui-izmjena`, `/vrati`, `/objavi` i `/codex-worktree spoji`: `scripts/test*` → AGENTS.md → `npm run test:fast`, inače pitaju
-- 69 testova (svih 69 prolazi na Linuxu), GitHub + auto-update
+- 75 testova (74 prolazi na Windowsu, 1 preskočen; ranijih 69 prolazi na Linuxu), GitHub + auto-update
 
 ## Sljedeće
 1. INHome (grana `15`): commit `a0612ea8` (napomena za `/codex-worktree`) čeka push i PR u `main`. Kad se PR #5 (kickstart 0.4.8, memory 0.4.1, guard 0.4.3) spoji u `main`, iz `CLAUDE.md` („Lični plugini") ukloniti stavke o skillovima koji sada sami staju (poseban commit)
