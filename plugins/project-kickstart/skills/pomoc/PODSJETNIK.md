@@ -16,6 +16,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | Nešto se pokvarilo, a radilo je | `/vrati` (predomislio si se: `/vrati poništi`) |
 | Ne razumiješ upozorenje | `objasni mi ovo upozorenje i riješi ga` |
 | Izgubio si se | `ne znam šta sad, vodi me` ili `/pomoc` |
+| Plugini kao da ne rade, ili nov računar | `/zdravlje` |
 | Aplikacija treba da radi bez Claudea | `/objavi` (na ovom računaru, na kućnoj mreži ili na internetu) |
 | Prva verzija gotova | `/izdanje` (Claude ga sam predloži) |
 | Poruka „Razgovor je velik" | kad završi korak: `/kraj-sesije`, pa nova sesija |
@@ -27,8 +28,8 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | **Nov projekat** | ✅ kapija: u novom folderu u `C:\dev\` kod je blokiran dok ne uradiš kickstart | napravi folder u `C:\dev\<ime>`, otvori ga, pokreni `/kickstart <tema>` i odgovori na intervju |
 | **Postojeći projekat bez temelja** | ✅ jednom predloži kickstart, ali ne blokira | `/kickstart --postojeci` (pravi samo dokumente koji fale) · projekat sa svojim sistemom dokumenata: `.claude/bez-kickstarta` (vidi ispod) |
 | **Start sesije** | ✅ STATUS.md, zadnjih 10 commitova, obim projekta, upozorenja (OneDrive, brava, repo iza GitHuba) | otvori sesiju **u folderu projekta**, ne u drugom folderu |
-| **Repo se promijenio ispod sesije** | ✅ repo iza GitHuba: pisanje čeka `git pull` · druga sesija commitovala: prva izmjena staje jednom, uz listu commitova | `git pull --ff-only`, pročitaj šta je novo, pa nastavi |
-| **Tokom rada** | ✅ zaštita tajni · ✅ limit fajla (300 upozori, 500 blokira rast) · ✅ boje samo iz tokena · ✅ čuvar obima | `/nova-funkcija <ime>`, `/ui-izmjena <opis>` (uz agenta ux-recenzent), `/adr <odluka>` |
+| **Repo se promijenio ispod sesije** | ✅ na startu sesije čist repo se sam povuče sa GitHuba · repo iza GitHuba sa lokalnim izmjenama: pisanje čeka `git pull` · druga sesija commitovala: prva izmjena staje jednom, uz listu commitova | `git pull --ff-only`, pročitaj šta je novo, pa nastavi |
+| **Tokom rada** | ✅ zaštita tajni (čitanje, pretraga i komande) · ✅ limit fajla (300 upozori, 500 blokira rast) · ✅ boje samo iz tokena · ✅ čuvar obima | `/nova-funkcija <ime>`, `/ui-izmjena <opis>` (uz agenta ux-recenzent), `/adr <odluka>` |
 | **Zahtjev van obima** | ✅ Claude pita za vezu i nudi 4 izbora | povezano / proširenje obima / `/novi-projekat` / `/ideja` · izuzetak: "svjesno, nastavi" |
 | **Nova biblioteka** | ✅ podsjetnik ako nijedan ADR ne spominje novu zavisnost | `/adr` (zašto baš ona, alternative) |
 | **Commit** | ✅ pre-commit (u projektima od kickstarta 0.3.0): brava, tajne, veličina fajla, brzi testovi. Važi i za Codex i za tebe iz terminala | nikad `--no-verify` |
@@ -40,7 +41,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | **Aplikacija za korištenje** | — | `/objavi`: samo na ovom računaru (`Pokreni.cmd`, dvoklik), na kućnoj mreži (i telefon u kući) ili na internetu (hosting, instalacija na telefon). Kickstart zapisuje izbor u VIZIJA.md → `Gdje se koristi` |
 | **MVP gotov** | ✅ Claude predloži izdanje umjesto novih funkcija (i prvo `/objavi`, ako README nema `Kako se koristi`) | `/izdanje`: CHANGELOG, tag v1.0, obim se zamrzava (održavanje). Nova verzija samo kroz plan sa rokovima |
 | **Povremeno** | — | `/stanje` · `/docs-audit` (red u dokumentima) · `/kickstart --nadogradi` (novi šabloni u starom projektu) · `/pravilo-u-hook` (pravilo koje se zaboravlja postaje provjera) |
-| **Hook smeta ili ima grešku** | — | `/pravila-pauza [minuta]` (tajne ostaju zaštićene) · `/pravila-pauza stop` · greške: `~/.claude/pravila.log` |
+| **Hook smeta ili ima grešku** | — | `/zdravlje` (provjera instalacije, greške i spori hookovi) · `/pravila-pauza [minuta]` (tajne ostaju zaštićene) · `/pravila-pauza stop` · greške: `~/.claude/pravila.log` |
 
 ## Gdje je šta u projektu
 | Fajl | Samo za |
