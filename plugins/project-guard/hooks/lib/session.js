@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { git, isGitRepo, dataDir, readJson, noKickstart } = require('./common');
+const { git, isGitRepo, loadState, saveState, noKickstart } = require('./common');
 
 const SYNC_DIRS = /onedrive|dropbox|google drive|icloud/i;
 const UI_FILE = /\.(css|scss|sass|less|jsx|tsx|vue|svelte|html?)$/i;
@@ -53,12 +53,10 @@ function stopReminder(input, root, now = Date.now()) {
   const u = uncommitted(root, now);
   if (!u || (u.count < MAX_FILES && u.ageMs < MAX_AGE_MS)) return null;
   const level = `${u.count >= MAX_FILES ? 'f' : ''}${u.ageMs >= MAX_AGE_MS ? 't' : ''}`;
-  const stateFile = path.join(dataDir(), 'stop-podsjetnik.json');
-  const state = readJson(stateFile, {});
-  const key = `${input.session_id}:${root}`;
-  if (state[key] === level) return null;
-  state[key] = level;
-  fs.writeFileSync(stateFile, JSON.stringify(state));
+  const state = loadState('stop', input.session_id);
+  if (state[root] === level) return null;
+  state[root] = level;
+  saveState('stop', input.session_id, state);
   const hours = Math.floor(u.ageMs / 3600000);
   let msg = `💾 Necommitovano: ${u.count} fajlova` + (hours >= 2 ? `, najstarija izmjena prije ${hours} h` : '')
     + `. Snimi save point: ${saveHint(root)}.`;

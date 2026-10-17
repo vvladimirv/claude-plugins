@@ -3,7 +3,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { relToRoot, git, dataDir, readJson, noKickstart } = require('./common');
+const { relToRoot, git, loadState, saveState, noKickstart } = require('./common');
 
 const MANIFEST = /(^|\/)(package\.json|requirements[\w.-]*\.txt|pyproject\.toml|Cargo\.toml)$/i;
 const ROOT_MANIFESTS = ['package.json', 'requirements.txt', 'pyproject.toml', 'Cargo.toml'];
@@ -80,14 +80,12 @@ function postCheck(input, root) {
   const missing = [...new Set(rels.flatMap((rel) => newDeps(root, rel)))].filter((d) => !adr.includes(d));
   if (!missing.length) return null;
 
-  const stateFile = path.join(dataDir(), 'deps-upozorenja.json');
-  const state = readJson(stateFile, {});
-  const key = `${input.session_id}:${root}`;
-  const seen = new Set(state[key] || []);
+  const state = loadState('deps', input.session_id);
+  const seen = new Set(state[root] || []);
   const fresh = missing.filter((d) => !seen.has(d));
   if (!fresh.length) return null;
-  state[key] = [...seen, ...fresh];
-  fs.writeFileSync(stateFile, JSON.stringify(state));
+  state[root] = [...seen, ...fresh];
+  saveState('deps', input.session_id, state);
   // U projektu bez kickstarta /adr stane, pa odluka ide po pravilima projekta.
   const how = noKickstart(root) ? 'zapiši odluku po pravilima projekta (AGENTS.md/CLAUDE.md)' : 'napiši kratak ADR (`/adr`)';
   return `📦 Nova zavisnost bez ADR-a: ${fresh.join(', ')}. Prije nastavka ${how}: `

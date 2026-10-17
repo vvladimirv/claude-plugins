@@ -1,29 +1,36 @@
 // Sinhronizacija: dugo otvorena sesija ne smije pisati po repou koji se promijenio ispod nje.
-// (1) Repo je iza GitHuba → pisanje čeka `git pull` (fetch najviše jednom u 10 min).
+// (1) Repo je iza GitHuba → pisanje čeka `git pull`. Na startu sesije čist repo se sam povuče (fast-forward).
+//     Tokom rada `git fetch` ide u pozadini (najviše jednom u 10 min), da hook ostane brz.
 // (2) Druga lokalna sesija je commitovala otkad je ova zadnji put gledala → prva izmjena staje jednom, uz listu commitova.
 
 const fs = require('fs');
 const path = require('path');
-const { execFileSync } = require('child_process');
-const { git, isGitRepo, dataDir, readJson } = require('./common');
-const { isWrite } = require('./lock');
+const { execFileSync, spawn } = require('child_process');
+const { git, isGitRepo, loadState, saveState } = require('./common');
+const { isWrite, heldByOther } = require('./lock');
 
 const FETCH_MS = 10 * 60 * 1000;
 const SYNC_CMD = /\bgit\b[^|;&\n]*\b(pull|fetch|stash|merge|rebase)\b/i;
 const OWN_CHANGE = /\bgit\b[^|;&\n]*\b(commit|merge|pull|rebase|cherry-pick|revert|reset|am|checkout|switch)\b/i;
+const GIT_ENV = { ...process.env, GIT_TERMINAL_PROMPT: '0' };
 
-function stateFile() {
-  return path.join(dataDir(), 'sync.json');
+function load(sid, root) {
+  return loadState('sync', sid)[root] || {};
 }
 
-function load(key) {
-  return readJson(stateFile(), {})[key] || {};
+function save(sid, root, s) {
+  const all = loadState('sync', sid);
+  all[root] = s;
+  saveState('sync', sid, all);
 }
 
-function save(key, s) {
-  const all = readJson(stateFile(), {});
-  all[key] = s;
-  fs.writeFileSync(stateFile(), JSON.stringify(all));
+// Glavni .git folder (u worktreeu je .git fajl koji pokazuje na njega).
+function commonGitDir(root) {
+  const gitPath = path.join(root, '.git');
+  if (fs.statSync(gitPath).isDirectory()) return gitPath;
+  const wt = path.resolve(root, fs.readFileSync(gitPath, 'utf8').replace(/^gitdir:\s*/, '').trim());
+  const common = path.join(wt, 'commondir');
+  return fs.existsSync(common) ? path.resolve(wt, fs.readFileSync(common, 'utf8').trim()) : wt;
 }
 
 // HEAD bez pokretanja gita kad god može (brže na Windowsu); worktree i ostalo preko gita.
@@ -45,14 +52,28 @@ function readHead(root) {
   return git(root, ['rev-parse', 'HEAD']);
 }
 
-function fetch(root) {
+// Kad je zadnji fetch (bilo čiji) završio; 0 ako ga nikad nije bilo.
+function fetchedTime(root) {
   try {
-    execFileSync('git', ['fetch', '--quiet'], {
-      cwd: root, timeout: 8000, stdio: 'ignore', env: { ...process.env, GIT_TERMINAL_PROMPT: '0' },
-    });
-    return true;
+    return fs.statSync(path.join(commonGitDir(root), 'FETCH_HEAD')).mtimeMs;
   } catch {
-    return false; // bez mreže ili bez remote-a: ne blokiraj
+    return 0;
+  }
+}
+
+function fetchNow(root, timeout) {
+  try {
+    execFileSync('git', ['fetch', '--quiet'], { cwd: root, timeout, stdio: 'ignore', env: GIT_ENV, windowsHide: true });
+  } catch {
+    // bez mreže ili bez remote-a: ne blokiraj
+  }
+}
+
+function fetchInBackground(root) {
+  try {
+    spawn('git', ['fetch', '--quiet'], { cwd: root, detached: true, stdio: 'ignore', env: GIT_ENV, windowsHide: true }).unref();
+  } catch {
+    // ne blokiraj
   }
 }
 
@@ -61,12 +82,17 @@ function behindCount(root) {
   return n === '' ? null : Number(n);
 }
 
-function remoteState(root, s, now) {
+// wait: na startu sesije fetch se čeka; tokom rada ide u pozadini, a rezultat se vidi pri sljedećoj provjeri.
+function remoteState(root, s, now, wait) {
   if (!s.fetchedAt || now - s.fetchedAt > FETCH_MS) {
     s.fetchedAt = now;
-    s.behind = fetch(root) ? behindCount(root) : s.behind || 0;
-  } else if (s.behind > 0) {
-    s.behind = behindCount(root);
+    if (wait) fetchNow(root, 6000);
+    else fetchInBackground(root);
+  }
+  const ft = fetchedTime(root);
+  if (s.behind > 0 || ft > (s.countedAt || 0)) {
+    s.behind = behindCount(root) || 0;
+    s.countedAt = ft;
   }
 }
 
@@ -77,23 +103,23 @@ function check(input, root, now = Date.now()) {
   if (!isGitRepo(root) || !isWrite(input)) return null;
   const cmd = (input.tool_input || {}).command || '';
   if (SYNC_CMD.test(cmd)) return null; // pull/fetch/stash moraju proći
-  const key = `${input.session_id}|${root}`;
-  const s = load(key);
-  remoteState(root, s, now);
+  const sid = input.session_id;
+  const s = load(sid, root);
+  remoteState(root, s, now, false);
   const head = readHead(root);
   if (s.behind > 0) {
-    save(key, s);
+    save(sid, root, s);
     return behindMsg(root, s.behind);
   }
   if (s.head && head && s.head !== head) {
     const news = git(root, ['log', '--oneline', '--no-decorate', '-5', `${s.head}..${head}`]) || '(historija je prepisana)';
     s.head = head;
-    save(key, s);
+    save(sid, root, s);
     return `🔄 Sinhronizacija: otkad je ova sesija zadnji put gledala \`${path.basename(root)}\`, neko drugi je commitovao:\n${news}\n`
       + 'Pročitaj šta se promijenilo (STATUS.md, `git show --stat <hash>`), pa ponovi izmjenu.';
   }
   s.head = head;
-  save(key, s);
+  save(sid, root, s);
   return null;
 }
 
@@ -101,22 +127,46 @@ function check(input, root, now = Date.now()) {
 function afterTool(input, root) {
   const cmd = (input.tool_input || {}).command || '';
   if (!isGitRepo(root) || !OWN_CHANGE.test(cmd)) return;
-  const key = `${input.session_id}|${root}`;
-  const s = load(key);
+  const sid = input.session_id;
+  const s = load(sid, root);
   s.head = readHead(root);
   if (/\bpull\b/.test(cmd)) s.behind = behindCount(root) || 0;
-  save(key, s);
+  save(sid, root, s);
 }
 
-// SessionStart: zapamti HEAD i odmah reci ako je repo iza GitHuba.
+// Povuci sa GitHuba samo kad je to sigurno: nema lokalnih izmjena ni commitova koji nisu na GitHubu,
+// i nijedna druga sesija ne piše u ovaj folder. Fast-forward ne može ništa izgubiti.
+function fastForward(root, sid, now) {
+  if (heldByOther(root, sid, now)) return false;
+  if (git(root, ['rev-list', '--count', '@{u}..HEAD']) !== '0') return false;
+  if (git(root, ['status', '--porcelain', '--untracked-files=no']) !== '') return false;
+  try {
+    execFileSync('git', ['merge', '--ff-only', '--quiet', '@{u}'], { cwd: root, timeout: 3000, stdio: 'ignore', env: GIT_ENV, windowsHide: true });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// SessionStart: zapamti HEAD; repo iza GitHuba povuci ako je čist, inače odmah reci.
 function sessionMessage(input, root, now = Date.now()) {
   if (!isGitRepo(root)) return null;
-  const key = `${input.session_id}|${root}`;
-  const s = load(key);
-  remoteState(root, s, now);
+  const sid = input.session_id;
+  const s = load(sid, root);
+  remoteState(root, s, now, true);
+  let msg = null;
+  if (s.behind > 0 && fastForward(root, sid, now)) {
+    const n = s.behind;
+    s.behind = 0;
+    msg = `## Sinhronizacija\n🔄 Repo je bio ${n} ${n === 1 ? 'commit' : 'commita'} iza GitHuba, pa je povučen (fast-forward; `
+      + `lokalnih izmjena nije bilo). STATUS.md u kontekstu je možda od prije povlačenja: pročitaj ga ponovo i pogledaj `
+      + `\`git log --oneline -${Math.min(n, 10)}\`. Korisniku reci jednom rečenicom da je projekat osvježen.`;
+  } else if (s.behind > 0) {
+    msg = '## Sinhronizacija\n' + behindMsg(root, s.behind);
+  }
   s.head = readHead(root);
-  save(key, s);
-  return s.behind > 0 ? '## Sinhronizacija\n' + behindMsg(root, s.behind) : null;
+  save(sid, root, s);
+  return msg;
 }
 
 module.exports = { check, afterTool, sessionMessage, readHead };
