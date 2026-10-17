@@ -8,10 +8,22 @@ const { buildContext, trimStatus } = require('./session-start.js');
 
 const HOOK = path.join(__dirname, 'session-start.js');
 
-function runHook(cwd) {
-  const out = execFileSync('node', [HOOK], { input: JSON.stringify({ cwd }), encoding: 'utf8' });
+function runHook(cwd, projectDir) {
+  const env = { ...process.env };
+  delete env.CLAUDE_PROJECT_DIR; // projekat je samo input.cwd, ne sesija iz koje se testovi pokreću
+  if (projectDir) env.CLAUDE_PROJECT_DIR = projectDir;
+  const out = execFileSync('node', [HOOK], { input: JSON.stringify({ cwd }), encoding: 'utf8', env });
   return out ? JSON.parse(out) : null;
 }
+
+test('korijen projekta: CLAUDE_PROJECT_DIR ima prednost nad cwd (kao u project-guard)', () => {
+  const project = fs.mkdtempSync(path.join(os.tmpdir(), 'pm-'));
+  fs.writeFileSync(path.join(project, 'STATUS.md'), '# STATUS\n- korijen sesije');
+  const sub = path.join(project, 'src');
+  fs.mkdirSync(sub);
+  const res = runHook(sub, project);
+  assert.match(res.hookSpecificOutput.additionalContext, /korijen sesije/);
+});
 
 test('bez STATUS.md i bez gita: nema izlaza', () => {
   assert.strictEqual(buildContext({ statusText: '', gitLog: '', uncommitted: 0 }), '');
