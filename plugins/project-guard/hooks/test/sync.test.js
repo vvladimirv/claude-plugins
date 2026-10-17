@@ -25,12 +25,36 @@ function withRemote() {
   return { a, b };
 }
 
-test('iza GitHuba: pisanje čeka pull, pull prolazi, poslije pulla pisanje radi', () => {
-  const { a, b } = withRemote();
+function pushFromOther(b) {
   fs.writeFileSync(path.join(b, 'drugi.txt'), 'x');
   git(b, 'add', '-A');
   git(b, 'commit', '-qm', 'rad sa drugog računara');
   git(b, 'push', '-q');
+}
+
+test('iza GitHuba, čist repo: start sesije ga sam povuče (fast-forward)', () => {
+  const { a, b } = withRemote();
+  pushFromOther(b);
+  const start = run({ hook_event_name: 'SessionStart', cwd: a, session_id: 'S1' });
+  assert.match(start.hookSpecificOutput.additionalContext, /1 commit iza GitHuba, pa je povučen/);
+  assert.ok(fs.existsSync(path.join(a, 'drugi.txt')), 'novi fajl je stigao');
+  assert.strictEqual(write(a, 'S1'), null);
+});
+
+test('iza GitHuba, ali druga sesija drži bravu: start ne povlači', () => {
+  const { a, b } = withRemote();
+  pushFromOther(b);
+  const now = new Date().toISOString();
+  fs.writeFileSync(path.join(a, '.agent-lock.json'), JSON.stringify({ agent: 'claude', session_id: 'X', since: now, heartbeat: now }));
+  const start = run({ hook_event_name: 'SessionStart', cwd: a, session_id: 'S1' });
+  assert.match(start.hookSpecificOutput.additionalContext, /1 commit iza GitHuba \(/);
+  assert.ok(!fs.existsSync(path.join(a, 'drugi.txt')));
+});
+
+test('iza GitHuba sa lokalnim izmjenama: pisanje čeka pull, pull prolazi, poslije pulla pisanje radi', () => {
+  const { a, b } = withRemote();
+  pushFromOther(b);
+  fs.writeFileSync(path.join(a, 'README.md'), '# p\nnesnimljeno\n'); // lokalna izmjena: bez automatskog povlačenja
 
   const start = run({ hook_event_name: 'SessionStart', cwd: a, session_id: 'S1' });
   assert.match(start.hookSpecificOutput.additionalContext, /1 commit iza GitHuba/);

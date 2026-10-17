@@ -23,6 +23,31 @@ test('tajne: komande koje diraju .env su blokirane', () => {
   assert.strictEqual(run(h.pre(root, 'Bash', { command: 'npm run dev -- --environment x' })), null);
 });
 
+test('tajne: komande koje diraju secrets.json, credentials, data/ ili zaštićene fajlove', () => {
+  const root = h.project({ marker: true, files: { '.claude/zasticeno.txt': 'src/legacy/**\n' } });
+  for (const command of ['cat secrets.json', 'type .\\config\\credentials.yml', 'cat data/klijenti.csv', 'Get-Content .\\data\\x.csv',
+    'cp src/legacy/a.js b.js', `cat "${path.join(root, 'data', 'x.csv')}"`]) {
+    assert.strictEqual(h.decision(run(h.pre(root, 'Bash', { command }))), 'deny', command);
+  }
+  for (const command of ['cat src/secrets.js', 'git commit -m "sakrij secrets"', 'ls data', 'npm run data:seed',
+    'curl https://x.io/data/a.json', 'cat src/data.js']) {
+    assert.strictEqual(run(h.pre(root, 'Bash', { command })), null, command);
+  }
+});
+
+test('tajne: Grep ne smije ciljati tajne ni data/, a kapija ne blokira čitanje', () => {
+  const root = h.project({ git: true }); // nov projekat bez temelja: kapija važi samo za pisanje
+  const grep = (input) => run(h.pre(root, 'Grep', { pattern: '.', ...input }));
+  assert.strictEqual(h.decision(grep({ path: path.join(root, '.env') })), 'deny');
+  assert.strictEqual(h.decision(grep({ path: 'data' })), 'deny');
+  assert.strictEqual(h.decision(grep({ glob: '.env*' })), 'deny');
+  assert.strictEqual(h.decision(grep({ glob: '**/secrets.json' })), 'deny');
+  assert.strictEqual(grep({ glob: '*.js' }), null);
+  assert.strictEqual(grep({ path: 'src' }), null);
+  assert.strictEqual(grep({}), null);
+  assert.strictEqual(run(h.pre(root, 'Read', { file_path: path.join(root, 'src/a.js') })), null);
+});
+
 test('tajne: .claude/zasticeno.txt i rad uprkos pauzi', () => {
   const root = h.project({ marker: true, files: { '.claude/zasticeno.txt': '# moje\nsrc/legacy/**\n' } });
   assert.strictEqual(h.decision(run(h.pre(root, 'Edit', { file_path: path.join(root, 'src/legacy/a.js') }))), 'deny');

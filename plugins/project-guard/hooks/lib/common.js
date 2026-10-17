@@ -139,13 +139,49 @@ function logError(where, err) {
   }
 }
 
+// Spor hook (bez pokretanja Node-a) ide u isti log, da se vidi da li važi pravilo < 200 ms.
+function logSlow(where, ms) {
+  logError(`sporo/${where}`, `${ms} ms`);
+}
+
 function dataDir() {
   const dir = process.env.CLAUDE_PLUGIN_DATA || path.join(os.tmpdir(), 'claude-project-guard');
   fs.mkdirSync(dir, { recursive: true });
   return dir;
 }
 
+// Stanje po sesiji: jedan fajl po sesiji (<dataDir>/<ime>/<sesija>.json), pa paralelne sesije ne gaze jedna drugu.
+function stateFile(name, sid) {
+  const dir = path.join(dataDir(), name);
+  fs.mkdirSync(dir, { recursive: true });
+  return path.join(dir, String(sid || 'nepoznata').replace(/[^\w.-]/g, '_') + '.json');
+}
+
+function loadState(name, sid) {
+  return readJson(stateFile(name, sid), {});
+}
+
+function saveState(name, sid, data) {
+  fs.writeFileSync(stateFile(name, sid), JSON.stringify(data));
+}
+
+const STATE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+const LEGACY_STATE = ['sync.json', 'stop-podsjetnik.json', 'deps-upozorenja.json'];
+
+// SessionStart: briše stanje sesija starijih od 7 dana i stare zajedničke fajlove (do 0.4.x).
+function pruneState(now = Date.now()) {
+  const dir = dataDir();
+  for (const f of LEGACY_STATE) fs.rmSync(path.join(dir, f), { force: true });
+  for (const sub of fs.readdirSync(dir, { withFileTypes: true }).filter((d) => d.isDirectory())) {
+    const subDir = path.join(dir, sub.name);
+    for (const f of fs.readdirSync(subDir)) {
+      const file = path.join(subDir, f);
+      if (now - fs.statSync(file).mtimeMs > STATE_MAX_AGE_MS) fs.rmSync(file, { force: true });
+    }
+  }
+}
+
 module.exports = {
   CLAUDE_HOME, norm, isUnder, relToRoot, readJson, projectRoot, rootFor, commandDir, kickstartRoots, noKickstart, isPaused,
-  limits, git, isGitRepo, countLines, globToRegex, logError, dataDir,
+  limits, git, isGitRepo, countLines, globToRegex, logError, logSlow, dataDir, loadState, saveState, pruneState,
 };

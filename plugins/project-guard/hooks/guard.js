@@ -47,6 +47,7 @@ function context(event, text) {
 
 function sessionStart(input, root) {
   safe('hooksPath', () => session.ensureHooksPath(root));
+  safe('prune', () => common.pruneState());
   const parts = [
     safe('location', () => session.locationMessage(root)),
     common.isPaused() ? '## Pravila\nBlokirajuća pravila su pauzirana (`/pravila-pauza`). Zaštita tajni radi.' : null,
@@ -77,12 +78,20 @@ const HANDLERS = {
   },
 };
 
+const SLOW_MS = 200;
+const TIMED = new Set(['PreToolUse', 'PostToolUse', 'UserPromptSubmit']);
+
 function run(input) {
-  const handler = HANDLERS[input.hook_event_name];
+  const event = input.hook_event_name;
+  const handler = HANDLERS[event];
   if (!handler) return null;
+  const started = Date.now();
   const sessionRoot = common.projectRoot(input);
-  const toolEvent = input.hook_event_name === 'PreToolUse' || input.hook_event_name === 'PostToolUse';
-  return handler(input, toolEvent ? common.rootFor(input, sessionRoot) : sessionRoot) || null;
+  const toolEvent = event === 'PreToolUse' || event === 'PostToolUse';
+  const out = handler(input, toolEvent ? common.rootFor(input, sessionRoot) : sessionRoot) || null;
+  const ms = Date.now() - started;
+  if (TIMED.has(event) && ms > SLOW_MS) common.logSlow(`${event}${input.tool_name ? ' ' + input.tool_name : ''}`, ms);
+  return out;
 }
 
 if (require.main === module) {

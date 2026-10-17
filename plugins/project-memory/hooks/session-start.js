@@ -2,10 +2,11 @@
 // Fail-open: svaka greška se upiše u ~/.claude/pravila.log, a sesija normalno nastavlja.
 
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
-const { execFileSync } = require('child_process');
 const { sessionText } = require('./lib/progress');
+const util = require('./lib/util');
+
+const { git } = util;
 
 const MAX_STATUS_LINES = 40;
 const MAX_STATUS_CHARS = 3000;
@@ -46,14 +47,6 @@ function buildContext({ statusText, gitLog, uncommitted, progress }) {
   return '# Memorija projekta (project-memory)\n\n' + parts.join('\n\n');
 }
 
-function git(cwd, args) {
-  try {
-    return execFileSync('git', args, { cwd, encoding: 'utf8', timeout: 3000, stdio: ['ignore', 'pipe', 'ignore'] });
-  } catch {
-    return '';
-  }
-}
-
 function readInput() {
   try {
     return JSON.parse(fs.readFileSync(0, 'utf8') || '{}');
@@ -62,18 +55,11 @@ function readInput() {
   }
 }
 
-function logError(err) {
-  try {
-    const line = `${new Date().toISOString()} project-memory/session-start: ${err && err.stack ? err.stack : err}\n`;
-    fs.appendFileSync(path.join(os.homedir(), '.claude', 'pravila.log'), line);
-  } catch {
-    // ni log nije uspio: tiho odustani, sesija ne smije pasti zbog hooka
-  }
-}
+const logError = (err) => util.logError('session-start', err);
 
 function main() {
   const input = readInput();
-  const cwd = input.cwd || process.env.CLAUDE_PROJECT_DIR || process.cwd();
+  const cwd = util.projectDir(input);
 
   const statusPath = path.join(cwd, 'STATUS.md');
   const statusText = fs.existsSync(statusPath) ? fs.readFileSync(statusPath, 'utf8') : '';

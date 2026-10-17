@@ -2,6 +2,7 @@
 name: ui-izmjena
 description: Siguran tok izmjene izgleda: pogođeni ekrani, mockup i OK, izmjena uz tokene, screenshot testovi, ux-recenzent. Za redizajn i promjenu izgleda.
 argument-hint: <šta treba promijeniti>
+model: sonnet
 ---
 
 # /ui-izmjena

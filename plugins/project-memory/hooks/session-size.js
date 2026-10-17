@@ -7,6 +7,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const { noKickstart } = require('./lib/progress');
+const { projectDir, logError } = require('./lib/util');
 
 const TAIL_BYTES = 256 * 1024;
 const LEVELS = [100000, 150000];
@@ -61,9 +62,20 @@ function readLevel(sessionId) {
   }
 }
 
-function writeLevel(sessionId, level) {
+const STATE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+// Upis je rijedak (jednom po pragu), pa tada i obriši stanja sesija starijih od 7 dana.
+function writeLevel(sessionId, level, now = Date.now()) {
   fs.mkdirSync(STATE_DIR, { recursive: true });
   fs.writeFileSync(stateFile(sessionId), String(level));
+  for (const f of fs.readdirSync(STATE_DIR)) {
+    const file = path.join(STATE_DIR, f);
+    try {
+      if (now - fs.statSync(file).mtimeMs > STATE_MAX_AGE_MS) fs.rmSync(file, { force: true });
+    } catch {
+      // druga sesija ga je upravo obrisala
+    }
+  }
 }
 
 // U projektu bez kickstarta i bez STATUS.md /kraj-sesije stane, pa se rad snima po pravilima projekta.
@@ -85,7 +97,7 @@ function check(input) {
   writeLevel(input.session_id, level);
 
   const k = Math.round(tokens / 1000);
-  const own = ownDocs(input.cwd || process.env.CLAUDE_PROJECT_DIR);
+  const own = ownDocs(projectDir(input));
   return {
     systemMessage: `Razgovor je velik (~${k}k tokena), pa je svaka poruka sada skuplja. `
       + (own ? 'Kad završiš ovaj korak, snimi rad po pravilima projekta (AGENTS.md/CLAUDE.md) i otvori novu sesiju.'
@@ -99,21 +111,12 @@ function check(input) {
   };
 }
 
-function logError(err) {
-  try {
-    const line = `${new Date().toISOString()} project-memory/session-size: ${err && err.stack ? err.stack : err}\n`;
-    fs.appendFileSync(path.join(os.homedir(), '.claude', 'pravila.log'), line);
-  } catch {
-    // ni log nije uspio: tiho odustani, poruka ne smije pasti zbog hooka
-  }
-}
-
 if (require.main === module) {
   try {
     const out = check(JSON.parse(fs.readFileSync(0, 'utf8') || '{}'));
     if (out) process.stdout.write(JSON.stringify(out));
   } catch (err) {
-    logError(err);
+    logError('session-size', err);
   }
   process.exit(0);
 }
