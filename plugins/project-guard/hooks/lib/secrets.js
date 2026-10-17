@@ -45,14 +45,33 @@ function checkPath(file, root) {
 const ENV_IN_CMD = /(^|[\s'"=/\\(])(\.env(\.[\w-]+)?)(?=$|[\s'";|&)>])/g;
 const KEY_IN_CMD = /(^|[\s'"=/\\])(id_(rsa|ed25519|ecdsa)|[\w.-]+\.(pem|p12|pfx))(?=$|[\s'";|&)])/i;
 
-function checkCommand(cmd) {
+// U komandi samo imena sa ekstenzijom: riječ "secrets" u poruci commita nije fajl.
+const SECRET_IN_CMD = /^(secrets?\.(json|ya?ml|toml|env|txt|ini|cfg|conf)|\.?credentials\.(json|ya?ml|toml|txt|ini))$/i;
+
+// Riječi komande koje liče na putanju: secrets.json, data/…, zaštićeni globovi iz .claude/zasticeno.txt.
+function checkCommandPaths(cmd, root) {
+  const globs = root ? protectedGlobs(root).map((g) => [g, globToRegex(g)]) : [];
+  for (const raw of cmd.split(/[\s'"`;|&()<>=,]+/)) {
+    if (!raw || raw.includes('://')) continue;
+    const tok = raw.replace(/\\/g, '/').replace(/^\.\//, '');
+    const base = tok.replace(/\/+$/, '').split('/').pop();
+    if (SECRET_IN_CMD.test(base)) return `komanda koristi \`${base}\` (tajne)`;
+    const rel = root ? relToRoot(tok, root) : tok;
+    if (rel && (rel.startsWith('data/') || (rel === 'data' && tok.endsWith('/')))) return 'komanda dira `data/` (stvarni podaci)';
+    const hit = rel && globs.find(([, re]) => re.test(rel));
+    if (hit) return `komanda dira \`${rel}\`, zaštićen u .claude/zasticeno.txt (\`${hit[0]}\`)`;
+  }
+  return null;
+}
+
+function checkCommand(cmd, root) {
   if (!cmd) return null;
   for (const m of cmd.matchAll(ENV_IN_CMD)) {
     if (!SAFE_ENV.test(m[2])) return `komanda koristi \`${m[2]}\` (tajne)`;
   }
   const k = cmd.match(KEY_IN_CMD);
   if (k) return `komanda koristi \`${k[2]}\` (ključ)`;
-  return null;
+  return checkCommandPaths(cmd, root);
 }
 
 function toolTarget(input) {
@@ -60,11 +79,24 @@ function toolTarget(input) {
   return t.file_path || t.notebook_path || t.path || null;
 }
 
+const SECRET_SAMPLES = ['.env', '.env.local', 'secrets.json', 'credentials.json', 'id_rsa', 'server.pem'];
+
+// Grep: putanja (fajl ili folder) i glob filter ne smiju ciljati tajne.
+function checkGrep(t, root) {
+  const byPath = t.path ? checkPath(t.path, root) : null;
+  if (byPath) return byPath;
+  const glob = t.glob ? globToRegex(t.glob.replace(/^\*\*\//, '')) : null;
+  const sample = glob && SECRET_SAMPLES.find((s) => glob.test(s) && !SAFE_ENV.test(s));
+  return sample ? `glob \`${t.glob}\` hvata fajlove sa tajnama (npr. \`${sample}\`)` : null;
+}
+
 function check(input, root) {
   const tool = input.tool_name;
-  const reason = tool === 'Bash' || tool === 'PowerShell'
-    ? checkCommand((input.tool_input || {}).command)
-    : checkPath(toolTarget(input), root);
+  const t = input.tool_input || {};
+  let reason;
+  if (tool === 'Bash' || tool === 'PowerShell') reason = checkCommand(t.command, root);
+  else if (tool === 'Grep') reason = checkGrep(t, root);
+  else reason = checkPath(toolTarget(input), root);
   if (!reason) return null;
   return `🔒 Zaštita tajni: ${reason}. Agent ne čita i ne mijenja tajne ni stvarne podatke. `
     + 'Ako to stvarno treba, korisnik to radi ručno. Primjer ključeva ide u `.env.example`, a test podaci u `fixtures/`.';

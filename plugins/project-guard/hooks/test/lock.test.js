@@ -21,6 +21,19 @@ test('komande: čitanje prolazi, pisanje ne', () => {
   }
 });
 
+test('komande: | i ; unutar navodnika i { } blokova ne dijele komandu (PowerShell)', () => {
+  for (const c of ['git log --oneline | Select-String "fix|feat"',
+    'git ls-files | Where-Object { $_ -match \'\\.(md|js)$\' } | ForEach-Object { "{0,6} {1}" -f (Get-Content $_).Count, $_ }',
+    '"---"; Get-Content package.json', 'Get-ChildItem | Sort-Object Name | Format-Table']) {
+    assert.ok(isReadonlyCommand(c), c);
+  }
+  for (const c of ['Get-ChildItem | ForEach-Object { Remove-Item $_ }', 'Get-ChildItem | ForEach-Object { git add $_ }',
+    'echo it\'s; rm -rf x', '"a" | Out-File b.txt', 'Get-Content a | Set-Content b', '$x = (git commit -m y)',
+    'Get-ChildItem | ForEach-Object { (Remove-Item $_) }']) {
+    assert.ok(!isReadonlyCommand(c), c);
+  }
+});
+
 test('brava: prva sesija uzme bravu, druga ne može pisati ali može čitati', () => {
   const root = h.project({ git: true, marker: true });
   const file = path.join(root, 'src/a.js');

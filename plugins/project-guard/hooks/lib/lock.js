@@ -10,15 +10,102 @@ const STALE_MS = 20 * 60 * 1000;
 
 // Komande koje ne diraju fajlove projekta. Worktree, grana i njena bazna grana (/codex-worktree) su samo git zapisi,
 // a gh komande ovdje samo čitaju GitHub.
-const READONLY = /^(git\s+(status|log|diff|show|branch|remote|rev-parse|ls-files|blame|fetch|worktree|stash\s+list|config\s+(--get|["']?branch\.\S+\.base))\b|git\s*$|gh\s+(auth\s+status|(pr|issue|run|release|repo|workflow)\s+(list|view|status|checks|diff))|ls|dir|cat|type|head|tail|less|more|grep|rg|find|pwd|cd|echo|wc|which|where|sort|uniq|cut|tr|date|sed\s+-n\b(?!.*\s-i)|node\s+(--version|--test)|npm\s+(test|run\s+test|ls|--version)|pytest|python3?\s+-m\s+pytest|py\s+-m\s+pytest|\.?[\\/]?scripts[\\/]test\S*|node\s+scripts[\\/]test\S*|claude\s+plugin\s+(list|validate|details)|Get-(ChildItem|Content|Location|Item|Command|Date)|Select-String|Select-Object|Measure-Object|Test-Path|Write-Output)\b/i;
+const READONLY = /^(git\s+(status|log|diff|show|branch|remote|rev-parse|ls-files|blame|fetch|worktree|stash\s+list|config\s+(--get|["']?branch\.\S+\.base))\b|git\s*$|gh\s+(auth\s+status|(pr|issue|run|release|repo|workflow)\s+(list|view|status|checks|diff))|ls|dir|cat|type|head|tail|less|more|grep|rg|find|pwd|cd|echo|wc|which|where|sort|uniq|cut|tr|date|sed\s+-n\b(?!.*\s-i)|node\s+(--version|--test)|npm\s+(test|run\s+test|ls|--version)|pytest|python3?\s+-m\s+pytest|py\s+-m\s+pytest|\.?[\\/]?scripts[\\/]test\S*|node\s+scripts[\\/]test\S*|claude\s+plugin\s+(list|validate|details)|Get-(ChildItem|Content|Location|Item|Command|Date)|Select-String|Select-Object|Measure-Object|Test-Path|Write-Output|Write-Host|ForEach-Object|Where-Object|Sort-Object|Group-Object|Format-(Table|List|Wide)|Out-String)\b/i;
 const HARMLESS_REDIRECT = /\d?>\s*&\d|\d?>\s*(\/dev\/null|\$null|nul)\b/gi;
 const GIT_DIR = /^git\s+-C\s+("[^"]*"|'[^']*'|\S+)\s*/i;
+// PowerShell cmdleti koji pišu, ma gdje u komandi bili (i unutar { } bloka).
+const WRITE_CMDLET = /\b(Set-Content|Add-Content|Out-File|New-Item|Remove-Item|Move-Item|Copy-Item|Rename-Item|Clear-Content|Tee-Object|Export-\w+|Invoke-Expression|iex|Start-Process)\b/i;
+// Izraz bez komande: string ili varijabla, uz operator (`"---"`, `$_ -match 'x'`, `"{0}" -f $a`).
+const EXPR = /^(?:"[^"]*"|'[^']*'|\$[\w:.]+)(?:\s+-(?:f|match|notmatch|like|notlike|eq|ne|gt|ge|lt|le|replace|split|join|contains|in)\b.*)?$/is;
+
+// Dijeli na &&, ||, ;, | i novi red, ali ne unutar navodnika i { } blokova. null ako navodnik nije zatvoren.
+function splitTop(cmd) {
+  const out = [];
+  let cur = '';
+  let quote = null;
+  let depth = 0;
+  for (let i = 0; i < cmd.length; i++) {
+    const c = cmd[i];
+    if (quote) {
+      cur += c;
+      if (c === quote) quote = null;
+      continue;
+    }
+    if (c === '"' || c === "'") quote = c;
+    else if (c === '{') depth++;
+    else if (c === '}') depth = Math.max(0, depth - 1);
+    if (depth === 0 && !quote) {
+      const two = cmd.slice(i, i + 2);
+      if (two === '&&' || two === '||') {
+        out.push(cur);
+        cur = '';
+        i++;
+        continue;
+      }
+      if (c === ';' || c === '|' || c === '\n') {
+        out.push(cur);
+        cur = '';
+        continue;
+      }
+    }
+    cur += c;
+  }
+  if (quote) return null;
+  out.push(cur);
+  return out.map((s) => s.trim()).filter(Boolean);
+}
+
+// Izdvaja sadržaj { } blokova najvišeg nivoa (bez navodnika); ostatak je sama komanda.
+function blocks(seg) {
+  const inner = [];
+  let rest = '';
+  let quote = null;
+  let depth = 0;
+  let cur = '';
+  for (const c of seg) {
+    if (quote) {
+      if (c === quote) quote = null;
+    } else if (c === '"' || c === "'") {
+      quote = c;
+    } else if (c === '{') {
+      if (depth++ === 0) continue;
+    } else if (c === '}' && depth > 0) {
+      if (--depth === 0) {
+        inner.push(cur);
+        cur = '';
+        continue;
+      }
+    }
+    if (depth > 0) cur += c;
+    else rest += c;
+  }
+  return { rest: rest.trim(), inner };
+}
+
+// Komande u zagradama izraza (npr. `(Get-Content $_).Count`) moraju biti čitanje.
+function exprReadonly(seg) {
+  if (!EXPR.test(seg) || seg.includes('$(')) return false;
+  const bare = seg.replace(/"[^"]*"|'[^']*'/g, '""');
+  return [...bare.matchAll(/\(\s*([A-Za-z][\w-]*)/g)].every((m) => READONLY.test(m[1]));
+}
+
+function segmentReadonly(seg) {
+  const s = seg.replace(/^(\w+=\S*\s+)+/, '').replace(GIT_DIR, 'git ');
+  const { rest, inner } = blocks(s);
+  if (!inner.every((b) => allReadonly(b))) return false;
+  return READONLY.test(rest) || exprReadonly(rest);
+}
+
+function allReadonly(cmd) {
+  const parts = splitTop(cmd) || cmd.split(/&&|\|\||;|\||\n/).map((s) => s.trim()).filter(Boolean);
+  return parts.every(segmentReadonly);
+}
 
 function isReadonlyCommand(cmd) {
   if (!cmd || !cmd.trim()) return true;
   if (cmd.replace(HARMLESS_REDIRECT, '').includes('>')) return false;
-  return cmd.split(/&&|\|\||;|\||\n/).map((s) => s.trim()).filter(Boolean)
-    .every((seg) => READONLY.test(seg.replace(/^(\w+=\S*\s+)+/, '').replace(GIT_DIR, 'git ')));
+  if (WRITE_CMDLET.test(cmd)) return false;
+  return allReadonly(cmd);
 }
 
 // Izlazi iz brave (/preuzmi-lock, /pravila-pauza) moraju raditi i iz blokirane sesije.
@@ -94,4 +181,4 @@ function sessionMessage(root, sid, now = Date.now()) {
     + 'Reci to korisniku odmah i predloži worktree za paralelni rad ili `/preuzmi-lock` ako je druga sesija zatvorena.';
 }
 
-module.exports = { check, release, sessionMessage, isReadonlyCommand, isWrite, LOCK, STALE_MS };
+module.exports = { check, release, sessionMessage, heldByOther, isReadonlyCommand, isWrite, LOCK, STALE_MS };

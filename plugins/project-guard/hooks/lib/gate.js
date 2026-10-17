@@ -53,9 +53,11 @@ function check(input, root) {
   if (tool === 'Bash' || tool === 'PowerShell') {
     const cmd = (input.tool_input || {}).command || '';
     if (!SCAFFOLD.test(cmd)) return null;
-  } else {
+  } else if (tool === 'Write' || tool === 'Edit' || tool === 'NotebookEdit') {
     const rel = relToRoot(toolTarget(input), root);
     if (rel === null || isAllowed(rel)) return null;
+  } else {
+    return null; // Read i Grep samo čitaju: kapija čuva pisanje koda
   }
   if (mode(root) !== 'nov') return null;
   return '🚧 Kapija kickstarta: ovo je nov projekat bez temelja (`.claude/kickstart.json` ne postoji). '
