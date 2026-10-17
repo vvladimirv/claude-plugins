@@ -19,18 +19,31 @@ function target(input, root) {
   return { rel, abs: path.resolve(root, t.file_path), lim, t };
 }
 
-function currentLines(abs) {
+function readText(abs) {
   try {
-    return countLines(fs.readFileSync(abs, 'utf8'));
+    return fs.readFileSync(abs, 'utf8');
   } catch {
-    return 0;
+    return '';
   }
 }
 
-function projectedLines(input, cur) {
+function occurrences(text, s) {
+  return s ? text.split(s).length - 1 : 0;
+}
+
+// Razlika u linijama za jednu zamjenu: "a\nb" → "a" je -1 (broje se novi redovi, ne linije).
+function lineDelta(t) {
+  return occurrences(t.new_string || '', '\n') - occurrences(t.old_string || '', '\n');
+}
+
+// text = sadržaj fajla prije izmjene (replace_all mijenja svako pojavljivanje).
+function projectedLines(input, cur, text = '') {
   const t = input.tool_input || {};
   if (input.tool_name === 'Write') return countLines(t.content || '');
-  if (input.tool_name === 'Edit') return cur - countLines(t.old_string || '') + countLines(t.new_string || '');
+  if (input.tool_name === 'Edit') {
+    const times = t.replace_all ? Math.max(1, occurrences(text, t.old_string)) : 1;
+    return t.replace_all ? cur + times * lineDelta(t) : cur - countLines(t.old_string || '') + countLines(t.new_string || '');
+  }
   return cur;
 }
 
@@ -39,8 +52,9 @@ function preCheck(input, root) {
   if (input.tool_name !== 'Write' && input.tool_name !== 'Edit') return null;
   const tg = target(input, root);
   if (!tg) return null;
-  const cur = currentLines(tg.abs);
-  const next = projectedLines(input, cur);
+  const text = readText(tg.abs);
+  const cur = countLines(text);
+  const next = projectedLines(input, cur, text);
   if (next <= tg.lim.maks || next <= cur) return null;
   return `📏 Limit fajla: \`${tg.rel}\` bi imao ${next} linija (maks ${tg.lim.maks}). `
     + 'Ne dodaj kod u ovaj fajl. Prvo ga podijeli po odgovornostima (vidi docs/PRAVILA-KODA.md), '
@@ -53,9 +67,15 @@ function postCheck(input, root) {
   const tg = target(input, root);
   if (!tg) return null;
   const notes = [];
-  const now = currentLines(tg.abs);
+  const text = readText(tg.abs);
+  const now = countLines(text);
   const t = tg.t;
-  const before = input.tool_name === 'Edit' ? now - countLines(t.new_string || '') + countLines(t.old_string || '') : 0;
+  let before = 0;
+  if (input.tool_name === 'Edit') {
+    before = t.replace_all
+      ? now - Math.max(1, occurrences(text, t.new_string)) * lineDelta(t)
+      : now - countLines(t.new_string || '') + countLines(t.old_string || '');
+  }
   if (now > tg.lim.upozorenje && now > before) {
     notes.push(`📏 \`${tg.rel}\` ima ${now} linija (upozorenje od ${tg.lim.upozorenje}, maks ${tg.lim.maks}). Planiraj podjelu prije sljedećeg dodavanja.`);
   }

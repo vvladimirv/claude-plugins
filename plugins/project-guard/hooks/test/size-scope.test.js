@@ -106,3 +106,19 @@ test('obim: poslije izdanja (faza odrzavanje) nove funkcije su zamrznute', () =>
   const start = run({ hook_event_name: 'SessionStart', cwd: root, session_id: 'A' });
   assert.match(start.hookSpecificOutput.additionalContext, /održavanje/);
 });
+
+test('limit: replace_all računa svako pojavljivanje', () => {
+  const body = Array.from({ length: 400 }, () => 'foo();').join('\n') + '\n';
+  const root = h.project({ marker: true, files: { 'src/a.js': body } });
+  const edit = (extra) => run(h.pre(root, 'Edit', { file_path: path.join(root, 'src/a.js'), old_string: 'foo();', new_string: 'foo();\nbar();', ...extra }));
+  assert.strictEqual(edit({}), null, 'jedna zamjena: 401 linija');
+  assert.strictEqual(h.decision(edit({ replace_all: true })), 'deny', '400 zamjena: 800 linija');
+  assert.strictEqual(run(h.pre(root, 'Edit', { file_path: path.join(root, 'src/a.js'), old_string: 'foo();', new_string: 'baz();', replace_all: true })), null);
+});
+
+test('obim: engleske riječi su cijele ("address" nije "add"), a oblici glagola se hvataju', () => {
+  const root = h.project({ marker: true, files: { 'docs/VIZIJA.md': '# V\n\n## Obim\n- budžet\n' } });
+  const ask = (prompt) => run({ hook_event_name: 'UserPromptSubmit', cwd: root, session_id: 'A', prompt });
+  for (const p of ['what is the address field', 'objasni mi sredinu ekrana', 'koji makeup']) assert.strictEqual(ask(p), null, p);
+  for (const p of ['added a button?', 'fixes for login', 'dodajte polje', 'sredi ovo']) assert.ok(ask(p), p);
+});
