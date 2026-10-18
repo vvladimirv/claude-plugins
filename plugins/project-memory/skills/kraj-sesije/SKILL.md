@@ -17,13 +17,14 @@ allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, ToolSearch
 4. **STATUS.md:** osvježi ga po pravilima iz `/stanje` (prepiši, ≤ 30 linija, samo sadašnjost).
 5. **Commitovi:** grupiši izmjene u logične cjeline (jedna cjelina = jedan commit). Poruke idu po Conventional Commits, opis na bosanskom, npr. `feat(budzet): unos troška`. STATUS.md ide u zadnji commit.
 6. **Push:** ako repo ima `origin`, a grana ima commitove koji nisu na GitHubu, pitaj da li da pushujem. Push samo uz izričito "da".
-7. **Završna poruka** (kratko): commitovi (hash + poruka), stanje testova, da li je pushovano i prva stavka iz "Sljedeće" za sutra.
+7. **Završna poruka** (kratko): commitovi (hash + poruka), stanje testova, da li je pushovano i prva stavka iz "Sljedeće" za sutra. Ako sekcija „Grane" sa starta sesije kaže da ima gotovih grana, dodaj jednu liniju: „<N> grana je gotovo → `/grane pocisti`".
 8. **Nova sesija sa sljedećim zadatkom:** samo ako je sve prije uspjelo: testovi prošli, `git status` čist i push urađen (ili repo nema `origin`). Ako su testovi pali, commit nije uspio, push nije uspio ili ga je korisnik odbio, ili „Sljedeće" u STATUS.md nema nijednu stavku, ovaj korak preskoči i idi na korak 9.
    - Uzmi prvu stavku iz „Sljedeće" u STATUS.md (bez rednog broja). Za pitanje je skrati na jednu rečenicu, a u prompt ide cijela.
+   - Model i effort za nju odredi po **Preporuka modela** ispod.
    - Pitaj (AskUserQuestion): **"Zatvaram ovu sesiju i pripremam novu sa zadatkom: <stavka>?"** sa opcijama "Da, nova sesija" (preporučeno, prva) / "Ne, samo završi".
    - **Da, nova sesija:**
      1. Ako alati nisu učitani, učitaj ih: ToolSearch `select:mcp__ccd_session__spawn_task,mcp__ccd_session_mgmt__archive_session`.
-     2. Ako postoji `mcp__ccd_session__spawn_task` (desktop aplikacija), pozovi ga: `title` je zadatak kao naredba (< 60 znakova), `tldr` jedna-dvije rečenice bez žargona, `cwd` je korijen projekta (`git rev-parse --show-toplevel`; ako je sesija u worktreeu, korijen glavnog repoa, tj. folder iznad `git rev-parse --path-format=absolute --git-common-dir`). `prompt` mora stajati sam za sebe: `Pročitaj STATUS.md i nastavi: <cijela stavka>`, pa bitan kontekst iz ove sesije (grana, zadnji commit, šta je urađeno, otvorena pitanja i odluke korisnika). Bez tajni i ključeva.
+     2. Ako postoji `mcp__ccd_session__spawn_task` (desktop aplikacija), pozovi ga: `title` je zadatak kao naredba (< 60 znakova), `tldr` jedna-dvije rečenice bez žargona i na kraju preporuka (npr. „Preporuka: Sonnet, effort srednji."), `cwd` je korijen projekta (`git rev-parse --show-toplevel`; ako je sesija u worktreeu, korijen glavnog repoa, tj. folder iznad `git rev-parse --path-format=absolute --git-common-dir`). `prompt` mora stajati sam za sebe. Prvi red: `Ako postoji komanda /grane, prvo pokreni /grane upisi --zadatak "<stavka u jednoj rečenici>" --model <opus|sonnet|haiku> --effort <low|medium|high>.` Zatim `Pročitaj STATUS.md i nastavi: <cijela stavka>`, pa bitan kontekst iz ove sesije (grana, zadnji commit, šta je urađeno, otvorena pitanja i odluke korisnika). Zadnji red: `Preporučen model: <Model>, effort <effort>. Ako ova sesija radi na drugom, reci korisniku da ga promijeni u meniju modela.` Bez tajni i ključeva.
      3. Tek kad je kartica napravljena, reci jednom rečenicom: „Kartica za novu sesiju je ispod, jedan klik je otvara." Zatim arhiviraj ovu sesiju alatom za arhiviranje (`session_id: "self"`, razlog: "kraj-sesije: nova sesija pripremljena"). Arhiviranje zaustavi sesiju i oslobodi bravu. Ako alata za arhiviranje nema, reci korisniku da ovu sesiju zatvori sa `/exit`.
      4. Ako `spawn_task` ne postoji (terminal, druga okruženja) ili javi grešku, ne arhiviraj i ne prijavljuj grešku. Ispiši gotov prompt u bloku koda (isti tekst kao u tački 2) i reci: „Otvori novu sesiju u ovom folderu i zalijepi ovo. Ovu zatvori sa `/exit`."
    - **Ne, samo završi:** idi na korak 9, kao do sada.
@@ -43,3 +44,10 @@ Traži u folderu koji testiraš i uzmi prvo što postoji:
 3. `npm run test:fast`, ako `package.json` ima skriptu `test:fast`.
 
 Ako nema ničega, pitaj korisnika koju komandu da pokreneš.
+
+## Preporuka modela
+- **Opus, effort visok:** arhitektura, refaktor, istraživanje, analiza, plan, odluka, migracija, sigurnost, težak bug.
+- **Haiku, effort nizak:** STATUS, dokumentacija, pravopis, dijakritika, tekst, README, CHANGELOG, čišćenje.
+- **Sonnet, effort srednji:** sve ostalo (svakodnevno kodiranje po planu).
+
+Sesija sama sebi ne može promijeniti model: bira ga korisnik u meniju modela, a drugoj sesiji ga može postaviti `/grane`.

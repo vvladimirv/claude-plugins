@@ -32,3 +32,17 @@ test('brzi testovi: ista uputa u codex-worktree, kraj-sesije, ui-izmjena, vrati 
     assert.match(t, /vidi \*\*Brzi testovi\*\*/, `${SKILLS[i]}: nijedan korak ne upućuje na "Brzi testovi"`);
   });
 });
+
+// „Preporuka modela" je u /grane i /kraj-sesije, a iste riječi prepoznaje hook (recommend u branches.js).
+test('preporuka modela: ista u grane i kraj-sesije, i hook je slijedi', () => {
+  const { recommend } = require('../plugins/project-guard/hooks/lib/branches');
+  const files = ['project-guard/skills/grane/SKILL.md', 'project-memory/skills/kraj-sesije/SKILL.md'];
+  const [first, second] = files.map((f) => section(read(f), 'Preporuka modela'));
+  assert.ok(first, `${files[0]}: nema sekcije "## Preporuka modela"`);
+  assert.strictEqual(second, first, `${files[1]}: "Preporuka modela" nije isto kao u ${files[0]}`);
+  for (const [model, effort] of [['opus', 'high'], ['haiku', 'low']]) {
+    const line = first.split('\n').find((l) => l.toLowerCase().includes(`**${model},`));
+    const words = line.slice(line.lastIndexOf('**') + 2).replace(/\.$/, '').split(',').map((w) => w.trim());
+    for (const w of words) assert.deepStrictEqual(recommend(w), { model, effort }, `"${w}" treba dati ${model}/${effort}`);
+  }
+});

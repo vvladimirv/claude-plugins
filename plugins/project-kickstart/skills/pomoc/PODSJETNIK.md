@@ -16,6 +16,8 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | Nešto se pokvarilo, a radilo je | `/vrati` (predomislio si se: `/vrati poništi`) |
 | Ne razumiješ upozorenje | `objasni mi ovo upozorenje i riješi ga` |
 | Izgubio si se | `ne znam šta sad, vodi me` ili `/pomoc` |
+| Ne znaš koja grana je gotova, koja čeka koju, gdje je ostao rad | `/grane` (gotove počisti `/grane pocisti`) |
+| Novi zadatak paralelno sa ovim | `/grane nova <zadatak>` (kartica nove sesije sa preporukom modela) |
 | Plugini kao da ne rade, ili nov računar | `/zdravlje` |
 | Aplikacija treba da radi bez Claudea | `/objavi` (na ovom računaru, na kućnoj mreži ili na internetu) |
 | Prva verzija gotova | `/izdanje` (Claude ga sam predloži) |
@@ -34,6 +36,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | **Nova biblioteka** | ✅ podsjetnik ako nijedan ADR ne spominje novu zavisnost | `/adr` (zašto baš ona, alternative) |
 | **Commit** | ✅ pre-commit (u projektima od kickstarta 0.3.0): brava, tajne, veličina fajla, brzi testovi. Važi i za Codex i za tebe iz terminala | nikad `--no-verify` |
 | **Testovi** | ✅ `scripts/test` ispisuje samo sažetak · CI na GitHubu pokreće pune, E2E i screenshot testove · `/kraj-sesije`, `/ui-izmjena` i `/codex-worktree spoji` pokreću prvo što nađu: `scripts/test` → „Brzi testovi" iz AGENTS.md → `npm run test:fast` (inače pitaju) | — |
+| **Grane** | ✅ nova grana sama zapamti iz koje je grane nastala · ✅ na startu sesije: grana, zadatak, šta čeka, preporuka modela i broj gotovih grana | `/grane`: sve grane sa stanjem (čeka pregled, stala, radi se, čeka granu, otvorena, stara, gotova) i jednom radnjom za svaku; brava ostala iza zatvorene sesije, sesije na gotovim granama i pogrešan model sesije · `/grane pocisti` (uz tvoje da) · `/grane nova <zadatak>` · `/grane ceka <X> <Y>` (X se spaja tek kad je Y gotova) |
 | **Paralelni rad** | ✅ brava: u istom folderu piše samo jedna sesija (oslobađa se na kraju sesije, a istekne i nakon 20 min bez pisanja) | druga sesija ili Codex ide u **worktree**: `/codex-worktree <zadatak>`. Kad je gotovo, `/codex-worktree spoji <zadatak>` napravi **PR** (pregledaš diff i klikneš Merge na GitHubu), a ponovljeni `spoji` počisti worktree i granu (i kad je PR spojen squashom). Bez GitHuba se spaja lokalno. · `/preuzmi-lock` ako je prva sesija zatvorena |
 | **Nešto se pokvarilo** | — | `/vrati`: odbaci nesnimljene izmjene ili poništi zadnje commitove. Ništa se ne briše zauvijek, a `/vrati poništi` vraća nazad |
 | **Kraj rada** | ✅ podsjetnik kad ima ≥ 10 necommitovanih fajlova ili su stariji od 2 h · ✅ upozorenje kad razgovor pređe ~100k i ~150k tokena (svaka poruka je tada skuplja) · sesija vezana za PR se sama arhivira kad se PR spoji | `/kraj-sesije`: testovi, STATUS, commit, push (uz tvoje da), pa ponudi **novu sesiju sa prvom stavkom iz „Sljedeće"** (u desktop aplikaciji kartica, jedan klik je otvara, a ova se arhivira; u terminalu gotov prompt za kopiranje); na „Ne" ponudi **zatvaranje sesije** kad je sve commitovano; ako je ostaviš otvorenu, `/kraj-sesije` oslobodi bravu (kad milestone završi: `Status` → `gotovo YYYY-MM-DD` u BLUEPRINT.md) · jednom po repou: uključi *Automatically delete head branches* (GitHub → Settings → General → Pull Requests), pa GitHub briše granu čim se PR spoji |
@@ -62,11 +65,11 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 ## Koji model za šta
 | Posao | Model | Effort |
 |---|---|---|
-| Nov projekat, arhitektura, teški bug | Opus | visok |
+| Nov projekat, arhitektura, refaktor, analiza, plan, odluka, migracija, sigurnost, teški bug | Opus | visok |
 | Svakodnevno kodiranje po planu | Sonnet | srednji |
-| STATUS, commit poruke, sitnice | Haiku | nizak |
+| STATUS, dokumentacija, pravopis, tekst, README, CHANGELOG, čišćenje | Haiku | nizak |
 
-Model i effort glavnog chata biraš ti. Skillovi i agenti iz plugina imaju svoj model upisan.
+Preporuku za sljedeći zadatak daju kartica nove sesije (`/kraj-sesije`, `/grane nova`) i start sesije. Model sesije u kojoj radiš biraš ti u meniju modela, jer sesija sama sebi ne može promijeniti model. Drugim sesijama ga može postaviti `/grane`. Skillovi i agenti iz plugina imaju svoj model upisan.
 
 ## 5 zlatnih pravila
 1. Projekti u `C:\dev\`, nikad u OneDriveu. Sinhronizacija ide preko gita.

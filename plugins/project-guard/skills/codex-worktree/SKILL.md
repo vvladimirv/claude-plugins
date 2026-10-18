@@ -16,10 +16,11 @@ Argument: `$ARGUMENTS`
 1. Ime zadatka pretvori u kratak slug (`izvoz-csv`). Projekat = ime trenutnog foldera.
 2. Provjeri da nema necommitovanih izmjena (`git status --short`). Ako ih ima, predloži commit prije grananja.
 3. Bazna grana = trenutna grana (`git branch --show-current`), ne nužno `main`. Ako je prazno (odvojen HEAD), stani i pitaj.
-4. Napravi worktree od trenutnog HEAD-a i zapamti baznu granu:
+4. Napravi worktree od trenutnog HEAD-a i zapamti baznu granu i zadatak (vidi ih `/grane`):
    ```bash
    git worktree add "../<projekat>-codex-<zadatak>" -b "codex/<zadatak>"
    git config "branch.codex/<zadatak>.base" "<bazna grana>"
+   git config "branch.codex/<zadatak>.zadatak" "<zadatak u jednoj rečenici>"
    ```
 5. Poruka korisniku:
    - otvori folder `../<projekat>-codex-<zadatak>` u Codex aplikaciji i daj mu zadatak,

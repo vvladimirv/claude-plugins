@@ -1,5 +1,5 @@
 {
-  "description": "project-guard: tajne, kapija kickstarta, brava sesija, limit fajlova, čuvar obima, podsjetnik na commit",
+  "description": "project-guard: tajne, kapija kickstarta, brava sesija, limit fajlova, čuvar obima, podsjetnik na commit, opis grana",
   "hooks": {
     "PreToolUse": [
       {
