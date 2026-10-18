@@ -1,8 +1,9 @@
 ---
 name: kraj-sesije
 description: Kraj rada: testovi, STATUS.md, mali logični commitovi, push, pa nova sesija sa sljedećim zadatkom ili zatvaranje. Za "/kraj-sesije", "završavamo", "snimi sve".
+argument-hint: "[auto [bazna-grana]]"
 model: sonnet
-allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, ToolSearch, mcp__ccd_session__spawn_task, mcp__ccd_session_mgmt__archive_session]
+allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, ToolSearch, PushNotification, mcp__ccd_session__spawn_task, mcp__ccd_session_mgmt__archive_session]
 ---
 
 # /kraj-sesije: snimi save point
@@ -25,17 +26,28 @@ allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, ToolSearch
    - **Da, nova sesija:**
      1. Ako alati nisu učitani, učitaj ih: ToolSearch `select:mcp__ccd_session__spawn_task,mcp__ccd_session_mgmt__archive_session`.
      2. Ako postoji `mcp__ccd_session__spawn_task` (desktop aplikacija), pozovi ga: `title` je zadatak kao naredba (< 60 znakova), `tldr` jedna-dvije rečenice bez žargona i na kraju preporuka (npr. „Preporuka: Sonnet, effort srednji."), `cwd` je korijen projekta (`git rev-parse --show-toplevel`; ako je sesija u worktreeu, korijen glavnog repoa, tj. folder iznad `git rev-parse --path-format=absolute --git-common-dir`). `prompt` mora stajati sam za sebe. Prvi red: `Ako postoji komanda /grane, prvo pokreni /grane upisi --zadatak "<stavka u jednoj rečenici>" --model <opus|sonnet|haiku> --effort <low|medium|high>.` Zatim `Pročitaj STATUS.md i nastavi: <cijela stavka>`, pa bitan kontekst iz ove sesije (grana, zadnji commit, šta je urađeno, otvorena pitanja i odluke korisnika). Zadnji red: `Preporučen model: <Model>, effort <effort>. Ako ova sesija radi na drugom, reci korisniku da ga promijeni u meniju modela.` Bez tajni i ključeva.
-     3. Tek kad je kartica napravljena, reci jednom rečenicom: „Kartica za novu sesiju je ispod, jedan klik je otvara." Zatim arhiviraj ovu sesiju alatom za arhiviranje (`session_id: "self"`, razlog: "kraj-sesije: nova sesija pripremljena"). Arhiviranje zaustavi sesiju i oslobodi bravu. Ako alata za arhiviranje nema, reci korisniku da ovu sesiju zatvori sa `/exit`.
+     3. Tek kad je kartica napravljena, reci jednom rečenicom: „Kartica za novu sesiju je ispod, jedan klik je otvara." Zatim oslobodi bravu naredbom iz koraka 9 („Ne, ostavi otvorenu"), jer arhiviranje je ne oslobađa uvijek, pa arhiviraj ovu sesiju alatom za arhiviranje (`session_id: "self"`, razlog: "kraj-sesije: nova sesija pripremljena"). Ako alata za arhiviranje nema, reci korisniku da ovu sesiju zatvori sa `/exit`.
      4. Ako `spawn_task` ne postoji (terminal, druga okruženja) ili javi grešku, ne arhiviraj i ne prijavljuj grešku. Ispiši gotov prompt u bloku koda (isti tekst kao u tački 2) i reci: „Otvori novu sesiju u ovom folderu i zalijepi ovo. Ovu zatvori sa `/exit`."
    - **Ne, samo završi:** idi na korak 9, kao do sada.
 9. **Zatvaranje sesije:** ako je `git status` čist (sve je commitovano), pitaj (AskUserQuestion): **"Posao je gotov. Da zatvorim ovu sesiju?"** sa opcijama "Da, zatvori" / "Ne, ostavi otvorenu".
-   - **Da:** u desktop aplikaciji arhiviraj ovu sesiju alatom za arhiviranje sesija (`session_id: "self"`, razlog: "kraj-sesije: sve commitovano"). Arhiviranje zaustavi sesiju i oslobodi bravu, a sesija se kasnije može otvoriti iz liste arhiviranih. Razgovor tu završava, pa završna poruka (korak 7) mora biti prije toga.
+   - **Da:** u desktop aplikaciji oslobodi bravu naredbom iz „Ne, ostavi otvorenu" (ispod), pa arhiviraj ovu sesiju alatom za arhiviranje sesija (`session_id: "self"`, razlog: "kraj-sesije: sve commitovano"). Sesija se kasnije može otvoriti iz liste arhiviranih. Razgovor tu završava, pa završna poruka (korak 7) mora biti prije toga.
    - Ako alat za arhiviranje nije dostupan (terminal), reci korisniku da sesiju zatvori sa `/exit`.
    - **Ne, ostavi otvorenu:** oslobodi bravu ove sesije, da druga sesija u istom folderu ne čeka do 20 min. Iz korijena projekta pokreni doslovno (briše bravu samo ako je ova sesija drži; sljedeće pisanje u ovoj sesiji uzima je opet):
      ```bash
      node -e "const fs=require('fs'),f='.agent-lock.json';try{const l=JSON.parse(fs.readFileSync(f,'utf8'));if(l.session_id==='${CLAUDE_SESSION_ID}'){fs.unlinkSync(f);console.log('brava oslobođena')}else{console.log('brava je tuđa, nije dirana')}}catch(e){console.log(e.code==='ENOENT'?'brave nema':'brava nije dirana: '+e.message)}"
      ```
    - Ako ima necommitovanog rada, ne nudi zatvaranje, nego reci šta je ostalo. Brava ostaje, jer štiti nesnimljene izmjene.
+
+## Režim auto (pomoćna sesija)
+Kad je prvi argument `auto` (`$ARGUMENTS`), ovo je pomoćna sesija iz `/pomocna`: radi u svom worktreeu i sama spaja svoj rad. Drugi argument je bazna grana (nema ga → `main`). Korisnik je push i spajanje odobrio unaprijed, ali **samo uz zelene testove**. Ništa ne pitaj; ako nešto ne ide, vidi **Ne ide**.
+
+1. Koraci 1–3 kao gore (bez `git pull --rebase`; rebase ide u tački 3). Korak 4 preskoči: STATUS.md piše samo glavna sesija. Ako je STATUS.md izmijenjen, vrati ga (`git checkout -- STATUS.md`).
+2. Commitovi kao u koraku 5, na grani worktreea.
+3. `git fetch origin`. Ako `git ls-remote --exit-code --heads origin <bazna>` ne nađe granu → **Ne ide**. Zatim `git rebase origin/<bazna>`; uz konflikt `git rebase --abort` → **Ne ide**. Ako je rebase donio tuđe commitove, ponovo brzi testovi (vidi **Brzi testovi**).
+4. `git push -u origin HEAD`, pa `gh pr create --base <bazna> --title "<glavni commit>" --body "<commitovi i stanje testova>"` (opis završava linijom `🤖 Generated with [Claude Code](https://claude.com/claude-code)`), pa `gh pr merge <PR> --squash` i `git push origin --delete <grana>`. Provjeri: `gh pr view <PR> --json state` mora biti `MERGED`.
+5. Završna poruka (kratko): PR link i šta je spojeno u <bazna>. Ako alati nisu učitani: ToolSearch `select:PushNotification,mcp__ccd_session_mgmt__archive_session`. `PushNotification`: „Gotovo i spojeno: <zadatak> (PR #N)". Zatim oslobodi bravu naredbom iz koraka 9 („Ne, ostavi otvorenu"), iz korijena worktreea, pa arhiviraj ovu sesiju (`archive_session`, `session_id: "self"`, razlog: "kraj-sesije auto: spojeno"). Aplikacija briše i worktree.
+6. **Ne ide** (crveni testovi, konflikt u rebaseu, bazne grane nema na GitHubu, push, PR ili spajanje odbijeno, zadatak nije gotov, treba odluka korisnika): ne spajaj i ne arhiviraj, brava ostaje (čuva rad), `PushNotification` „Čeka tebe: <razlog u par riječi>", pa poruka šta je urađeno i šta treba, sa `➡️ Sljedeće:`.
+7. Koraci 6, 8 i 9 (pitanje za push, nova sesija, zatvaranje) se u auto režimu ne izvode.
 
 ## Brzi testovi
 Traži u folderu koji testiraš i uzmi prvo što postoji:

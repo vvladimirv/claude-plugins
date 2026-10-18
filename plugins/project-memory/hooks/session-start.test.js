@@ -78,3 +78,37 @@ test('napredak iz blueprinta ulazi u kontekst', () => {
   const ctx = buildContext({ statusText: '', gitLog: '', uncommitted: 0, progress: '## Napredak\nNapredak: MVP gotov' });
   assert.match(ctx, /Napredak: MVP gotov/);
 });
+
+test('pomoćne sesije: glavni folder dobija pravilo o karticama, worktree pravilo o /kraj-sesije auto', () => {
+  const main = buildContext({ statusText: '# STATUS', gitLog: '', uncommitted: 0, worktree: false });
+  assert.match(main, /karticu pomoćne sesije/);
+  assert.match(main, /\/pomocna/);
+  assert.doesNotMatch(main, /kraj-sesije auto/);
+
+  const wt = buildContext({ statusText: '# STATUS', gitLog: '', uncommitted: 0, worktree: true });
+  assert.match(wt, /Ti si pomoćna sesija/);
+  assert.match(wt, /\/kraj-sesije auto/);
+  assert.match(wt, /STATUS\.md ne diraj/);
+
+  const plain = buildContext({ statusText: '# STATUS', gitLog: '', uncommitted: 0 });
+  const extra = (s) => s.length - plain.length;
+  assert.ok(extra(main) < 300 && extra(wt) < 400, `pravilo mora biti kratko (${extra(main)}, ${extra(wt)} znakova)`);
+});
+
+test('worktree unutar projekta: hook čita worktree i zna da je worktree, iako je CLAUDE_PROJECT_DIR glavni repo', () => {
+  const main = fs.mkdtempSync(path.join(os.tmpdir(), 'pm-'));
+  const g = (cwd, ...a) => execFileSync('git', a, { cwd, stdio: 'ignore' });
+  g(main, 'init', '-q', '-b', 'main');
+  g(main, 'config', 'user.email', 't@t');
+  g(main, 'config', 'user.name', 't');
+  fs.writeFileSync(path.join(main, 'STATUS.md'), '# STATUS\n- glavni');
+  g(main, 'add', '-A');
+  g(main, 'commit', '-qm', 'chore: prvi');
+  const wt = path.join(main, '.claude', 'worktrees', 'pomocna');
+  g(main, 'worktree', 'add', '-q', wt, '-b', 'pomocna');
+
+  const inWt = runHook(wt, main).hookSpecificOutput.additionalContext;
+  assert.match(inWt, /\/kraj-sesije auto/);
+  const inMain = runHook(main, main).hookSpecificOutput.additionalContext;
+  assert.match(inMain, /karticu pomoćne sesije/);
+});
