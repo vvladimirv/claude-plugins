@@ -18,6 +18,16 @@ const GUIDE = '## Vođenje korisnika\n'
   + '`➡️ Sljedeće:` sa jednom konkretnom stvari: komanda koju kuca (npr. `/kraj-sesije`), šta da proba i kako, '
   + 'ili odluka koju treba donijeti. Bez žargona; nov pojam objasni u pola rečenice.';
 
+// Glavna sesija samostalne zadatke daje pomoćnim sesijama (kartica, klik korisnika). Pomoćna radi u worktreeu, ali u
+// worktreeu je i nova sesija iz štafete, pa pomoćnu prepoznaje po svom promptu.
+const HELPERS_MAIN = '## Pomoćne sesije\n'
+  + 'Samostalan zadatak (može se uraditi bez korisnika, usput) ne radi ovdje: napravi karticu pomoćne sesije po `/pomocna` '
+  + '(prompt je gotov, korisnik samo klikne).';
+const HELPERS_WORKTREE = '## Pomoćne sesije\n'
+  + 'Ovo je worktree. Ako prompt kaže „Ti si pomoćna sesija": STATUS.md ne diraj, kartice ne pravi, a kad je zadatak '
+  + 'gotov i provjeren, sam pokreni `/kraj-sesije auto <bazna grana>`. Inače radi kao glavna (samostalan zadatak ide na '
+  + 'karticu po `/pomocna`).';
+
 function trimStatus(text) {
   let lines = text.replace(/\r\n/g, '\n').trim().split('\n');
   let cut = lines.length > MAX_STATUS_LINES;
@@ -30,7 +40,7 @@ function trimStatus(text) {
   return cut ? out + '\n… (skraćeno: STATUS.md je predugačak, treba ga skratiti na ≤ 30 linija)' : out;
 }
 
-function buildContext({ statusText, gitLog, uncommitted, progress }) {
+function buildContext({ statusText, gitLog, uncommitted, progress, worktree }) {
   const parts = [];
   if (progress) parts.push(progress);
   if (statusText) {
@@ -43,6 +53,8 @@ function buildContext({ statusText, gitLog, uncommitted, progress }) {
     parts.push(`## Necommitovano\n${uncommitted} izmijenjenih fajlova od prošle sesije. Pitaj korisnika da li ih prvo commitovati.`);
   }
   if (parts.length === 0) return '';
+  if (worktree === true) parts.push(HELPERS_WORKTREE);
+  else if (worktree === false) parts.push(HELPERS_MAIN);
   parts.push(GUIDE);
   return '# Memorija projekta (project-memory)\n\n' + parts.join('\n\n');
 }
@@ -66,6 +78,7 @@ function main() {
 
   const isRepo = git(cwd, ['rev-parse', '--is-inside-work-tree']).trim() === 'true';
   const gitLog = isRepo ? git(cwd, ['log', '--oneline', '--no-decorate', `-${GIT_LOG_COUNT}`]) : '';
+  const worktree = isRepo ? util.isWorktreeRoot(cwd) : undefined;
   const uncommitted = isRepo ? git(cwd, ['status', '--porcelain', '-uall']).split('\n').filter(Boolean).length : 0;
 
   let progress = null;
@@ -74,7 +87,7 @@ function main() {
   } catch (err) {
     logError(err);
   }
-  const context = buildContext({ statusText, gitLog, uncommitted, progress });
+  const context = buildContext({ statusText, gitLog, uncommitted, progress, worktree });
   if (!context) return;
 
   process.stdout.write(JSON.stringify({

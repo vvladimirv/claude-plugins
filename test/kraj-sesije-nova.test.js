@@ -57,3 +57,55 @@ test('kraj-sesije: alati za novu sesiju su u allowed-tools', () => {
     assert.ok(fm.includes(t), `allowed-tools nema ${t}`);
   }
 });
+
+// Režim auto: pomoćna sesija sama spoji svoj rad u baznu granu i zatvori se, ali samo kad sve uspije.
+function autoSection() {
+  const m = text.match(/\n## Režim auto \(pomoćna sesija\)\n([\s\S]*?)(?=\n## |$)/);
+  assert.ok(m, 'kraj-sesije: nema sekcije "## Režim auto (pomoćna sesija)"');
+  return m[1];
+}
+
+test('kraj-sesije auto: redoslijed rebase, push, PR, spajanje, notifikacija, brava, arhiviranje', () => {
+  const s = autoSection();
+  const order = ['git rebase origin/<bazna>', 'git push -u origin HEAD', 'gh pr create --base <bazna>', 'gh pr merge',
+    'PushNotification', 'oslobodi bravu', 'archive_session'];
+  let last = -1;
+  for (const token of order) {
+    const i = s.indexOf(token, last + 1);
+    assert.ok(i > last, `"${token}" nije poslije prethodnog koraka`);
+    last = i;
+  }
+  assert.match(s, /gh pr merge[^\n]*--squash/);
+});
+
+test('kraj-sesije auto: uz neuspjeh nema spajanja ni arhiviranja, nego „Čeka tebe"', () => {
+  const s = autoSection();
+  const fail = s.match(/\n\d\. \*\*Ne ide\*\*[^\n]*/);
+  assert.ok(fail, 'nema stavke **Ne ide**');
+  assert.match(fail[0], /ne spajaj/);
+  assert.match(fail[0], /ne arhiviraj/);
+  assert.match(fail[0], /Čeka tebe/);
+  assert.match(fail[0], /konflikt/);
+});
+
+test('kraj-sesije auto: STATUS.md ne dira, brava istom naredbom, bez pitanja štafete', () => {
+  const s = autoSection();
+  assert.match(s, /STATUS\.md[^\n]*samo glavna/);
+  assert.match(s, /naredbom iz koraka 9/);
+  assert.doesNotMatch(s, /node -e/, 'naredba za bravu postoji samo jednom (test/lock-release čita prvu)');
+  assert.match(s, /[Kk]oraci 6, 8 i 9/);
+});
+
+test('kraj-sesije auto: argument i alati', () => {
+  const fm = text.match(/^---\n([\s\S]*?)\n---/)[1];
+  assert.match(fm, /argument-hint: .*auto/);
+  assert.ok(fm.includes('PushNotification'), 'allowed-tools nema PushNotification');
+});
+
+test('kraj-sesije: prije svakog arhiviranja se oslobodi brava (arhiviranje je ne oslobađa uvijek)', () => {
+  for (const s of [step(8), step(9)]) {
+    const release = s.indexOf('oslobodi bravu');
+    const archive = s.indexOf('arhiviraj ovu sesiju');
+    assert.ok(release > 0 && release < archive, 'brava se oslobađa prije arhiviranja');
+  }
+});

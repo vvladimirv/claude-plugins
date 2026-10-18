@@ -5,9 +5,35 @@ const os = require('os');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
-// Isti redoslijed kao project-guard: folder sesije (CLAUDE_PROJECT_DIR), pa cwd iz hooka.
+const IS_WIN = process.platform === 'win32';
+const norm = (p) => (IS_WIN ? path.resolve(p).toLowerCase() : path.resolve(p));
+function isUnder(child, parent) {
+  const c = norm(child);
+  const p = norm(parent);
+  return c === p || c.startsWith(p.endsWith(path.sep) ? p : p + path.sep);
+}
+
+// Worktree unutar projekta (npr. `.claude/worktrees/x` iz aplikacije): `.git` je fajl koji pokazuje na `.../worktrees/...`.
+function isWorktreeRoot(dir) {
+  try {
+    return /^gitdir:.*[\\/]worktrees[\\/]/m.test(fs.readFileSync(path.join(dir, '.git'), 'utf8'));
+  } catch {
+    return false;
+  }
+}
+
+// Isti redoslijed kao project-guard: folder sesije (CLAUDE_PROJECT_DIR), pa cwd iz hooka. Aplikacija sesiji u
+// worktreeu daje CLAUDE_PROJECT_DIR glavnog repoa, pa tada važi worktree iz cwd.
 function projectDir(input) {
-  return process.env.CLAUDE_PROJECT_DIR || input.cwd || process.cwd();
+  const dir = process.env.CLAUDE_PROJECT_DIR;
+  const cwd = input.cwd;
+  if (!dir) return cwd || process.cwd();
+  if (cwd && isUnder(cwd, dir)) {
+    for (let d = path.resolve(cwd); norm(d) !== norm(dir) && isUnder(d, dir); d = path.dirname(d)) {
+      if (isWorktreeRoot(d)) return d;
+    }
+  }
+  return dir;
 }
 
 function git(cwd, args) {
@@ -27,4 +53,4 @@ function logError(where, err) {
   }
 }
 
-module.exports = { projectDir, git, logError };
+module.exports = { projectDir, isWorktreeRoot, git, logError };
