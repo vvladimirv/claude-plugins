@@ -1,6 +1,6 @@
 # STATUS
 
-**Ažurirano:** 2026-10-17 · **Talas:** D završen, ispravke po nalazima iz rada
+**Ažurirano:** 2026-10-18 · **Talas:** D završen, ispravke po nalazima iz rada
 
 ## Radi
 - `project-kickstart` 0.4.12: `/kickstart` (+ `--postojeci`, `--nadogradi`, iz drugog foldera pita za ciljni projekat), faza 4 računa rokove iz tempa, `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`, šabloni 0.4.4 (pravilo "isti problem drugdje", VIZIJA → Gdje se koristi, rokovi, status, cilj MVP, pre-commit i `scripts/test.mjs` i na Linuxu/Macu, CI za pnpm/npm + Linux snimci)
@@ -11,14 +11,15 @@
 - 88 testova (87 prolazi na Windowsu, 1 preskočen; ranijih 69 prolazi na Linuxu), uključujući test da su verzije u plugin.json i marketplace.json iste i da izmjena šablona podiže `verzija_sablona`, GitHub + auto-update
 
 ## Sljedeće
-1. INHome (grana `15`): commit `a0612ea8` (napomena za `/codex-worktree`) čeka push i PR u `main`. Kad se PR #5 (kickstart 0.4.8, memory 0.4.1, guard 0.4.3) spoji u `main`, iz `CLAUDE.md` („Lični plugini") ukloniti stavke o skillovima koji sada sami staju (poseban commit)
-2. `budzet` (šabloni 0.4.1, MVP 11/11): M3 je vanjski korak (Cloudflare Pages + PWA na Androidu, rok 2026-09-27), pa `/izdanje` v1.0
-3. `budzet`: CI je ugašen, jer GitHub zbog naplate na nalogu ne pokreće jobove. Puni testovi idu lokalno (`pnpm test:all`, i u `/izdanje`), a koraci iz ci.yml na Linuxu prolaze. Kad se naplata sredi: Actions → CI → Enable workflow
-4. Instalirati plugine na laptopu (README → Instalacija), pa `/zdravlje`
-5. Stranica sa komandama (pinovana na claude.ai): https://claude.ai/artifact/RAWkZcHhL5WufmHyNe2NnG, izvor je PODSJETNIK.md (osvježiti: `/zdravlje`, automatski pull)
-6. Skupljati nalaze iz stvarnog rada → male ispravke (verzija + push)
-7. GitHub: u svakom repou sa PR tokom uključiti *Automatically delete head branches* (Settings → General → Pull Requests). U claude-plugins obrisati 5 starih grana spojenih PR-ova: `claude/admiring-curie-t5f1u9`, `claude/beautiful-diffie-5d20dc`, `claude/hungry-almeida-85294e`, `claude/sleepy-edison-bnoe2w`, `feat/pravilo-isti-problem`
-8. Cloud sesije ne učitavaju plugine (ni korisničke, ni projektne postavke). Proba: novo cloud okruženje sa `CLAUDE_CODE_PLUGIN_DIRS`. A: putanje u `/home/user/claude-plugins/plugins/...`, bez klona. B: setup skripta klonira repo u `/opt/moji-pluginsi`. Kad prođe, upisati recept u README
+1. Glavna + pomoćne sesije (plan: `C:/Users/Korisnik/.claude/plans/ovo-lijevo-radi-cekamene-wild-marble.md`, pročitaj ga prvi): nova komanda `/pomocna <zadatak>` i `/kraj-sesije auto` (project-memory 0.5.0, kickstart 0.4.13). Glavna sesija sama predlaže karticu pomoćne (SessionStart pravilo, razlikuje worktree od glavnog foldera), korisnik samo klikne. Pomoćna na kraju: brzi testovi, commit, rebase, push, PR, squash merge u `main`, `PushNotification`, oslobađanje brave, arhiviranje sebe. STATUS.md piše samo glavna. Uz neuspjeh se ne zatvara nego javi „Čeka tebe". Uz kod idu testovi, PODSJETNIK.md, README i verzije. Lijeva traka je već vraćena na grupisanje po projektu (ručne grupe obrisane)
+2. INHome (grana `15`): commit `a0612ea8` (napomena za `/codex-worktree`) čeka push i PR u `main`. Kad se PR #5 (kickstart 0.4.8, memory 0.4.1, guard 0.4.3) spoji u `main`, iz `CLAUDE.md` („Lični plugini") ukloniti stavke o skillovima koji sada sami staju (poseban commit)
+3. `budzet` (šabloni 0.4.1, MVP 11/11): M3 je vanjski korak (Cloudflare Pages + PWA na Androidu, rok 2026-09-27), pa `/izdanje` v1.0
+4. `budzet`: CI je ugašen, jer GitHub zbog naplate na nalogu ne pokreće jobove. Puni testovi idu lokalno (`pnpm test:all`, i u `/izdanje`), a koraci iz ci.yml na Linuxu prolaze. Kad se naplata sredi: Actions → CI → Enable workflow
+5. Instalirati plugine na laptopu (README → Instalacija), pa `/zdravlje`
+6. Stranica sa komandama (pinovana na claude.ai): https://claude.ai/artifact/RAWkZcHhL5WufmHyNe2NnG, izvor je PODSJETNIK.md (osvježiti: `/zdravlje`, automatski pull)
+7. Skupljati nalaze iz stvarnog rada → male ispravke (verzija + push)
+8. GitHub: u svakom repou sa PR tokom uključiti *Automatically delete head branches* (Settings → General → Pull Requests). U claude-plugins obrisati 5 starih grana spojenih PR-ova: `claude/admiring-curie-t5f1u9`, `claude/beautiful-diffie-5d20dc`, `claude/hungry-almeida-85294e`, `claude/sleepy-edison-bnoe2w`, `feat/pravilo-isti-problem`
+9. Cloud sesije ne učitavaju plugine (ni korisničke, ni projektne postavke). Proba: novo cloud okruženje sa `CLAUDE_CODE_PLUGIN_DIRS`. A: putanje u `/home/user/claude-plugins/plugins/...`, bez klona. B: setup skripta klonira repo u `/opt/moji-pluginsi`. Kad prođe, upisati recept u README
 
 ## Blokeri / otvorena pitanja
 - nema
