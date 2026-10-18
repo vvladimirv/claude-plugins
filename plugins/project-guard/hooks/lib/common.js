@@ -35,8 +35,27 @@ function readJson(file, fallback) {
   }
 }
 
+// Worktree unutar projekta (npr. `.claude/worktrees/x` iz aplikacije): `.git` je fajl koji pokazuje na `.../worktrees/...`.
+function isWorktreeRoot(dir) {
+  try {
+    return /^gitdir:.*[\\/]worktrees[\\/]/m.test(fs.readFileSync(path.join(dir, '.git'), 'utf8'));
+  } catch {
+    return false;
+  }
+}
+
+// Aplikacija sesiji u worktreeu daje CLAUDE_PROJECT_DIR glavnog repoa. Worktree je svoj folder sa svojom bravom,
+// pa tada važi worktree iz cwd, inače bi pomoćna sesija bila blokirana bravom glavne.
 function projectRoot(input) {
-  return process.env.CLAUDE_PROJECT_DIR || input.cwd || process.cwd();
+  const dir = process.env.CLAUDE_PROJECT_DIR;
+  const cwd = input.cwd;
+  if (!dir) return cwd || process.cwd();
+  if (cwd && isUnder(cwd, dir)) {
+    for (let d = path.resolve(cwd); norm(d) !== norm(dir) && isUnder(d, dir); d = path.dirname(d)) {
+      if (isWorktreeRoot(d)) return d;
+    }
+  }
+  return dir;
 }
 
 // Korijeni u kojima važi kapija kickstarta (jedna putanja po liniji).
@@ -182,6 +201,6 @@ function pruneState(now = Date.now()) {
 }
 
 module.exports = {
-  CLAUDE_HOME, norm, isUnder, relToRoot, readJson, projectRoot, rootFor, commandDir, kickstartRoots, noKickstart, isPaused,
+  CLAUDE_HOME, norm, isUnder, relToRoot, readJson, projectRoot, isWorktreeRoot, rootFor, commandDir, kickstartRoots, noKickstart, isPaused,
   limits, git, isGitRepo, countLines, globToRegex, logError, logSlow, dataDir, loadState, saveState, pruneState,
 };
