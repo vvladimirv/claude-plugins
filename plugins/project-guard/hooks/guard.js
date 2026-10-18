@@ -12,6 +12,7 @@ const scope = require('./lib/scope');
 const session = require('./lib/session');
 const deps = require('./lib/deps');
 const sync = require('./lib/sync');
+const branches = require('./lib/branches');
 
 function safe(name, fn, fallback = null) {
   try {
@@ -55,6 +56,7 @@ function sessionStart(input, root) {
     safe('sync', () => sync.sessionMessage(input, root)),
     safe('lock', () => lock.sessionMessage(root, input.session_id)),
     safe('scope', () => scope.sessionMessage(root)),
+    safe('branches', () => branches.sessionMessage(input, root)),
   ].filter(Boolean);
   return parts.length ? context('SessionStart', '# Pravila projekta (project-guard)\n\n' + parts.join('\n\n')) : null;
 }
@@ -63,6 +65,7 @@ const HANDLERS = {
   PreToolUse: preToolUse,
   PostToolUse: (input, root) => {
     safe('sync-post', () => sync.afterTool(input, root));
+    safe('branches-post', () => branches.recordNewBranch(input, root));
     return context('PostToolUse', [
       safe('size-post', () => size.postCheck(input, root)),
       safe('deps', () => deps.postCheck(input, root)),

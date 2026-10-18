@@ -10,21 +10,21 @@
     {
       "name": "project-kickstart",
       "description": "Start projekta: intervju, stack, arhitektura, blueprint, dokumenti, pre-commit i CI (/kickstart, /nova-funkcija, /ui-izmjena, /adr, /pomoc; agenti arhitekta i ux-recenzent)",
-      "version": "0.4.12",
+      "version": "0.4.13",
       "source": "./plugins/project-kickstart",
       "category": "development"
     },
     {
       "name": "project-memory",
       "description": "Memorija i napredak: STATUS.md, git log i napredak po blueprintu na startu sesije, upozorenje na veliku sesiju (/stanje, /kraj-sesije, /vrati, /napredak, /objavi, /izdanje, /docs-audit)",
-      "version": "0.4.4",
+      "version": "0.4.5",
       "source": "./plugins/project-memory",
       "category": "development"
     },
     {
       "name": "project-guard",
-      "description": "Pravila koja mašina provjerava: tajne, kapija kickstarta, brava sesija, limit fajlova, čuvar obima, zavisnosti = ADR (/zdravlje, /pravila-pauza, /preuzmi-lock, /novi-projekat, /ideja, /codex-worktree, /pravilo-u-hook)",
-      "version": "0.5.0",
+      "description": "Pravila koja mašina provjerava: tajne, kapija kickstarta, brava sesija, limit fajlova, čuvar obima, zavisnosti = ADR, mapa grana (/grane, /zdravlje, /pravila-pauza, /preuzmi-lock, /novi-projekat, /ideja, /codex-worktree, /pravilo-u-hook)",
+      "version": "0.6.0",
       "source": "./plugins/project-guard",
       "category": "development"
     }
