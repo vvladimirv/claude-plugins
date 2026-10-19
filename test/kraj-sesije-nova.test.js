@@ -78,6 +78,24 @@ test('kraj-sesije auto: redoslijed rebase, push, PR, spajanje, notifikacija, bra
   assert.match(s, /gh pr merge[^\n]*--squash/);
 });
 
+// Brisanje grane prije provjere zatvara PR bez spajanja (pukao merge zbog mreže, pa delete zatvorio PR).
+test('kraj-sesije auto: grana se briše tek kad je PR MERGED', () => {
+  const s = autoSection();
+  const merged = s.indexOf('MERGED');
+  const del = s.indexOf('git push origin --delete');
+  assert.ok(merged > -1 && del > merged, 'brisanje grane mora biti poslije provjere MERGED');
+  assert.doesNotMatch(s, /`gh pr merge[^`]*--delete-branch/);
+});
+
+// Poslije squash spajanja worktree drži commit kog nema na GitHubu, pa ga aplikacija pri arhiviranju ne briše.
+test('kraj-sesije auto: prije arhiviranja worktree ide na baznu granu bez svoje grane', () => {
+  const s = autoSection();
+  const det = s.indexOf('git switch --detach origin/<bazna>');
+  const del = s.indexOf('git branch -D <grana>');
+  const arch = s.lastIndexOf('archive_session');
+  assert.ok(det > s.indexOf('MERGED') && del > det && arch > del, 'detach i brisanje grane idu poslije MERGED, a prije arhiviranja');
+});
+
 test('kraj-sesije auto: uz neuspjeh nema spajanja ni arhiviranja, nego „Čeka tebe"', () => {
   const s = autoSection();
   const fail = s.match(/\n\d\. \*\*Ne ide\*\*[^\n]*/);
