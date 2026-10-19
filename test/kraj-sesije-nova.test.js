@@ -87,7 +87,7 @@ test('kraj-sesije auto: grana se briše tek kad je PR MERGED', () => {
   assert.doesNotMatch(s, /`gh pr merge[^`]*--delete-branch/);
 });
 
-// Poslije squash spajanja worktree drži commit kog nema na GitHubu, pa ga aplikacija pri arhiviranju ne briše.
+// Poslije squash spajanja worktree drži commit kog nema na GitHubu, pa ga aplikacija pri arhiviranju zadrži kao nesnimljen rad.
 test('kraj-sesije auto: prije arhiviranja worktree ide na baznu granu bez svoje grane', () => {
   const s = autoSection();
   const det = s.indexOf('git switch --detach origin/<bazna>');
