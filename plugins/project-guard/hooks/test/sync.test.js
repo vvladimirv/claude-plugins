@@ -68,6 +68,34 @@ test('iza GitHuba sa lokalnim izmjenama: pisanje čeka pull, pull prolazi, posli
   assert.strictEqual(write(a, 'S1'), null);
 });
 
+test('grana na GitHubu se čita iz fajlova isto kao git @{u}, i u worktreeu', () => {
+  const { readHead, readUpstream } = require('../lib/sync');
+  const { a, b } = withRemote();
+  const rev = (cwd, ref) => execFileSync('git', ['rev-parse', ref], { cwd, encoding: 'utf8' }).trim();
+  assert.strictEqual(readUpstream(a), rev(a, '@{u}'));
+  pushFromOther(b);
+  git(a, 'fetch', '-q');
+  git(a, 'pack-refs', '--all');
+  assert.strictEqual(readUpstream(a), rev(a, '@{u}'), 'i iz packed-refs');
+  assert.notStrictEqual(readUpstream(a), readHead(a));
+
+  const wt = path.join(h.BASE, `wt-${path.basename(a)}`);
+  git(a, 'worktree', 'add', '-q', '-b', 'zadatak', wt, 'origin/main');
+  assert.strictEqual(readHead(wt), rev(wt, 'HEAD'));
+  assert.strictEqual(readUpstream(wt), rev(wt, '@{u}'));
+});
+
+test('tokom rada: fetch donese tuđi commit → pisanje čeka pull', () => {
+  const { a, b } = withRemote();
+  run({ hook_event_name: 'SessionStart', cwd: a, session_id: 'S1' });
+  assert.strictEqual(write(a, 'S1'), null);
+  pushFromOther(b);
+  git(a, 'fetch', '-q');
+  const d = write(a, 'S1');
+  assert.strictEqual(h.decision(d), 'deny');
+  assert.match(d.hookSpecificOutput.permissionDecisionReason, /1 commit iza GitHuba/);
+});
+
 test('druga lokalna sesija commitovala: prva izmjena staje jednom, sa listom commitova', () => {
   const root = h.project({ commit: true, marker: true });
   assert.strictEqual(write(root, 'S1'), null);
