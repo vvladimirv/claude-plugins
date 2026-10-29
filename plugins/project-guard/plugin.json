@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "project-guard",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Pravila koja mašina provjerava: tajne, kapija kickstarta, brava sesija, limit fajlova, čuvar obima, zavisnosti = ADR, mapa grana (/grane, /zdravlje, /pravila-pauza, /preuzmi-lock, /novi-projekat, /ideja, /codex-worktree, /pravilo-u-hook)",
   "author": {
     "name": "vvladimirv",

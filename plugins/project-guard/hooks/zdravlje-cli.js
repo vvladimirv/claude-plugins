@@ -36,11 +36,10 @@ function report({ root, now = Date.now() } = {}) {
   const settings = readJson(path.join(CLAUDE_HOME, 'settings.json'), {});
   const known = readJson(path.join(CLAUDE_HOME, 'plugins', 'known_marketplaces.json'), {});
   const auto = [((settings.extraKnownMarketplaces || {})['moji-pluginsi']), known['moji-pluginsi']].some((m) => m && m.autoUpdate);
-  if (auto) ok.push('auto-update plugina uključen');
-  else warn.push('auto-update nije uključen: README → Instalacija (`"autoUpdate": true` pod `extraKnownMarketplaces.moji-pluginsi`)');
-  if (known['moji-pluginsi']?.source?.source === 'directory') {
-    warn.push('lokalni izvor plugina: nakon git pull pokrenite setup; auto-update postavka ne povlači lokalni repo');
-  }
+  const localSource = known['moji-pluginsi']?.source?.source === 'directory';
+  if (localSource) ok.push('lokalni izvor plugina: ažuriranje kroz git pull i setup');
+  else if (auto) ok.push('auto-update plugina uključen');
+  else warn.push('auto-update nije uključen za udaljeni izvor: README → Instalacija');
 
   let entries = [];
   try {

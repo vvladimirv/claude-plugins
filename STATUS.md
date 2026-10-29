@@ -3,7 +3,7 @@
 **Ažurirano:** 2026-10-30 · univerzalni lokalni plugini
 
 ## Radi
-- Jedan izvor za Claude Code i Codex; guard 0.7.0, kickstart 0.5.0, memory 0.6.0; šabloni 0.5.0.
+- Jedan izvor za Claude Code i Codex; guard 0.7.1, kickstart 0.5.0, memory 0.6.0; šabloni 0.5.0.
 - Codex patch: zaštita svih putanja prije čitanja, projekcija sadržaja, brava, veličina, obim i zavisnosti; nepodržani format je vidljiv.
 - Git šablon provjerava stvarnog vlasnika sesije i svjež dokaz provjera ako projekat ima plan.
 - Samostalan runner i projektna kopija; sadržaj/planski indeks poništavaju stari rezultat; nije nekrivotvoriva potvrda.
