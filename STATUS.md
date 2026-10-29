@@ -9,7 +9,7 @@
 - Samostalan runner i projektna kopija; sadržaj/planski indeks poništavaju stari rezultat; nije nekrivotvoriva potvrda.
 - Skillovi poslovna-pravila, provjera i pregled-izmjene; objedinjeni Codex agent profili, ciljni uređaji iz projekta.
 - Codex token_count parser; zdravstveni pregled razlikuje opaženo izvršavanje od potpune pokrivenosti.
-- Setup koristi javne CLI-jeve, lokalni izvor i backup profila; ne mijenja povjerenje hookova ni stare projektne instalacije.
+- Setup koristi javne CLI-jeve i lokalni izvor; profili i projektne konfiguracije imaju backup. Iste izvore usklađuje, posebne izvore čuva; ne odobrava hookove.
 - CI definisan za Windows i Linux; lokalna provjera i instalacijska proba upisuju se u završni izvještaj.
 - Detalji i ograničenja: docs/UNIVERZALNI-PLUGINI.md. Prethodno stanje i zadaci su u git istoriji.
 

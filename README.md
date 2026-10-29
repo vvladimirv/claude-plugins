@@ -23,7 +23,8 @@ node scripts/setup.js --apply
 Prva komanda samo prikazuje plan. Druga osvježava korisničke instalacije oba alata iz ovog lokalnog foldera
 kroz njihove CLI-jeve. `--claude` ili `--codex` ograničava instalaciju. Codex profili se ažuriraju uz backup.
 Nakon ažuriranja otvori novi chat; u Codexu pregledaj nove ili promijenjene hookove kroz `/hooks`.
-Projektne instalacije se ne brišu i povjerenje hookova se ne odobrava automatski.
+Projektne instalacije se ne brišu: postojeći pokazivači na isti izvor usklađuju se uz backup konfiguracije.
+Posebni projektni izvori i aktivne brave ostaju netaknuti. Povjerenje hookova se ne odobrava automatski.
 
 Poslije `git pull` ponovi setup. Lokalni izvor se osvježava ovim postupkom; GitHub auto-update
 ne preuzima izmjene umjesto lokalnog `git pull`. Za drugi računar kloniraj isti repo i pokreni setup.

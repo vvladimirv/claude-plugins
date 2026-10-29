@@ -25,7 +25,9 @@ Instalacijski cache nije mjesto za ručne popravke. Izmjena ide u izvor, pa test
 
 Lokalna registracija omogućava testiranje i korištenje bez objavljivanja na internetu. Nakon `git pull` u izvoru
 ponovo pokrenuti setup. Time se GitHub auto-update za ovu lokalnu registraciju zamjenjuje eksplicitnim lokalnim osvježavanjem.
-Projektne instalacije starijih verzija se ne brišu: prvo ih pregledati i odlučiti koji projekti trebaju nadogradnju.
+Projektne instalacije se ne brišu. Setup pregleda postojeće registracije istog GitHub repozitorija ili istog lokalnog
+izvora i uskladi njihov pokazivač i verzije uz backup konfiguracije u `~/.claude/backups/universal-plugins`.
+Tuđi projektni izvor, aktivna/nečitljiva brava ili nestala konfiguracija ostaju bez izmjene i ispisuju se kao preskočeni.
 Ako CLI nije dostupan ili komanda padne, setup staje s greškom i navodi gdje. Djelimična instalacija nije uspjeh.
 
 ## Pokrivenost hookova
