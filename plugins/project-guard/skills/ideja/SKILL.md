@@ -1,7 +1,7 @@
 ---
 name: ideja
-description: Zapisuje ideju van obima u listu ideja (C:\dev\ideje, poseban repo), da se ne izgubi i ne zagađuje projekat.
-argument-hint: <ideja u jednoj ili dvije rečenice>
+description: "Zapisuje ideju van obima u listu ideja (C:\\dev\\ideje, poseban repo), da se ne izgubi i ne zagađuje projekat."
+argument-hint: "<ideja u jednoj ili dvije rečenice>"
 model: haiku
 allowed-tools: [Read, Edit, Write, Bash]
 ---

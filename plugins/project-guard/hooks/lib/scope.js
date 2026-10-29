@@ -8,7 +8,7 @@ const { relToRoot, noKickstart } = require('./common');
 
 // Bosanski su korijeni glagola (dodaj, dodajte…); engleske riječi moraju biti cijele ("add" nije "address").
 const CHANGE = /(^|[\s,.;:!?"'(])(dodaj|napravi|kreiraj|ubaci|implementiraj|izmijeni|promijeni|prepravi|obriš|izbriš|ukloni|popravi|refaktor|preimenuj|instaliraj|integriš|poveži|napiši|sredi(?!n)|(add|create|implement|build|make|write|change|remove|delete|fix|refactor|install|integrate)(?:s|es|d|ed|ing)?(?![a-z]))/i;
-const STANDARD_TOP = new Set(['docs', '.claude', 'src', 'app', 'lib', 'tests', 'test', 'e2e', 'scripts', 'fixtures', 'public', 'static', 'assets', '.github', '.githooks']);
+const STANDARD_TOP = new Set(['docs', '.claude', '.codex', '.agents', 'src', 'app', 'lib', 'tests', 'test', 'e2e', 'scripts', 'fixtures', 'public', 'static', 'assets', '.github', '.githooks']);
 
 function readDoc(root, rel) {
   try {

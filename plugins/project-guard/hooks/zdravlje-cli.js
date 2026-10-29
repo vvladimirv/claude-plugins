@@ -38,6 +38,9 @@ function report({ root, now = Date.now() } = {}) {
   const auto = [((settings.extraKnownMarketplaces || {})['moji-pluginsi']), known['moji-pluginsi']].some((m) => m && m.autoUpdate);
   if (auto) ok.push('auto-update plugina uključen');
   else warn.push('auto-update nije uključen: README → Instalacija (`"autoUpdate": true` pod `extraKnownMarketplaces.moji-pluginsi`)');
+  if (known['moji-pluginsi']?.source?.source === 'directory') {
+    warn.push('lokalni izvor plugina: nakon git pull pokrenite setup; auto-update postavka ne povlači lokalni repo');
+  }
 
   let entries = [];
   try {
@@ -71,6 +74,17 @@ function report({ root, now = Date.now() } = {}) {
     const hp = git(root, ['config', '--get', 'core.hooksPath']);
     if (hp === '.githooks') ok.push(`git hookovi uključeni u ${path.basename(root)}`);
     else warn.push(`git hookovi nisu uključeni u ${path.basename(root)}: \`git config core.hooksPath .githooks\``);
+  }
+  if (root && !fs.existsSync(path.join(root, '.githooks')) && fs.existsSync(path.join(root, '.git'))) {
+    warn.push('projekat nema .githooks/: nije potvrđena lokalna Git kontrola prije commita');
+  }
+  for (const item of require('./lib/runtime-status').inspect(CLAUDE_HOME, now)) {
+    if (item.fresh) ok.push(`${item.runtime}: zabilježeno izvršavanje guarda ${item.version}; nije dokaz pokrivenosti svih alata`);
+    else warn.push(`${item.runtime}: ${item.observed ? 'staro izvršavanje hooka' : 'nema zabilježenog izvršavanja hooka'}; provjerite učitavanje i povjerenje u novom chatu`);
+  }
+  if (root && fs.existsSync(path.join(root, '.agent-checks.json'))) {
+    const verified = require('../scripts/checks').verify(root);
+    (verified.ok ? ok : warn).push(verified.message);
   }
   return { ok, warn };
 }

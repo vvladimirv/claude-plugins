@@ -81,3 +81,14 @@ Preporuku za sljedeći zadatak daju kartica nove sesije (`/kraj-sesije`, `/grane
 
 ## Plugini
 Repo: `C:\dev\claude-plugins` (GitHub: vvladimirv/claude-plugins) · instalacija i ažuriranje: `README.md` u tom repou.
+
+
+## Claude Code i Codex — jedan izvor
+- Isti repozitorij i tri paketa. `node scripts/setup.js` u repozitoriju prikazuje plan, `--apply` ažurira korisničku instalaciju oba alata; profili Codex agenata imaju backup. Projektne instalacije se ne brišu.
+- Codex patch se prevodi u iste provjere putanja, brave i veličine. Shell i MCP nisu opći sigurnosni sandbox; nepodržane putanje ne predstavljaju potvrđenu zaštitu. Nakon promjene hooka pregledaj povjerenje kroz `/hooks`.
+- `/zdravlje`: razlikuje opaženo izvršavanje hooka od potpune pokrivenosti; provjerava i svježinu dokaza projekta.
+- `/provjera`: `.agent-checks.json` definiše obavezne komande; stage namjeravanih fajlova → runner → commit. Novi sadržaj ili Git indeks poništava raniji dokaz. Runner provjerava izlazni status, a projektna skripta mora odbiti nula testova i preskočene obavezne grupe.
+- `/poslovna-pravila`: potvrđeni ulazi i očekivani rezultati prije promjene važnog ponašanja.
+- `/pregled-izmjene`: read-only pregled posljedica diffa i dokaza testiranja. Recenzija nije zamjena za testove.
+- `/arhitekta` i `/ux-recenzent`: skillovi za oba alata; Codex profili se osvježavaju setup skriptom. Ciljni uređaji dolaze iz projekta.
+- U Codexu se čuva korisnikov model; preporuka Claude naziva modela ne važi za Codex.

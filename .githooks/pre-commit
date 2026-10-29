@@ -1,0 +1,3 @@
+#!/bin/sh
+# Pokreće .githooks/pre-commit.mjs (uključuje se sa: git config core.hooksPath .githooks)
+exec node "$(git rev-parse --show-toplevel)/.githooks/pre-commit.mjs"

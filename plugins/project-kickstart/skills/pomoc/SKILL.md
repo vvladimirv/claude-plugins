@@ -1,6 +1,6 @@
 ---
 name: pomoc
-description: Podsjetnik rada: šta je automatski, koje komande kad, gdje je šta, koji model za šta. Za "/pomoc", "šta trebam raditi".
+description: "Podsjetnik rada: šta je automatski, koje komande kad, gdje je šta, koji model za šta. Za \"/pomoc\", \"šta trebam raditi\"."
 model: haiku
 allowed-tools: [Read]
 ---

@@ -1,8 +1,11 @@
 {
   "name": "claude-plugins",
   "private": true,
-  "description": "Lični Claude Code pluginovi (marketplace moji-pluginsi)",
+  "description": "Zajednički lični plugini za Claude Code i Codex",
   "scripts": {
-    "test": "node --test \"plugins/**/*.test.js\" \"test/*.test.js\""
+    "test": "node --test --test-concurrency=2 \"plugins/**/*.test.js\" \"test/*.test.js\"",
+    "package:plugins": "node scripts/package-plugins.js",
+    "setup": "node scripts/setup.js",
+    "check": "node plugins/project-guard/scripts/checks.js"
   }
 }

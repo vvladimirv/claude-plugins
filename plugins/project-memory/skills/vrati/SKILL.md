@@ -1,6 +1,6 @@
 ---
 name: vrati
-description: Vraća projekat na zadnje stanje koje je radilo (odbaci nesnimljene izmjene ili poništi zadnje commitove), uvijek tako da se može povratiti. Za "/vrati", "pokvarilo se", "vrati kako je bilo"; "/vrati poništi" vraća zadnje vraćanje.
+description: "Vraća projekat na zadnje stanje koje je radilo (odbaci nesnimljene izmjene ili poništi zadnje commitove), uvijek tako da se može povratiti. Za \"/vrati\", \"pokvarilo se\", \"vrati kako je bilo\"; \"/vrati poništi\" vraća zadnje vraćanje."
 argument-hint: "[šta se pokvarilo] | poništi"
 model: sonnet
 allowed-tools: [Read, Bash, Glob, Grep, AskUserQuestion]
@@ -26,6 +26,9 @@ Korisnik je napisao: `$ARGUMENTS`
 7. **Završna poruka** (kratko): šta je vraćeno, stanje testova i kako se predomisliti: `/vrati poništi`. Push ne radi ovdje: ide kroz `/kraj-sesije`, uz izričito "da".
 
 ## Brzi testovi
+Ako postoji `.agent-checks.json`, koristi runner projekta `node scripts/checks.cjs` (ili `/provjera` iz project-guard). Prije commita stage samo namjeravanih fajlova, pa obnovi dokaz nad tim sadržajem i indeksom. Ne preskači obavezne grupe.
+
+Bez tog plana vrijedi postojeći postupak:
 Traži u folderu koji testiraš i uzmi prvo što postoji:
 1. `scripts/test` (ili `scripts/test.mjs`, `.js`, `.ps1`),
 2. komanda za brze testove iz `AGENTS.md` (sekcija „Komande" ili „Brzi testovi"),

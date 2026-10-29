@@ -1,6 +1,6 @@
 ---
 name: pomocna
-description: Samostalan zadatak ide u pomoćnu sesiju (svoj worktree): kartica sa gotovim promptom, a pomoćna na kraju sama testira, spoji u baznu granu i zatvori se. "/pomocna <zadatak>".
+description: "Samostalan zadatak ide u pomoćnu sesiju (svoj worktree): kartica sa gotovim promptom, a pomoćna na kraju sama testira, spoji u baznu granu i zatvori se. \"/pomocna <zadatak>\"."
 argument-hint: "<zadatak>"
 model: haiku
 allowed-tools: [Bash, Read, AskUserQuestion, ToolSearch, mcp__ccd_session__spawn_task]

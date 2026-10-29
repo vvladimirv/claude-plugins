@@ -1,7 +1,7 @@
 ---
 name: codex-worktree
-description: Poseban worktree i grana za Codex ili drugi chat; "spoji <zadatak>" vraća gotov rad preko PR-a (ili lokalnog merge-a) u granu iz koje je nastao.
-argument-hint: <zadatak> | spoji <zadatak>
+description: "Poseban worktree i grana za Codex ili drugi chat; \"spoji <zadatak>\" vraća gotov rad preko PR-a (ili lokalnog merge-a) u granu iz koje je nastao."
+argument-hint: "<zadatak> | spoji <zadatak>"
 model: haiku
 allowed-tools: [Bash, Read, AskUserQuestion]
 ---
@@ -54,6 +54,9 @@ Argument: `$ARGUMENTS`
 4. Reci korisniku da zatvori prozor tog zadatka u Codex aplikaciji. Claude sesije vezane za PR se arhiviraju same.
 
 ## Brzi testovi
+Ako postoji `.agent-checks.json`, koristi runner projekta `node scripts/checks.cjs` (ili `/provjera` iz project-guard). Prije commita stage samo namjeravanih fajlova, pa obnovi dokaz nad tim sadržajem i indeksom. Ne preskači obavezne grupe.
+
+Bez tog plana vrijedi postojeći postupak:
 Traži u folderu koji testiraš i uzmi prvo što postoji:
 1. `scripts/test` (ili `scripts/test.mjs`, `.js`, `.ps1`),
 2. komanda za brze testove iz `AGENTS.md` (sekcija „Komande" ili „Brzi testovi"),

@@ -32,12 +32,17 @@ function readTail(file) {
 function contextTokens(jsonl) {
   const lines = jsonl.split('\n');
   for (let i = lines.length - 1; i >= 0; i--) {
-    if (!lines[i].includes('"usage"')) continue;
+    if (!lines[i].includes('"usage"') && !lines[i].includes('"token_count"')) continue;
     let entry;
     try {
       entry = JSON.parse(lines[i]);
     } catch {
       continue;
+    }
+    // Codex input_tokens već uključuje keš; kumulativni total_token_usage nije veličina konteksta.
+    if (entry.type === 'event_msg' && entry.payload?.type === 'token_count') {
+      const last = entry.payload.info?.last_token_usage;
+      if (Number.isFinite(last?.input_tokens)) return last.input_tokens;
     }
     const u = entry && !entry.isSidechain && entry.message && entry.message.usage;
     if (!u) continue;
@@ -117,6 +122,7 @@ if (require.main === module) {
     if (out) process.stdout.write(JSON.stringify(out));
   } catch (err) {
     logError('session-size', err);
+    process.stdout.write(JSON.stringify({ systemMessage: 'Procjena veličine razgovora nije izvršena; pogledajte pravila.log.' }));
   }
   process.exit(0);
 }

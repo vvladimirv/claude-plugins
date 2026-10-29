@@ -162,7 +162,7 @@ function check(input, root, now = Date.now()) {
   const own = prev && prev.session_id === sid;
   const nowIso = new Date(now).toISOString();
   fs.writeFileSync(lockPath(root), JSON.stringify({
-    agent: 'claude', session_id: sid, since: own ? prev.since : nowIso, heartbeat: nowIso,
+    agent: input._runtime || 'claude', session_id: sid, since: own ? prev.since : nowIso, heartbeat: nowIso,
   }, null, 2));
   if (!own) ensureExcluded(root);
   return null;

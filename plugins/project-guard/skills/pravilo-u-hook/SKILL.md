@@ -1,7 +1,7 @@
 ---
 name: pravilo-u-hook
-description: Pretvara pravilo iz AGENTS.md u nešto što mašina provjerava: test, pre-commit, podešavanje ili hook.
-argument-hint: <pravilo ili broj pravila iz AGENTS.md>
+description: "Pretvara pravilo iz AGENTS.md u nešto što mašina provjerava: test, pre-commit, podešavanje ili hook."
+argument-hint: "<pravilo ili broj pravila iz AGENTS.md>"
 model: sonnet
 ---
 

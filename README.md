@@ -1,6 +1,6 @@
 # moji-pluginsi
 
-Lični Claude Code pluginovi za ispravan start i vođenje projekata.
+Lični plugini za Claude Code i Codex za ispravan start i vođenje projekata.
 
 | Plugin | Šta daje |
 |---|---|
@@ -10,47 +10,49 @@ Lični Claude Code pluginovi za ispravan start i vođenje projekata.
 
 Svakodnevni podsjetnik (šta je automatski, a šta radiš ti): [PODSJETNIK.md](plugins/project-kickstart/skills/pomoc/PODSJETNIK.md). U Claude Codeu ga prikazuje `/pomoc`.
 
-## Instalacija (jednom po računaru)
-Potrebno: Claude Code, git, Node.js (hookovi su Node skripte).
+## Zajednička instalacija za Claude Code i Codex
 
-```bash
-claude plugin marketplace add vvladimirv/claude-plugins
-claude plugin install project-kickstart@moji-pluginsi
-claude plugin install project-memory@moji-pluginsi
-claude plugin install project-guard@moji-pluginsi
-```
-Zatim u `~/.claude/settings.json`, pod `extraKnownMarketplaces.moji-pluginsi`, dodaj `"autoUpdate": true`. Tako računar sam povlači nove verzije. Repo je privatan, pa git mora imati sačuvanu prijavu za github.com: Git Credential Manager (dolazi uz Git for Windows) ili `gh auth login` + `gh auth setup-git`.
+Izvor je jedan repozitorij za sve projekte. Potrebni su Node.js 18+ za hookove, git i CLI izabranog alata;
+razvojni testovi koriste Node.js 24. Projektna pravila ostaju u projektima.
 
-Na kraju restartuj Claude Code (desktop app ili terminal sesiju) i otkucaj `/zdravlje`: pokaže šta još fali.
-
-### Podešavanje po računaru (jednom)
-- **Korijen projekata:** kapija kickstarta važi samo za foldere ispod `C:\dev`. Ako su projekti na laptopu negdje drugdje, upiši putanju (jednu po liniji) u `~/.claude/kickstart-korijeni.txt`.
-- **Lista ideja** (`/ideja`, `/novi-projekat`): privatni repo `vvladimirv/ideje`, kloniran u `<korijen>/ideje`:
-  ```bash
-  gh repo clone vvladimirv/ideje C:/dev/ideje
-  ```
-
-Na drugom računaru možeš otvoriti Claude Code i reći: *"instaliraj moje plugine po README-u iz github.com/vvladimirv/claude-plugins"*.
-
-## Ažuriranje
-```bash
-claude plugin marketplace update moji-pluginsi
-claude plugin update project-kickstart@moji-pluginsi
-claude plugin update project-memory@moji-pluginsi
-claude plugin update project-guard@moji-pluginsi
+```powershell
+node scripts/setup.js
+node scripts/setup.js --apply
 ```
 
-## Isključivanje
-```bash
-claude plugin disable project-memory@moji-pluginsi
+Prva komanda samo prikazuje plan. Druga osvježava korisničke instalacije oba alata iz ovog lokalnog foldera
+kroz njihove CLI-jeve. `--claude` ili `--codex` ograničava instalaciju. Codex profili se ažuriraju uz backup.
+Nakon ažuriranja otvori novi chat; u Codexu pregledaj nove ili promijenjene hookove kroz `/hooks`.
+Projektne instalacije se ne brišu i povjerenje hookova se ne odobrava automatski.
+
+Poslije `git pull` ponovi setup. Lokalni izvor se osvježava ovim postupkom; GitHub auto-update
+ne preuzima izmjene umjesto lokalnog `git pull`. Za drugi računar kloniraj isti repo i pokreni setup.
+Ne uređuj instalacijski cache.
+
+Detaljno: [podržane zaštite, ograničenja i dokaz testiranja](docs/UNIVERZALNI-PLUGINI.md).
+
+## Razvoj
+
+```powershell
+npm test
+node scripts/package-plugins.js
+claude plugin validate .
 ```
-Ako hook napravi problem, greške su u `~/.claude/pravila.log`. Hookovi su fail-open: greška ne blokira rad. Privremeno isključivanje blokirajućih pravila: `/pravila-pauza` ili env `CC_PRAVILA=off` (zaštita tajni ostaje).
 
-Hookovi su Node skripte: jedan poziv traje ~0,2 s, od čega je većina samo pokretanje Node-a na Windowsu. Poziv kojem samo pravila traju duže od 200 ms upiše se u `pravila.log` kao `sporo/…`, a `/zdravlje` ih prebroji.
+- Claude manifesti su izvor verzija; paketiranje generiše Codex manifeste i katalog.
+- Poslije izmjene šablona podigni verziju šablona, upiši changelog i pokreni `node test/sablon-hash.js --upisi`.
+- Testovi koriste privremene projekte; CI provjerava Windows i Linux.
+- `.agent-checks.json` definiše obavezne provjere. Stage namjeravanih fajlova, zatim `npm run check`, pa commit.
+- Neobjavljena grana nije isto što i instaliran paket. Setup koristi folder iz kojeg je pokrenut.
 
-## Razvoj (u ovom repou)
-1. Izmijeni plugin.
-2. `npm test`: testovi hook skripti.
-3. `claude plugin validate .`: provjera manifesta i skillova.
-4. Probaj ga bez instalacije, u probnom projektu: `claude --plugin-dir C:\dev\claude-plugins\plugins\<plugin>`.
-5. Podigni `version` u `plugin.json` i `marketplace.json`, commit, push. Tek tada ga dobijaju svi računari.
+## Novi postupci
+
+| Postupak | Svrha |
+|---|---|
+| `/provjera` | Pokretanje obaveznih provjera i dokaz vezan za trenutni kod i Git indeks |
+| `/poslovna-pravila` | Potvrđeni primjeri prije izmjene važnog ponašanja |
+| `/pregled-izmjene` | Završna recenzija diffa i dokaza testiranja |
+| `/zdravlje` | Instalacija, zabilježeno izvršavanje oba alata i svježina provjera |
+
+Raniji skillovi i projektne postavke ostaju podržani. Opšti hook nije potpuni sigurnosni sandbox:
+nepodržani alati i dinamičke shell skripte traže dodatne slojeve dozvola i Git/CI provjere.

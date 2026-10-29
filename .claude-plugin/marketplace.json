@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "moji-pluginsi",
-  "description": "Lični pluginovi za ispravan start i vođenje projekata sa Claude Codeom",
+  "description": "Zajednički plugini za Claude Code i Codex",
   "owner": {
     "name": "vvladimirv",
     "email": "330362@gmail.com"
@@ -10,21 +10,21 @@
     {
       "name": "project-kickstart",
       "description": "Start projekta: intervju, stack, arhitektura, blueprint, dokumenti, pre-commit i CI (/kickstart, /nova-funkcija, /ui-izmjena, /adr, /pomoc; agenti arhitekta i ux-recenzent)",
-      "version": "0.4.14",
+      "version": "0.5.0",
       "source": "./plugins/project-kickstart",
       "category": "development"
     },
     {
       "name": "project-memory",
       "description": "Memorija i napredak: STATUS.md, git log i napredak po blueprintu na startu sesije, upozorenje na veliku sesiju, pomoćne sesije koje same spoje rad (/stanje, /kraj-sesije, /pomocna, /vrati, /napredak, /objavi, /izdanje, /docs-audit)",
-      "version": "0.5.2",
+      "version": "0.6.0",
       "source": "./plugins/project-memory",
       "category": "development"
     },
     {
       "name": "project-guard",
       "description": "Pravila koja mašina provjerava: tajne, kapija kickstarta, brava sesija, limit fajlova, čuvar obima, zavisnosti = ADR, mapa grana (/grane, /zdravlje, /pravila-pauza, /preuzmi-lock, /novi-projekat, /ideja, /codex-worktree, /pravilo-u-hook)",
-      "version": "0.6.2",
+      "version": "0.7.0",
       "source": "./plugins/project-guard",
       "category": "development"
     }
