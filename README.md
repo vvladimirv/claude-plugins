@@ -22,6 +22,7 @@ node scripts/setup.js --apply
 
 Prva komanda samo prikazuje plan. Druga osvježava korisničke instalacije oba alata iz ovog lokalnog foldera
 kroz njihove CLI-jeve. `--claude` ili `--codex` ograničava instalaciju. Codex profili se ažuriraju uz backup.
+Setup registruje Codex hookove u korisnički `hooks.json`, bez duplog učitavanja iz paketa i bez mijenjanja povjerenja.
 Nakon ažuriranja otvori novi chat; u Codexu pregledaj nove ili promijenjene hookove kroz `/hooks`.
 Projektne instalacije se ne brišu: postojeći pokazivači na isti izvor usklađuju se uz backup konfiguracije.
 Posebni projektni izvori i aktivne brave ostaju netaknuti. Povjerenje hookova se ne odobrava automatski.

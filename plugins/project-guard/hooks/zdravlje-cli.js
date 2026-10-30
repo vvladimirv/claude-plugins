@@ -81,6 +81,8 @@ function report({ root, now = Date.now() } = {}) {
     if (item.fresh) ok.push(`${item.runtime}: zabilježeno izvršavanje guarda ${item.version}; nije dokaz pokrivenosti svih alata`);
     else warn.push(`${item.runtime}: ${item.observed ? 'staro izvršavanje hooka' : 'nema zabilježenog izvršavanja hooka'}; provjerite učitavanje i povjerenje u novom chatu`);
   }
+  const codexHome = process.env.CODEX_HOME || path.join(require('os').homedir(), '.codex');
+  if (!fs.existsSync(path.join(codexHome, 'hooks.json'))) warn.push('Codex nema korisnički registar hookova: u zajedničkom repozitoriju pokrenite node scripts/setup.js --apply --codex');
   if (root && fs.existsSync(path.join(root, '.agent-checks.json'))) {
     const verified = require('../scripts/checks').verify(root);
     (verified.ok ? ok : warn).push(verified.message);

@@ -15,7 +15,12 @@ test('paketi: Claude i Codex imaju iste identitete i verzije iz jednog izvora', 
     assert.equal(manifest.version, entry.version);
     assert.equal(manifest.name, entry.name);
     assert.equal(codex.plugins.find(p => p.name === entry.name).source.path, entry.source);
-    if (entry.name !== 'project-kickstart') assert.equal(manifest.extensions['com.openai'].hooks, './hooks/hooks.json');
+    const compatibility = json(entry.source + '/.codex-plugin/plugin.json');
+    assert.equal(compatibility.version, manifest.version);
+    if (entry.name !== 'project-kickstart') {
+      assert.deepEqual(manifest.extensions['com.openai'].hooks, []);
+      assert.deepEqual(compatibility.hooks, []);
+    }
   }
 });
 test('runner projekta je identičan izvoru u guardu', () => {

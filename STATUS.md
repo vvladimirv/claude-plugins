@@ -3,7 +3,7 @@
 **Ažurirano:** 2026-10-30 · univerzalni lokalni plugini
 
 ## Radi
-- Jedan izvor za Claude Code i Codex; guard 0.7.1, kickstart 0.5.0, memory 0.6.0; šabloni 0.5.0.
+- Jedan izvor za Claude Code i Codex; guard 0.7.2, kickstart 0.5.1, memory 0.6.1; šabloni 0.5.0.
 - Codex patch: zaštita svih putanja prije čitanja, projekcija sadržaja, brava, veličina, obim i zavisnosti; nepodržani format je vidljiv.
 - Git šablon provjerava stvarnog vlasnika sesije i svjež dokaz provjera ako projekat ima plan.
 - Samostalan runner i projektna kopija; sadržaj/planski indeks poništavaju stari rezultat; nije nekrivotvoriva potvrda.
@@ -12,6 +12,8 @@
 - Setup koristi javne CLI-jeve i lokalni izvor; profili i projektne konfiguracije imaju backup. Iste izvore usklađuje, posebne izvore čuva; ne odobrava hookove.
 - CI definisan za Windows i Linux; lokalna provjera i instalacijska proba upisuju se u završni izvještaj.
 - Detalji i ograničenja: docs/UNIVERZALNI-PLUGINI.md. Prethodno stanje i zadaci su u git istoriji.
+
+- Codex koristi eksplicitni korisnički registar hookova, jer je CLI prikazivao nule za hookove iz paketa; paketi isključuju dupli Codex unos.
 
 ## Sljedeće
 1. Poslije instalacije otvoriti novi chat u oba alata; u Codexu pregledati nove hookove kroz /hooks.

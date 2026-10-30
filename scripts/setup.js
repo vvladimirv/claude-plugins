@@ -17,7 +17,7 @@ function operations(surface, source = root) {
   }
   if (surface === 'both' || surface === 'codex') {
     result.push(['codex', ['plugin', 'marketplace', 'add', source]]);
-    for (const name of names) result.push(['codex', ['plugin', 'add', name + '@moji-pluginsi']]);
+    for (const name of names) result.push(['codex', ['plugin', 'add', name + '@moji-pluginsi', '--json']]);
   }
   return result;
 }
@@ -36,12 +36,20 @@ function syncProfiles(home) {
 }
 
 function main(args) {
+  const installed = [];
   const surface = args.includes('--claude') ? 'claude' : args.includes('--codex') ? 'codex' : 'both';
   for (const [cmd, params] of operations(surface)) {
     console.log(cmd + ' ' + params.map(s => JSON.stringify(s)).join(' '));
     if (args.includes('--apply')) {
-      const result = spawnSync(cmd, params, { cwd: root, stdio: 'inherit', windowsHide: true, timeout: 120000 });
+      const jsonResult = cmd === 'codex' && params.includes('--json');
+      const result = spawnSync(cmd, params, { cwd: root, stdio: jsonResult ? ['ignore', 'pipe', 'inherit'] : 'inherit', encoding: 'utf8', windowsHide: true, timeout: 120000 });
       if (result.error || result.status !== 0) throw new Error('Instalacija nije završena: ' + cmd + ' ' + params.join(' '));
+      if (jsonResult) {
+        const value = JSON.parse(result.stdout);
+        if (!value.installedPath || !names.includes(value.name)) throw new Error('Codex nije vratio putanju instaliranog paketa.');
+        installed.push(value);
+        console.log(value.name + ' ' + value.version + ': ' + value.installedPath);
+      }
     }
   }
   if (surface !== 'codex') {
@@ -60,7 +68,15 @@ function main(args) {
       }
     }
   }
-  if (args.includes('--apply') && surface !== 'claude') syncProfiles(process.env.CODEX_HOME || path.join(os.homedir(), '.codex'));
+  if (surface !== 'claude') {
+    console.log('Codex: korisnički hooks.json povezuje iste instalirane skripte; zapis povjerenja se ne mijenja.');
+    if (args.includes('--apply')) {
+      const home = process.env.CODEX_HOME || path.join(os.homedir(), '.codex');
+      const result = require('./codex-hooks').register(home, installed);
+      console.log(`Codex: registrovano ${result.count} hookova (${result.changed ? 'osvježeno' : 'bez izmjene'}).`);
+      syncProfiles(home);
+    }
+  }
   console.log(args.includes('--apply')
     ? 'Paketi su osvježeni. Otvorite novi chat u oba alata. U Codexu pregledajte /hooks; instalacija ne odobrava hookove umjesto vas.'
     : 'Ovo je plan. --apply izvršava instalaciju za korisnika; --claude ili --codex ograničava alat. Projektne instalacije se ne brišu.');

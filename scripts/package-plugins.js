@@ -13,8 +13,9 @@ for (const entry of catalog.plugins) {
   const hooks = fs.existsSync(path.join(dir, 'hooks/hooks.json'));
   save(path.join(dir, 'plugin.json'), {
     $schema: 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json', ...own,
-    ...(hooks ? { extensions: { 'com.openai': { hooks: './hooks/hooks.json' } } } : {})
+    ...(hooks ? { extensions: { 'com.openai': { hooks: [] } } } : {})
   });
+  save(path.join(dir, '.codex-plugin/plugin.json'), { ...own, skills: './skills/', ...(hooks ? { hooks: [] } : {}) });
 }
 save(path.join(root, '.agents/plugins/marketplace.json'), {
   name: catalog.name, interface: { displayName: 'Moji plugini — Claude i Codex' },

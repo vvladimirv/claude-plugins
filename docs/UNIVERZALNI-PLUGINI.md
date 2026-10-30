@@ -1,7 +1,7 @@
 # Zajednički sistem za Claude Code i Codex
 
 Izvor je ovaj repozitorij. Tri postojeća plugina ostaju odvojeni paketi; svaki radi bez npm zavisnosti.
-Claude čita `.claude-plugin`, Codex portable `plugin.json` i `.agents/plugins/marketplace.json`.
+Claude čita `.claude-plugin`, Codex portable `plugin.json` i `.agents/plugins/marketplace.json` uz kompatibilni `.codex-plugin` manifest.
 `node scripts/package-plugins.js` generiše Codex metapodatke iz Claude manifesta. Test čuva jednake verzije.
 Instalacijski cache nije mjesto za ručne popravke. Izmjena ide u izvor, pa test, verzija i setup.
 
@@ -19,6 +19,12 @@ Instalacijski cache nije mjesto za ručne popravke. Izmjena ide u izvor, pa test
 2. `node scripts/setup.js --apply` registruje ovaj lokalni izvor i osvježava tri korisničke instalacije u oba alata.
    `--claude` ili `--codex` bira samo jedan alat. Koriste se javni CLI-jevi; skripta ne prepisuje korisnički config.
 3. Codex profili arhitekta/ux_recenzent kopiraju se iz paketa u korisnički agents folder. Različita prethodna datoteka dobija backup.
+   Codex hookovi se registruju u korisnički `~/.codex/hooks.json`, jer neki CLI runtimeovi prikazuju praznu listu za hookove iz plugina.
+   Komande vode na verzionisane skripte iz putanja koje vrati javni CLI prilikom instalacije. Drugi korisnički hookovi ostaju sačuvani.
+   U Codex manifestima hookovi su isključeni da se ne izvrše dvaput; Claude koristi hookove iz paketa.
+   Codex hookovima se upravlja kroz `/hooks` (ili `features.hooks=false`), odvojeno od uključivanja skillova plugina.
+   Isključivanje ili deinstalacija plugina samo po sebi ne uklanja korisničke hook registracije; prije uklanjanja paketa
+   isključiti pripadajuće hookove u `/hooks`. Setup čuva druge korisničke hookove i pravi backup promijenjenog registra.
 4. Otvoriti novi chat u oba alata. Codex povjerenje za izmijenjene hookove korisnik pregleda kroz `/hooks`.
    Setup ne upisuje niti zaobilazi internu bazu povjerenja.
 5. `/zdravlje` i listanje plugina provjeravaju verzije i opaženo izvršavanje. Provjera svakog pravila je zaseban test.
