@@ -1,6 +1,6 @@
 # STATUS
 
-**Ažurirano:** 2026-10-19 · **Talas:** D završen, glavna + pomoćne sesije
+**Ažurirano:** 2026-11-01 · **Talas:** D završen, glavna + pomoćne sesije
 
 ## Radi
 - `project-kickstart` 0.4.14: `/kickstart` (+ `--postojeci`, `--nadogradi`, iz drugog foldera pita za ciljni projekat), faza 4 računa rokove iz tempa, `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`, šabloni 0.4.4 (pravilo "isti problem drugdje", VIZIJA → Gdje se koristi, rokovi, status, cilj MVP, pre-commit i `scripts/test.mjs` i na Linuxu/Macu, CI za pnpm/npm + Linux snimci)
@@ -18,7 +18,7 @@
 5. Stranica sa komandama (pinovana na claude.ai): https://claude.ai/artifact/RAWkZcHhL5WufmHyNe2NnG, izvor je PODSJETNIK.md (osvježiti: `/zdravlje`, automatski pull)
 6. Skupljati nalaze iz stvarnog rada → male ispravke (verzija + push)
 7. `/grane pocisti` u `inhome` (36 gotovih grana, 3 foldera) i ovdje (5 grana). Grane spojenih PR-ova koje postoje samo na GitHubu `/grane` ne vidi: `claude/admiring-curie-t5f1u9`, `claude/sleepy-edison-bnoe2w`, `claude/great-franklin-ehmh5c`. GitHub: u svakom repou sa PR tokom uključiti *Automatically delete head branches* (Settings → General → Pull Requests)
-8. Cloud sesije ne učitavaju plugine (ni korisničke, ni projektne postavke). Proba: novo cloud okruženje sa `CLAUDE_CODE_PLUGIN_DIRS`. A: putanje u `/home/user/claude-plugins/plugins/...`, bez klona. B: setup skripta klonira repo u `/opt/moji-pluginsi`. Kad prođe, upisati recept u README
+8. Cloud sesije: okruženje `moji-pluginsi` radi (README → Cloud sesije; repo je zato javan, proba 2026-11-01: sva tri `√ loaded` u sesiji bez repoa). Ostaje: (a) provjeriti SessionStart kontekst u cloud sesiji za pravi projekat (npr. `budzet`); (b) nova verzija stiže tek kad se izmijeni setup skripta, pa razmisliti o automatskom osvježavanju
 
 ## Blokeri / otvorena pitanja
 - Projekat bez kickstarta i bez STATUS.md: `/kraj-sesije auto` tu staje (provjera markera je prva); riješiti ako se pojavi u praksi
