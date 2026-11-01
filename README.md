@@ -19,7 +19,7 @@ claude plugin install project-kickstart@moji-pluginsi
 claude plugin install project-memory@moji-pluginsi
 claude plugin install project-guard@moji-pluginsi
 ```
-Zatim u `~/.claude/settings.json`, pod `extraKnownMarketplaces.moji-pluginsi`, dodaj `"autoUpdate": true`. Tako računar sam povlači nove verzije. Repo je privatan, pa git mora imati sačuvanu prijavu za github.com: Git Credential Manager (dolazi uz Git for Windows) ili `gh auth login` + `gh auth setup-git`.
+Zatim u `~/.claude/settings.json`, pod `extraKnownMarketplaces.moji-pluginsi`, dodaj `"autoUpdate": true`. Tako računar sam povlači nove verzije. Repo je javan, pa za instalaciju i ažuriranje ne treba prijava na GitHub (za push i dalje treba).
 
 Na kraju restartuj Claude Code (desktop app ili terminal sesiju) i otkucaj `/zdravlje`: pokaže šta još fali.
 
@@ -31,6 +31,29 @@ Na kraju restartuj Claude Code (desktop app ili terminal sesiju) i otkucaj `/zdr
   ```
 
 Na drugom računaru možeš otvoriti Claude Code i reći: *"instaliraj moje plugine po README-u iz github.com/vvladimirv/claude-plugins"*.
+
+## Cloud sesije (claude.ai/code, telefon)
+Cloud sesija svaki put dobije nov kontejner, a marketplace je tu ugašen (`SKIP_PLUGIN_MARKETPLACE=true`). Zato `claude plugin install` i `enabledPlugins` tu ne rade. Pluginovi se učitavaju iz foldera, preko varijable `CLAUDE_CODE_PLUGIN_DIRS` (folder sa više pluginova učita svaki od njih).
+
+Okruženje `moji-pluginsi` (meni okruženja u naslovu sesije → Edit):
+- **Environment variables:** `CLAUDE_CODE_PLUGIN_DIRS=/opt/moji-pluginsi/plugins`
+- **Setup script:**
+  ```bash
+  #!/bin/bash
+  # v2
+  LOG=/opt/moji-pluginsi.log
+  date > "$LOG"
+  if git clone --depth 1 https://github.com/vvladimirv/claude-plugins.git /opt/moji-pluginsi >> "$LOG" 2>&1; then
+    echo "OK" >> "$LOG"
+  else
+    echo "KLON NIJE USPIO" >> "$LOG"
+  fi
+  ```
+Sesije za bilo koji projekat pokreći u tom okruženju. Provjera u sesiji: `claude plugin list` (sva tri `√ loaded`), a ako ne radi, `cat /opt/moji-pluginsi.log`.
+
+- **Repo mora biti javan.** Git u cloud sesiji ima prijavu samo za repoe te sesije, pa privatni repo setup skripta ne može klonirati.
+- **Nova verzija ne stiže sama.** Okruženje pamti stanje poslije setup skripte i daje ga svakoj novoj sesiji. Poslije izdanja izmijeni skriptu (`# v2` → `# v3`), pa nove sesije kloniraju svjež `main`.
+- Hookovi rade (Node je u kontejneru). Kapija kickstarta važi samo ispod korijena projekata (`C:\dev` ili `~/.claude/kickstart-korijeni.txt`), pa u cloudu ne smeta.
 
 ## Ažuriranje
 ```bash
