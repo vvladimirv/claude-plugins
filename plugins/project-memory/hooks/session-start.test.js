@@ -43,11 +43,50 @@ test('necommitovani fajlovi se prijave', () => {
   assert.match(ctx, /3 izmijenjenih fajlova/);
 });
 
-test('predug STATUS se skrati i to se kaže', () => {
+test('predug STATUS bez sekcija: staro skraćivanje od vrha i napomena', () => {
   const long = Array.from({ length: 100 }, (_, i) => `linija ${i}`).join('\n');
   const out = trimStatus(long);
   assert.ok(out.split('\n').length <= 41);
+  assert.match(out, /^linija 0\n/);
   assert.match(out, /skraćeno/);
+  const wide = Array.from({ length: 10 }, () => 'x'.repeat(500)).join('\n');
+  assert.ok(trimStatus(wide).length <= 3000 + 100);
+  assert.match(trimStatus(wide), /skraćeno/);
+});
+
+test('dugačak „Radi“ ne guta „Sljedeće“ i „Blokere“: oni idu cijeli, „Radi“ se skrati', () => {
+  const radi = Array.from({ length: 6 }, (_, i) => `- stavka ${i} ${'opis '.repeat(200)}`).join('\n');
+  const status = '# STATUS\n\n**Ažurirano:** 2026-11-04 · **Talas:** D\n\n## Radi\n' + radi
+    + '\n\n## Sljedeće\n1. prvi sljedeći zadatak\n2. drugi sljedeći zadatak\n\n## Blokeri / otvorena pitanja\n- jedan bloker';
+  assert.ok(status.length > 5000);
+  const out = trimStatus(status);
+  assert.match(out, /^# STATUS\n\n\*\*Ažurirano:\*\* 2026-11-04/);
+  assert.match(out, /## Radi\n- stavka 0/);
+  assert.match(out, /skraćeno/);
+  assert.match(out, /## Sljedeće\n1\. prvi sljedeći zadatak\n2\. drugi sljedeći zadatak\n\n## Blokeri \/ otvorena pitanja\n- jedan bloker$/);
+  assert.ok(out.indexOf('skraćeno') < out.indexOf('## Sljedeće'), 'napomena je na kraju „Radi“, prije „Sljedeće“');
+  assert.ok(out.length <= 3000 + 100, `ukupno ${out.length} znakova`);
+});
+
+test('„Radi“ sa previše linija: linije „Sljedeće“ ostaju, „Radi“ gubi linije', () => {
+  const radi = Array.from({ length: 60 }, (_, i) => `- kratka ${i}`).join('\n');
+  const out = trimStatus('# STATUS\n\n## Radi\n' + radi + '\n\n## Sljedeće\n1. a\n2. b\n3. c');
+  assert.ok(out.split('\n').length <= 42, `linija: ${out.split('\n').length}`);
+  assert.match(out, /## Sljedeće\n1\. a\n2\. b\n3\. c$/);
+  assert.match(out, /skraćeno/);
+});
+
+test('kratak STATUS sa sekcijama: ništa se ne mijenja', () => {
+  const status = '# STATUS\n\n**Ažurirano:** 2026-11-04\n\n## Radi\n- X\n\n## Sljedeće\n1. Y\n\n## Blokeri / otvorena pitanja\n- nema';
+  assert.strictEqual(trimStatus(status), status);
+  assert.strictEqual(trimStatus(status.replace(/\n/g, '\r\n')), status);
+});
+
+test('STATUS ovog repoa: u kontekst ulazi sekcija „Sljedeće“', () => {
+  const own = fs.readFileSync(path.join(__dirname, '..', '..', '..', 'STATUS.md'), 'utf8');
+  const out = trimStatus(own);
+  assert.match(out, /## Sljedeće\n1\. /);
+  assert.ok(out.length <= 3000 + 100, `ukupno ${out.length} znakova`);
 });
 
 test('pravi git repo: hook vraća SessionStart JSON', () => {
