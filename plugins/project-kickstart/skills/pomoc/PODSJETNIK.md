@@ -28,7 +28,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 ## Tok rada
 | Kad | Automatski | Ti radiš |
 |---|---|---|
-| **Nov projekat** | ✅ kapija: u novom folderu u `C:\dev\` kod je blokiran dok ne uradiš kickstart | napravi folder u `C:\dev\<ime>`, otvori ga, pokreni `/kickstart <tema>` i odgovori na intervju |
+| **Nov projekat** | ✅ kapija: u novom folderu u `C:\dev\` kod je blokiran dok ne uradiš kickstart | napravi folder u `C:\dev\<ime>`, otvori ga, pokreni `/kickstart <tema>` i odgovori na intervju · mala lična aplikacija: **lagani start** (kickstart sam pita, ili `--lagano`): samo VIZIJA, STATUS, AGENTS i CLAUDE, bez plana sa rokovima; `/napredak` tu ne radi, a `/izdanje`, `/nova-funkcija` i `/ui-izmjena` rade smanjeno · kad poraste: `/kickstart --nadogradi` → prelazak na puni |
 | **Postojeći projekat bez temelja** | ✅ jednom predloži kickstart, ali ne blokira | `/kickstart --postojeci` (pravi samo dokumente koji fale) · projekat sa svojim sistemom dokumenata: `.claude/bez-kickstarta` (vidi ispod) |
 | **Start sesije** | ✅ STATUS.md, zadnjih 10 commitova, obim projekta, upozorenja (OneDrive, brava, repo iza GitHuba) | otvori sesiju **u folderu projekta**, ne u drugom folderu |
 | **Repo se promijenio ispod sesije** | ✅ na startu sesije čist repo se sam povuče sa GitHuba · cloud sesija: i pluginovi se sami povuku sa GitHuba i javi se nova verzija · repo iza GitHuba sa lokalnim izmjenama: pisanje čeka `git pull` · druga sesija commitovala: prva izmjena staje jednom, uz listu commitova | `git pull --ff-only`, pročitaj šta je novo, pa nastavi |
