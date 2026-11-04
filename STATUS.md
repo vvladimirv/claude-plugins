@@ -1,21 +1,24 @@
 # STATUS
 
-**Ažurirano:** 2026-11-04 · **Talas:** D završen, glavna + pomoćne sesije
+**Ažurirano:** 2026-11-04 · **Talas:** D završen, pregled od 2026-11-04 (stavke 1–7 riješene)
 
 ## Radi
-- `project-kickstart` 0.4.14: `/kickstart` (`--postojeci`, `--nadogradi`), `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`, šabloni 0.4.4
-- `project-memory` 0.5.3: SessionStart kontekst (STATUS po sekcijama: „Sljedeće“ i „Blokeri“ uvijek cijeli, dugačak „Radi“ se skrati), linija napretka, pravilo „➡️ Sljedeće:“, pomoćne sesije (`/pomocna`, `/kraj-sesije auto`), upozorenje na veliku sesiju, `/stanje`, `/kraj-sesije`, `/vrati`, `/objavi`, `/napredak`, `/izdanje`, `/docs-audit`
-- `project-guard` 0.6.2: tajne, kapija, brava (i za worktree u projektu), sinhronizacija sa GitHubom, čuvar obima, limiti fajlova i tokena, `/grane`, `/zdravlje`, `/codex-worktree`; cloud sesija sama povuče pluginove sa GitHuba
-- `.claude/bez-kickstarta`: projekat sa svojim dokumentima; kickstart komande staju, `/stanje` i `/kraj-sesije` rade uz postojeći STATUS.md
-- Brzi testovi u `/kraj-sesije`, `/ui-izmjena`, `/vrati`, `/objavi` i `/codex-worktree spoji`: `scripts/test*` → AGENTS.md → `npm run test:fast`, inače pitaju
-- Testovi prolaze na Linuxu (verzije plugin.json = marketplace.json, hash šablona, GitHub + auto-update); na Windowsu jedan preskočen
+- `project-kickstart` 0.5.0: `/kickstart` (+ `--lagano` za male lične aplikacije, `--postojeci`, `--nadogradi` sa prelaskom lagano → puno), `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`, šabloni 0.4.5 (CI i za Flutter/Dart)
+- `project-memory` 0.5.4: SessionStart kontekst (STATUS po sekcijama: „Sljedeće“ i „Blokeri“ uvijek cijeli), napredak, „➡️ Sljedeće:“, pomoćne sesije (`/pomocna`, `/kraj-sesije auto`), `/stanje`, `/kraj-sesije`, `/vrati`, `/objavi`, `/napredak`, `/izdanje`, `/docs-audit`
+- `project-guard` 0.6.4: tajne, kapija, brava (i po worktreeu), sinhronizacija, čuvar obima, zavisnosti = ADR (i `pubspec.yaml`), limit fajlova, `/grane`, `/zdravlje`, `/codex-worktree`, samoosvježavanje u cloudu
+- Cloud sesija: `/kraj-sesije`, `/pomocna` i `/grane` koriste i cloud imena alata (arhiviranje radi, model druge sesije ne)
+- Lagani projekat: hookovi bez BLUEPRINT/INVENTAR/ARHITEKTURA/ADR šute, a čuvar obima i kapija rade
+- CI ovog repoa (GitHub Actions): `npm test` i `claude plugin validate .`; test pazi da kopije funkcija guard → memory ne zaostanu
 
 ## Sljedeće
-1. Ručna proba pomoćne sesije sa glavnom na posebnoj grani (`C:/dev/proba-pomocne`): spoj mora ići u tu granu, ne u `main`
-2. `budzet`: M3 (Cloudflare Pages + PWA na Androidu), pa `/izdanje` v1.0; CI uključiti kad se sredi naplata na GitHubu (Actions → CI → Enable workflow)
-3. Instalirati plugine na laptopu (README → Instalacija), pa `/zdravlje`
-4. Cloud sesije: provjeriti SessionStart kontekst za pravi projekat (npr. `budzet`); setup skriptu `# v2` → `# v3` uz `CLAUDE_CODE_PLUGIN_DIR_WATCH=1`, pa provjeriti poruku „Pluginovi su osvježeni“
-5. `/grane pocisti` u `inhome` i ovdje; grane spojenih PR-ova koje su samo na GitHubu (`claude/admiring-curie-t5f1u9`, `claude/sleepy-edison-bnoe2w`, `claude/great-franklin-ehmh5c`) obrisati ručno i uključiti *Automatically delete head branches*; stranicu komandi na claude.ai osvježiti iz PODSJETNIK.md
+1. Spojiti PR #19 (stavke 4–7 iz pregleda) kad CI prođe
+2. Probati `/kraj-sesije` u cloud sesiji sa telefona: kartica bez `cwd` i arhiviranje preko `get_session` id-a
+3. Probati `/kickstart --lagano` na sljedećem malom projektu
+4. `budzet`: M3 (Cloudflare Pages + PWA na Androidu), pa `/izdanje` v1.0; CI uključiti kad se sredi naplata na GitHubu
+5. `/grane pocisti` u `inhome` i ovdje; grane spojenih PR-ova samo na GitHubu (`claude/admiring-curie-t5f1u9`, `claude/sleepy-edison-bnoe2w`, `claude/great-franklin-ehmh5c`) obrisati i uključiti *Automatically delete head branches*
 
 ## Blokeri / otvorena pitanja
-- Projekat bez kickstarta i bez STATUS.md: `/kraj-sesije auto` tu staje (provjera markera je prva); riješiti ako se pojavi u praksi
+- `dependencies` u plugin.json (memory → guard): `claude plugin validate .` ga ne provjerava, a bez guarda gasi cijeli memory. Nije dodano; odlučiti da li je tvrda zavisnost bolja od rada „bez /grane smanjeno“
+- Worktreeovi: odluka (a), ostaje kako je. `/pomocna` već koristi nativni worktree, a `/codex-worktree` ostaje jer nativni ne radi za Codex
+- Cloud: klon `/opt/moji-pluginsi` u ovom okruženju bio je zastario (guard 0.6.1, stari `/kraj-sesije`); setup skriptu `# v2` → `# v3` uz `CLAUDE_CODE_PLUGIN_DIR_WATCH=1`, pa provjeriti „Pluginovi su osvježeni“
+- Ostaje iz ranije: ručna proba pomoćne sesije sa glavnom na posebnoj grani; plugini na laptopu (`/zdravlje`); stranica komandi iz PODSJETNIK.md
