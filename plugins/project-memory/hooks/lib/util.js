@@ -6,7 +6,14 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 
 const IS_WIN = process.platform === 'win32';
-const norm = (p) => (IS_WIN ? path.resolve(p).toLowerCase() : path.resolve(p));
+const CLAUDE_HOME = path.join(os.homedir(), '.claude');
+
+// Kopije iz project-guard/hooks/lib/common.js (pluginovi ne dijele kod). test/kopije-funkcija.test.js pazi da ostanu iste.
+function norm(p) {
+  const r = path.resolve(p);
+  return IS_WIN ? r.toLowerCase() : r;
+}
+
 function isUnder(child, parent) {
   const c = norm(child);
   const p = norm(parent);
@@ -38,7 +45,7 @@ function projectDir(input) {
 
 function git(cwd, args) {
   try {
-    return execFileSync('git', args, { cwd, encoding: 'utf8', timeout: 3000, stdio: ['ignore', 'pipe', 'ignore'] });
+    return execFileSync('git', args, { cwd, encoding: 'utf8', timeout: 3000, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
   } catch {
     return '';
   }
@@ -47,10 +54,10 @@ function git(cwd, args) {
 function logError(where, err) {
   try {
     const line = `${new Date().toISOString()} project-memory/${where}: ${err && err.stack ? err.stack : err}\n`;
-    fs.appendFileSync(path.join(os.homedir(), '.claude', 'pravila.log'), line);
+    fs.appendFileSync(path.join(CLAUDE_HOME, 'pravila.log'), line);
   } catch {
-    // ni log nije uspio: tiho odustani, sesija ne smije pasti zbog hooka
+    // ni log nije uspio: tiho odustani
   }
 }
 
-module.exports = { projectDir, isWorktreeRoot, git, logError };
+module.exports = { norm, isUnder, projectDir, isWorktreeRoot, git, logError };

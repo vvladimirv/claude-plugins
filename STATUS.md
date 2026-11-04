@@ -21,4 +21,5 @@
 8. Cloud sesije: okruženje `moji-pluginsi` radi (README → Cloud sesije; repo je zato javan, proba 2026-11-01: sva tri `√ loaded` u sesiji bez repoa). Ostaje: (a) provjeriti SessionStart kontekst u cloud sesiji za pravi projekat (npr. `budzet`); (b) automatsko osvježavanje (guard 0.6.2: start sesije povuče `/opt/moji-pluginsi`): jednom izmijeniti setup skriptu `# v2` → `# v3` i dodati `CLAUDE_CODE_PLUGIN_DIR_WATCH=1`, pa sa sljedećim izdanjem provjeriti da poruka „Pluginovi su osvježeni“ stiže i da izmijenjen skill važi bez nove sesije
 
 ## Blokeri / otvorena pitanja
+- `dependencies` u plugin.json (project-memory → project-guard): polje postoji, ali `claude plugin validate .` ga ne provjerava (prolazi i sa izmišljenim imenom), a bez guarda se cijeli project-memory ugasi. Nije dodano; odlučiti da li je tvrda zavisnost bolja od današnjeg rada „bez /grane smanjeno“ (provjereno 2026-11-04, Claude Code 2.1.318)
 - Projekat bez kickstarta i bez STATUS.md: `/kraj-sesije auto` tu staje (provjera markera je prva); riješiti ako se pojavi u praksi
