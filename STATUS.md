@@ -1,25 +1,24 @@
 # STATUS
 
-**Ažurirano:** 2026-11-01 · **Talas:** D završen, glavna + pomoćne sesije
+**Ažurirano:** 2026-11-04 · **Talas:** D završen, pregled od 2026-11-04 (stavke 4–7 riješene)
 
 ## Radi
-- `project-kickstart` 0.4.14: `/kickstart` (+ `--postojeci`, `--nadogradi`, iz drugog foldera pita za ciljni projekat), faza 4 računa rokove iz tempa, `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`, šabloni 0.4.4 (pravilo "isti problem drugdje", VIZIJA → Gdje se koristi, rokovi, status, cilj MVP, pre-commit i `scripts/test.mjs` i na Linuxu/Macu, CI za pnpm/npm + Linux snimci)
-- `project-memory` 0.5.2: SessionStart kontekst + linija napretka + pravilo „➡️ Sljedeće:“ (vodi korisnika korak po korak), **pomoćne sesije** (glavna sama pravi karticu, `/pomocna <zadatak>`; pomoćna na kraju `/kraj-sesije auto`: testovi, commit, rebase, PR, squash u baznu granu glavne, grana se briše tek poslije MERGED, worktree ide na baznu granu (čist folder aplikacija čuva za sljedeće sesije), PushNotification, brava, arhiviranje; uz neuspjeh „Čeka tebe"; ručno provjereno u `proba-pomocne`, PR #1 i #2), upozorenje na veliku sesiju (~100k i ~150k tokena), `/vrati` (stash ili revert, uvijek povratno), `/objavi` (računar, kućna mreža ili internet), `/stanje`, `/kraj-sesije` (push uz da, pa ponudi novu sesiju sa prvom stavkom iz „Sljedeće" i preporukom modela, ili zatvaranje; brava se oslobađa i prije arhiviranja), `/napredak [html]`, `/izdanje`, `/docs-audit`
-- `project-guard` 0.6.2: **cloud sesija sama povuče pluginove sa GitHuba** na startu i javi novu verziju, **worktree unutar projekta ima svoju bravu** (aplikacija mu daje CLAUDE_PROJECT_DIR glavnog repoa), **`/grane`** (sve grane i worktreeovi sa stanjem i jednom radnjom, veza sa sesijama i njihovim modelom, `pocisti`, `nova <zadatak>` sa preporukom modela, `ceka`; nova grana sama upiše bazu, start sesije pokaže granu, zadatak i broj gotovih grana), tajne (i u Grep-u i komandama: secrets.json, credentials, `data/`, zasticeno.txt), kapija, brava (i za `cd X &&` / `git -C X`; čitanje preko `gh pr list/view`, `sed -n`, `git -C X log` ne uzima bravu), **sinhronizacija** (na startu čist repo se sam povuče; fetch tokom rada ide u pozadini; repo iza GitHuba sa lokalnim izmjenama → pisanje čeka pull; tuđi commit → jednom stani), limit fajlova, tokeni, čuvar obima + zamrzavanje, zavisnosti = ADR, Stop podsjetnik, `/zdravlje` (instalacija, greške i spori hookovi > 200 ms iz pravila.log), stanje po sesiji (briše se nakon 7 dana), `/codex-worktree` (PR tok ili lokalni merge u baznu granu; čišćenje grane radi i poslije squash spajanja, preko `headRefOid`)
-- `.claude/bez-kickstarta` (projekat sa svojim sistemom dokumenata): nema kapije ni čuvara obima, `/kickstart`, `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/docs-audit`, `/napredak`, `/objavi` i `/izdanje` staju, a `/stanje` i `/kraj-sesije` rade samo uz postojeći STATUS.md
-- Brzi testovi u `/kraj-sesije`, `/ui-izmjena`, `/vrati`, `/objavi` i `/codex-worktree spoji`: `scripts/test*` → AGENTS.md → `npm run test:fast`, inače pitaju
-- 120 testova (svi prolaze na Linuxu; ranijih 114 na Windowsu: 113 prolazi, 1 preskočen; testovi sa git/node procesima ponekad padaju na vrijeme dok rade druge sesije; ranijih 69 prolazi na Linuxu), uključujući test da su verzije u plugin.json i marketplace.json iste i da izmjena šablona podiže `verzija_sablona`, GitHub + auto-update
+- `project-kickstart` 0.5.0: `/kickstart` (+ `--lagano` za male lične aplikacije, `--postojeci`, `--nadogradi` sa prelaskom lagano → puno), `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`, šabloni 0.4.4
+- `project-memory` 0.5.4: SessionStart kontekst i napredak, „➡️ Sljedeće:“, pomoćne sesije (`/pomocna`, `/kraj-sesije auto`), `/stanje`, `/kraj-sesije`, `/vrati`, `/objavi`, `/napredak`, `/izdanje`, `/docs-audit`
+- `project-guard` 0.6.3: tajne, kapija, brava (i po worktreeu), sinhronizacija, čuvar obima, zavisnosti = ADR, limit fajlova, `/grane`, `/zdravlje`, `/codex-worktree`, samoosvježavanje u cloudu
+- Cloud sesija: `/kraj-sesije`, `/pomocna` i `/grane` koriste i cloud imena alata (arhiviranje radi, model druge sesije ne)
+- Lagani projekat: hookovi bez BLUEPRINT/INVENTAR/ARHITEKTURA/ADR šute, a čuvar obima i kapija rade
+- 135 testova prolazi na Linuxu; test pazi da kopije funkcija guard → memory ne zaostanu
 
 ## Sljedeće
-1. Ručna proba pomoćne sesije sa glavnom na posebnoj grani (`C:/dev/proba-pomocne`): pomoćna treba spojiti u tu granu, ne u `main`. Proba sa glavnom na `main` je prošla dvaput (PR #1 i #2: grana obrisana tek poslije MERGED, bez brave, arhivirano, glavna na „stiglo“ povukla i osvježila STATUS)
-2. `budzet` (šabloni 0.4.1, MVP 11/11): M3 je vanjski korak (Cloudflare Pages + PWA na Androidu, rok 2026-09-27), pa `/izdanje` v1.0
-3. `budzet`: CI je ugašen, jer GitHub zbog naplate na nalogu ne pokreće jobove. Puni testovi idu lokalno (`pnpm test:all`, i u `/izdanje`), a koraci iz ci.yml na Linuxu prolaze. Kad se naplata sredi: Actions → CI → Enable workflow
-4. Instalirati plugine na laptopu (README → Instalacija), pa `/zdravlje`
-5. Stranica sa komandama (pinovana na claude.ai): https://claude.ai/artifact/RAWkZcHhL5WufmHyNe2NnG, izvor je PODSJETNIK.md (osvježiti: `/zdravlje`, automatski pull)
-6. Skupljati nalaze iz stvarnog rada → male ispravke (verzija + push)
-7. `/grane pocisti` u `inhome` (36 gotovih grana, 3 foldera) i ovdje (5 grana). Grane spojenih PR-ova koje postoje samo na GitHubu `/grane` ne vidi: `claude/admiring-curie-t5f1u9`, `claude/sleepy-edison-bnoe2w`, `claude/great-franklin-ehmh5c`. GitHub: u svakom repou sa PR tokom uključiti *Automatically delete head branches* (Settings → General → Pull Requests)
-8. Cloud sesije: okruženje `moji-pluginsi` radi (README → Cloud sesije; repo je zato javan, proba 2026-11-01: sva tri `√ loaded` u sesiji bez repoa). Ostaje: (a) provjeriti SessionStart kontekst u cloud sesiji za pravi projekat (npr. `budzet`); (b) automatsko osvježavanje (guard 0.6.2: start sesije povuče `/opt/moji-pluginsi`): jednom izmijeniti setup skriptu `# v2` → `# v3` i dodati `CLAUDE_CODE_PLUGIN_DIR_WATCH=1`, pa sa sljedećim izdanjem provjeriti da poruka „Pluginovi su osvježeni“ stiže i da izmijenjen skill važi bez nove sesije
+1. Pushati ovu granu i spojiti PR (stavke 4–7 iz pregleda)
+2. Probati `/kraj-sesije` u cloud sesiji sa telefona: kartica bez `cwd` i arhiviranje preko `get_session` id-a
+3. Probati `/kickstart --lagano` na sljedećem malom projektu
+4. `budzet`: M3 (Cloudflare Pages + PWA na Androidu), pa `/izdanje` v1.0
+5. `/grane pocisti` u `inhome` i ovdje; u GitHub repoima uključiti *Automatically delete head branches*
 
 ## Blokeri / otvorena pitanja
-- `dependencies` u plugin.json (project-memory → project-guard): polje postoji, ali `claude plugin validate .` ga ne provjerava (prolazi i sa izmišljenim imenom), a bez guarda se cijeli project-memory ugasi. Nije dodano; odlučiti da li je tvrda zavisnost bolja od današnjeg rada „bez /grane smanjeno“ (provjereno 2026-11-04, Claude Code 2.1.318)
-- Projekat bez kickstarta i bez STATUS.md: `/kraj-sesije auto` tu staje (provjera markera je prva); riješiti ako se pojavi u praksi
+- `dependencies` u plugin.json (memory → guard): `claude plugin validate .` ga ne provjerava, a bez guarda gasi cijeli memory. Nije dodano; odlučiti da li je tvrda zavisnost bolja od rada „bez /grane smanjeno“
+- Worktreeovi: odluka (a), ostaje kako je. `/pomocna` već koristi nativni worktree, a `/codex-worktree` ostaje jer nativni ne radi za Codex
+- Cloud: klon `/opt/moji-pluginsi` u ovom okruženju bio je na guardu 0.6.1; provjeriti samoosvježavanje (setup skripta `# v3`, `CLAUDE_CODE_PLUGIN_DIR_WATCH=1`)
+- Projekat bez kickstarta i bez STATUS.md: `/kraj-sesije auto` tu staje; riješiti ako se pojavi u praksi
