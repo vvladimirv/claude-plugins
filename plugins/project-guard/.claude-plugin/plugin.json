@@ -1,6 +1,6 @@
 {
   "name": "project-guard",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "description": "Pravila koja mašina provjerava: tajne, kapija kickstarta, brava sesija, limit fajlova, čuvar obima, zavisnosti = ADR, mapa grana (/grane, /zdravlje, /pravila-pauza, /preuzmi-lock, /novi-projekat, /ideja, /codex-worktree, /pravilo-u-hook)",
   "author": {
     "name": "vvladimirv",

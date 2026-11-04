@@ -79,5 +79,6 @@ Hookovi su Node skripte: jedan poziv traje ~0,2 s, od čega je većina samo pokr
 1. Izmijeni plugin.
 2. `npm test`: testovi hook skripti.
 3. `claude plugin validate .`: provjera manifesta i skillova.
+   Iste dvije provjere pokreće i CI na GitHubu (`.github/workflows/ci.yml`) na svaki push i pull request.
 4. Probaj ga bez instalacije, u probnom projektu: `claude --plugin-dir C:\dev\claude-plugins\plugins\<plugin>`.
 5. Podigni `version` u `plugin.json` i `marketplace.json`, commit, push. Tek tada ga dobijaju svi računari.
