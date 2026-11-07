@@ -17,6 +17,8 @@ process.env.CC_GUARD_HOME = HOME;
 process.env.CLAUDE_PLUGIN_DATA = path.join(BASE, 'data');
 delete process.env.CLAUDE_PROJECT_DIR;
 delete process.env.CC_PRAVILA;
+delete process.env.CLAUDE_CODE_REMOTE; // cloud kontejner: testovi ne smiju povući pravi klon pluginova
+delete process.env.CLAUDE_CODE_PLUGIN_DIRS;
 
 let n = 0;
 

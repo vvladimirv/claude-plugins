@@ -1,0 +1,30 @@
+# Iste provjere kao prije commita (CLAUDE.md): npm test i claude plugin validate.
+# Pluginovi se auto-updateom šire na sve računare, pa greška na main odmah stiže svuda.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  provjere:
+    name: Testovi i validacija plugina
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Testovi hookova (node:test, bez npm zavisnosti).
+      - name: npm test
+        run: npm test
+
+      # Claude Code CLI: validate radi bez prijave (provjereno sa praznim HOME).
+      - name: Instaliraj Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: claude plugin validate
+        run: claude plugin validate .

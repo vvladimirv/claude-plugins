@@ -10,6 +10,8 @@ allowed-tools: [Bash, Read]
 
 **Prvo, projekat bez kickstarta:** ako projekat ima fajl `.claude/bez-kickstarta`, ovu komandu ovdje ne izvršavaj i ništa ne pravi (ni `STATUS.md`, ni `CHANGELOG.md`, ni `docs/*`, ni `.claude/kickstart.json`). Reci korisniku da projekat ima svoj sistem dokumenata i da pravila rada nađe u `AGENTS.md`/`CLAUDE.md` projekta. Ako ta pravila kažu kako se ovaj posao ovdje radi, navedi to u jednoj rečenici. Zatim stani.
 
+**Lagani projekat** (`.claude/kickstart.json` ima `"rezim": "lagano"`): ovdje nema plana sa rokovima, pa ništa ne računaj i ništa ne pravi. Reci: „Lagani projekat nema plan sa rokovima; stanje je u STATUS.md. Za milestone i rokove: `/kickstart --nadogradi` → prelazak na puni." Zatim stani.
+
 *Zašto:* bez mjerenja napretka rad može trajati beskonačno. Pregled se računa mašinski iz `docs/BLUEPRINT.md` i `docs/INVENTAR-FUNKCIJA.md`, pa je uvijek tačan koliko i ti dokumenti.
 
 Skripta je u folderu ovog plugina: `<folder ovog skilla>/../../hooks/progress-cli.js`.

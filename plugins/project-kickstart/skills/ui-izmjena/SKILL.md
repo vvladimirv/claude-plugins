@@ -9,6 +9,8 @@ model: sonnet
 
 **Prvo, projekat bez kickstarta:** ako projekat ima fajl `.claude/bez-kickstarta`, ovu komandu ovdje ne izvršavaj i ništa ne pravi (ni `STATUS.md`, ni `CHANGELOG.md`, ni `docs/*`, ni `.claude/kickstart.json`). Reci korisniku da projekat ima svoj sistem dokumenata i da pravila rada nađe u `AGENTS.md`/`CLAUDE.md` projekta. Ako ta pravila kažu kako se ovaj posao ovdje radi, navedi to u jednoj rečenici. Zatim stani.
 
+**Lagani projekat** (`.claude/kickstart.json` ima `"rezim": "lagano"`): radi smanjeno i ne staje u koraku 1. DIZAJN-SISTEM, EKRANI i INVENTAR ne postoje: pogođene ekrane i komponente nađi u kodu, a u tabeli koraka 2 umjesto F-funkcija navedi šta korisnik na tom ekranu radi. Mockup i OK, brzi testovi, screenshot testovi (ako postoje) i `ux-recenzent` ostaju. Upis u DIZAJN-SISTEM.md i EKRANI.md preskoči.
+
 *Zašto:* kod redizajna funkcije tiho nestaju, jer novi izgled "zaboravi" dugme ili ekran. Ovaj tok radi izmjenu po ugovoru: inventar funkcija i lista ekrana moraju i poslije izmjene biti tačni.
 
 Zahtjev: `$ARGUMENTS`

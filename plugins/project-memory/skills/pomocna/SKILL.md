@@ -19,7 +19,7 @@ Zadatak: `$ARGUMENTS`. Ako je prazno, uzmi zadatak o kojem se upravo pričalo; a
    - Provjeri da je bazna grana na GitHubu: `git ls-remote --exit-code --heads origin <bazna>`. Ako nije, pitaj: "Pushujem granu <bazna> na GitHub?" sa opcijama "Da, pushuj" / "Ne, bez kartice". Push samo uz "da".
    - Ako bazna grana ima commitove koji nisu na GitHubu (`git status -sb` pokazuje `ahead`), pomoćna ih neće vidjeti. Pitaj da li da ih pushujem prije kartice.
 3. **Kartica:** ako alat nije učitan, ToolSearch `select:mcp__ccd_session__spawn_task`. Pozovi `spawn_task`:
-   - `cwd`: korijen glavnog repoa (folder iznad `git rev-parse --path-format=absolute --git-common-dir`). Aplikacija sama pravi svjež worktree.
+   - `cwd`: korijen glavnog repoa (folder iznad `git rev-parse --path-format=absolute --git-common-dir`). Aplikacija sama pravi svjež worktree. `cwd` šalji samo ako ga shema alata ima; ako ga nema (cloud sesija, `CLAUDE_CODE_REMOTE=true`), prvi red prompta je `Korijen projekta: <putanja>`.
    - `title`: zadatak kao naredba (< 60 znakova). `tldr`: jedna-dvije rečenice bez žargona: zašto sada i šta će pomoćna uraditi.
    - `prompt` mora stajati sam za sebe: zadatak, bitan kontekst iz ove sesije (šta je urađeno, odluke korisnika, fajlovi), bez tajni i ključeva, pa na kraju ovaj blok sa upisanom baznom granom:
      ```text

@@ -45,6 +45,15 @@ jobs:
       - run: pip install -r requirements.txt
       - run: {{KOMANDA_PUNI_TESTOVI}}
 
+      # UPUTA: Flutter/Dart (pubspec.yaml). {{KOMANDA_PUNI_TESTOVI}} = "flutter test", a za čisti Dart (bez Fluttera) "dart test";
+      # Flutter SDK sadrži Dart, pa ostali koraci ostaju isti.
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: {{KOMANDA_PUNI_TESTOVI}}
+
       # UPUTA: E2E + screenshot testovi (samo ako projekat ima UI).
       # Snimci ekrana zavise od OS-a: Playwright dodaje -win32 / -linux u ime fajla, a lokalni Windows snimci ne važe na Linuxu.
       # Zato CI dok u repou nema *-linux.png snimaka poredi samo ponašanje (--ignore-snapshots).

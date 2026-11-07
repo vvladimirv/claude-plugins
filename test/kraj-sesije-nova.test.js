@@ -53,7 +53,8 @@ test('kraj-sesije: bez alata se ispiše prompt i ništa se ne arhivira', () => {
 
 test('kraj-sesije: alati za novu sesiju su u allowed-tools', () => {
   const fm = text.match(/^---\n([\s\S]*?)\n---/)[1];
-  for (const t of ['AskUserQuestion', 'ToolSearch', 'mcp__ccd_session__spawn_task', 'mcp__ccd_session_mgmt__archive_session']) {
+  for (const t of ['AskUserQuestion', 'ToolSearch', 'mcp__ccd_session__spawn_task', 'mcp__ccd_session_mgmt__archive_session',
+    'mcp__claude-code-remote__archive_session', 'mcp__claude-code-remote__get_session']) {
     assert.ok(fm.includes(t), `allowed-tools nema ${t}`);
   }
 });

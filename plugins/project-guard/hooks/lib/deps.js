@@ -5,9 +5,9 @@ const fs = require('fs');
 const path = require('path');
 const { relToRoot, git, loadState, saveState, noKickstart } = require('./common');
 
-const MANIFEST = /(^|\/)(package\.json|requirements[\w.-]*\.txt|pyproject\.toml|Cargo\.toml)$/i;
-const ROOT_MANIFESTS = ['package.json', 'requirements.txt', 'pyproject.toml', 'Cargo.toml'];
-const INSTALL = /\b(npm|pnpm|yarn|bun)\s+(add|install|i)\s+[^-\s]|\b(pip3?|uv\s+pip)\s+install\s+[^-\s]|\b(poetry|uv)\s+add\b|\bcargo\s+add\b/i;
+const MANIFEST = /(^|\/)(package\.json|requirements[\w.-]*\.txt|pyproject\.toml|Cargo\.toml|pubspec\.yaml)$/i;
+const ROOT_MANIFESTS = ['package.json', 'requirements.txt', 'pyproject.toml', 'Cargo.toml', 'pubspec.yaml'];
+const INSTALL = /\b(npm|pnpm|yarn|bun)\s+(add|install|i)\s+[^-\s]|\b(pip3?|uv\s+pip)\s+install\s+[^-\s]|\b(poetry|uv)\s+add\b|\bcargo\s+add\b|\b(flutter|dart)\s+pub\s+add\b/i;
 
 function tomlSection(text, header) {
   const m = text.match(new RegExp(`^\\[${header.replace(/[.[\]]/g, '\\$&')}\\]\\s*$([\\s\\S]*?)(?=^\\[|$(?![\\s\\S]))`, 'm'));
@@ -40,6 +40,25 @@ function parse(file, text) {
       for (const l of tomlSection(text, sec).split(/\r?\n/)) {
         const k = l.match(/^\s*([\w-]+)\s*=/);
         if (k) add(k[1]);
+      }
+    }
+  } else if (base === 'pubspec.yaml') {
+    // Bez YAML biblioteke: paket je ključ uvučen za 2 razmaka ispod `dependencies:` / `dev_dependencies:`.
+    // `flutter:` i paketi sa `sdk: flutter` (flutter_test, flutter_localizations...) su dio SDK-a, ne biblioteke.
+    let section = null;
+    let last = null;
+    for (const l of text.split(/\r?\n/)) {
+      if (/^\s*(#|$)/.test(l)) continue;
+      const top = l.match(/^([\w-]+):/);
+      if (top) { section = /^(dev_)?dependencies$/.test(top[1]) ? top[1] : null; last = null; continue; }
+      if (!section) continue;
+      const pkg = l.match(/^ {2}([A-Za-z_][\w-]*):/);
+      if (pkg) {
+        last = /^(flutter|sdk)$/.test(pkg[1]) ? null : pkg[1];
+        add(last);
+      } else if (last && /^ {4}sdk:/.test(l)) {
+        names.delete(last.toLowerCase());
+        last = null;
       }
     }
   }

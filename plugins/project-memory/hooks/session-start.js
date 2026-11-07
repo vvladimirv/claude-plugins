@@ -28,8 +28,11 @@ const HELPERS_WORKTREE = '## Pomoćne sesije\n'
   + 'gotov i provjeren, sam pokreni `/kraj-sesije auto <bazna grana>`. Inače radi kao glavna (samostalan zadatak ide na '
   + 'karticu po `/pomocna`).';
 
-function trimStatus(text) {
-  let lines = text.replace(/\r\n/g, '\n').trim().split('\n');
+const CUT_NOTE = '\n… (skraćeno: STATUS.md je predugačak, treba ga skratiti na ≤ 30 linija)';
+
+// Staro skraćivanje: od vrha, po linijama pa po znakovima.
+function trimFlat(text) {
+  let lines = text.split('\n');
   let cut = lines.length > MAX_STATUS_LINES;
   lines = lines.slice(0, MAX_STATUS_LINES);
   let out = lines.join('\n');
@@ -37,7 +40,53 @@ function trimStatus(text) {
     out = out.slice(0, MAX_STATUS_CHARS);
     cut = true;
   }
-  return cut ? out + '\n… (skraćeno: STATUS.md je predugačak, treba ga skratiti na ≤ 30 linija)' : out;
+  return cut ? out + CUT_NOTE : out;
+}
+
+// STATUS razbijen po `## ` naslovima: prvi dio je zaglavlje (`# STATUS` + „Ažurirano“).
+function splitSections(text) {
+  const sections = [];
+  let current = { title: '', lines: [] };
+  for (const line of text.split('\n')) {
+    if (/^## /.test(line)) {
+      sections.push(current);
+      current = { title: line, lines: [line] };
+    } else {
+      current.lines.push(line);
+    }
+  }
+  sections.push(current);
+  return sections;
+}
+
+// Dugačak „Radi“ ne smije progutati „Sljedeće“ i „Blokere“: oni (i zaglavlje) idu cijeli, a „Radi“ dobija ostatak
+// budžeta linija i znakova. Bez tih naslova ostaje staro skraćivanje od vrha.
+function trimStatus(text) {
+  const clean = text.replace(/\r\n/g, '\n').trim();
+  const sections = splitSections(clean);
+  const radi = sections.find((s) => /^## Radi\b/i.test(s.title));
+  const sljedece = sections.find((s) => /^## Sljede[ćc]e\b/i.test(s.title));
+  if (!radi || !sljedece) return trimFlat(clean);
+
+  const others = sections.filter((s) => s !== radi);
+  const otherLines = others.reduce((n, s) => n + s.lines.length, 0);
+  const otherChars = others.reduce((n, s) => n + s.lines.join('\n').length + 1, 0);
+  const lineBudget = Math.max(2, MAX_STATUS_LINES - otherLines);
+  const charBudget = Math.max(radi.title.length + 1, MAX_STATUS_CHARS - otherChars);
+
+  let radiText = radi.lines.join('\n');
+  let cut = false;
+  if (radi.lines.length > lineBudget) {
+    radiText = radi.lines.slice(0, lineBudget).join('\n');
+    cut = true;
+  }
+  if (radiText.length > charBudget) {
+    radiText = radiText.slice(0, charBudget);
+    cut = true;
+  }
+  if (cut) radiText += CUT_NOTE + '\n';
+
+  return sections.map((s) => (s === radi ? radiText : s.lines.join('\n'))).join('\n').trimEnd();
 }
 
 function buildContext({ statusText, gitLog, uncommitted, progress, worktree }) {

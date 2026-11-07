@@ -1,14 +1,14 @@
 ---
 name: kickstart
-description: "Ispravan start projekta. Intervju, pojmovi, stack, arhitektura i blueprint, pa temeljni dokumenti, git hookovi i prvi commit. Za nov projekat; --postojeci za projekat sa kodom; --nadogradi za nove šablone."
-argument-hint: "<tema projekta> | --postojeci | --nadogradi"
+description: "Ispravan start projekta. Intervju, pojmovi, stack, arhitektura i blueprint, pa temeljni dokumenti, git hookovi i prvi commit. Za nov projekat; --lagano za malu ličnu aplikaciju; --postojeci za projekat sa kodom; --nadogradi za nove šablone ili prelazak na puni."
+argument-hint: "<tema projekta> [--lagano | --puno] | --postojeci | --nadogradi"
 ---
 
 # /kickstart: ispravan start projekta
 
 Korisnik je pokrenuo: `$ARGUMENTS`
 
-Tvoj zadatak je postaviti temelj projekta koji se kasnije neće morati mijenjati. Radiš u **6 faza**. Nakon faza 1–4 **staneš i tražiš odobrenje** (AskUserQuestion ili jasno pitanje). Ništa ne pišeš na disk prije faze 5.
+Tvoj zadatak je postaviti temelj projekta koji se kasnije neće morati mijenjati. Radiš u **6 faza** (lagani režim: vidi **Režim lagano**). Nakon faza 1–4 **staneš i tražiš odobrenje** (AskUserQuestion ili jasno pitanje). Ništa ne pišeš na disk prije faze 5.
 
 Korisnik uči kroz rad: uz svaku fazu u 1–2 rečenice objasni **zašto** ta faza postoji (koji problem sprječava). Piši na bosanskom (ijekavica). Kod, identifikatori i imena fajlova koda su na engleskom.
 
@@ -30,7 +30,8 @@ Korisnik uči kroz rad: uz svaku fazu u 1–2 rečenice objasni **zašto** ta fa
    - napravi folder i nastavi sve faze tamo, sa **apsolutnim putanjama** u taj folder. Hookovi (kapija, brava) važe za ciljni folder,
    - na kraju reci korisniku da otvori novu sesiju u tom folderu za rad na M1.
 7. Ako postoji `.claude/kickstart.json`, a argument nije nova tema: projekat je već pokrenut. Ponudi pregled dokumenata ili `--nadogradi`. Ne generiši ništa ponovo.
-8. Ako folder već ima kod (npr. `src/`, `package.json`, `*.py`, `index.html`) ili je proslijeđen `--postojeci`: radi u **režimu postojećeg projekta**:
+8. **Režim:** `--lagano` ili `--puno` u argumentu odlučuje odmah (zastavica nije dio teme). Bez zastavice režim se bira u fazi 1, poslije pitanja 6.
+9. Ako folder već ima kod (npr. `src/`, `package.json`, `*.py`, `index.html`) ili je proslijeđen `--postojeci`: radi u **režimu postojećeg projekta**:
    - prvo pročitaj postojeći kod i dokumente (README, CLAUDE.md, *.md u korijenu),
    - intervju skrati na ono što se ne vidi iz koda,
    - u fazi 5 **nikad ne prepisuj** postojeće fajlove. Pravi samo one koji fale, a za postojeće predloži izmjene kao diff.
@@ -46,6 +47,7 @@ Postavi najviše 8 pitanja, grupisano (AskUserQuestion, do 4 po pozivu). Ne pita
 4. Gdje radi: web, mobitel (PWA), desktop, skripta/CLI, servis?
 5. Podaci: odakle dolaze, da li su lični ili osjetljivi, gdje se čuvaju?
 6. Ko ga koristi: samo ti, mala grupa ili javno? Treba li prijava?
+   - Bez `--lagano`/`--puno`, odmah poslije odgovora pitaj (AskUserQuestion): **"Lagani ili puni start?"**. Za aplikaciju samo za korisnika, bez roka i bez tuđih podataka preporuči "Lagano" (prva opcija): samo VIZIJA, STATUS, AGENTS i CLAUDE, bez plana sa rokovima. Inače preporuči "Puno". Na "Lagano" nastavi po **Režim lagano**.
 7. Gdje se koristi: samo na ovom računaru, na kućnoj mreži (i telefon u kući) ili na internetu? Nije svaka aplikacija za internet: kad je koristi jedna osoba, a podaci su lični, preporuči ovaj računar. Odgovor ide u VIZIJA.md → `## Gdje se koristi` (čita ga `/objavi`).
 8. Ima li rok ili ograničenje (budžet, postojeći sistem s kojim se povezuje)?
 
@@ -142,7 +144,7 @@ Pravila za sadržaj:
 
 Na kraju napravi `.claude/kickstart.json`:
 ```json
-{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.5.0", "faza": "razvoj", "izdanja": [], "ui": <true|false>, "stack": "<kratko>" }
+{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.5.1", "rezim": "puno", "faza": "razvoj", "izdanja": [], "ui": <true|false>, "stack": "<kratko>" }
 ```
 
 ## Faza 6: git start
@@ -163,8 +165,27 @@ Kratko, u tabeli: šta je napravljeno (fajlovi), šta je prvi zadatak iz M1 i ko
 
 *Zašto:* plugin se razvija. Projekti pokrenuti starijim šablonima treba da dobiju nova pravila i fajlove, ali bez gubljenja vlastitog sadržaja.
 
-1. Pročitaj `.claude/kickstart.json` ciljnog projekta (Faza 0, tačka 3). Ako ga nema ni u jednom kandidatu, predloži `--postojeci`.
+1. Pročitaj `.claude/kickstart.json` ciljnog projekta (Faza 0, tačka 3). Ako ga nema ni u jednom kandidatu, predloži `--postojeci`. Ako je `"rezim": "lagano"`, prvo pitaj (AskUserQuestion): **"Samo nove verzije šablona ili prelazak na puni?"** sa "Samo šabloni" (prva) / "Prelazak na puni". Za prelazak vidi **Režim lagano → Prelazak na puni**. Kad polja `rezim` nema, projekat je puni.
 2. Pročitaj `templates/CHANGELOG-SABLONA.md`. Izdvoji sve verzije novije od `verzija_sablona` u projektu.
-3. Za svaku stavku napravi plan: **nov fajl** se pravi iz šablona i popunjava podacima projekta (stack i komande iz AGENTS.md i ADR 0001). **Postojeći fajl** dobija samo minimalan dodatak (diff), a postojeći tekst se ne mijenja.
+3. Za svaku stavku napravi plan (u laganom projektu preskoči stavke za fajlove koje lagani nema, npr. BLUEPRINT ili CI): **nov fajl** se pravi iz šablona i popunjava podacima projekta (stack i komande iz AGENTS.md i ADR 0001). **Postojeći fajl** dobija samo minimalan dodatak (diff), a postojeći tekst se ne mijenja.
 4. Pokaži plan kao listu diffova i čekaj OK.
 5. Primijeni, postavi `verzija_sablona` na trenutnu verziju i commituj: `chore: nadogradnja temelja <stara> → <nova>`.
+
+## Režim lagano
+
+*Zašto:* mala lična aplikacija ne treba plan sa rokovima, inventar ni arhitekturu na papiru. Previše dokumenata se ne održava, pa zastari i smeta. Lagani start zadrži ono što štiti (obim, stanje, pravila, tajne, testovi) i ništa više.
+
+1. **Faza 1:** samo pitanja 1–4 i 7 (problem i korisnici, MVP sa 3–5 stavki, van obima, gdje radi, gdje se koristi). Bez rječnika pojmova.
+2. **Faza 2:** jedna preporuka stacka i jedna alternativa, svaka u jednoj rečenici. Tabela i ADR otpadaju.
+3. **Faze 3 i 4** otpadaju. Prije faze 5 pokaži sažetak (problem, MVP, van obima, stack) i čekaj jedan "OK".
+4. **Faza 5**, samo ovi fajlovi (ostali iz tabele se ne prave):
+   - `AGENTS.md`, `CLAUDE.md`, `STATUS.md`, `README.md`, `docs/VIZIJA.md`, `.claude/settings.json`, `.gitignore`, `.gitattributes`, `.githooks/` (oba), `scripts/test.mjs`,
+   - `AGENTS.md` iz šablona, ali skraćen: u „Gdje je šta" samo VIZIJA, STATUS i git log; ispod naslova linija `Stack: <izbor>, jer <razlog>`; bez pravila **Pojmovi**; **Struktura** glasi „novi kod prati postojeću strukturu foldera, jedan fajl = jedna odgovornost"; **Zavisnosti** glasi „nova biblioteka samo uz OK korisnika, upiši je u liniju Stack"; u „Komande" bez punih testova ako nema CI,
+   - `STATUS.md` umjesto milestonea ima `**Cilj:** MVP iz docs/VIZIJA.md → Obim`,
+   - bez kostura foldera, `fixtures/`, `docs/adr/` (pravi ga `/adr` kad zatreba) i CI,
+   - `.claude/kickstart.json` kao gore, ali sa `"rezim": "lagano"`.
+5. **Faza 6** i završna poruka kao gore. Dodaj liniju: „Kad projekat poraste: `/kickstart --nadogradi` → prelazak na puni."
+
+### Prelazak na puni
+Radi kao režim postojećeg projekta (Faza 0, tačka 9): pročitaj kod i postojeće dokumente, pitaj samo ono što se ne vidi (pojmovi, tempo i rok), pa faze 3 i 4 sa odobrenjem. U fazi 5 napravi samo fajlove koji fale. Postojeće fajlove ne prepisuj, nego predloži diff (npr. puna pravila u AGENTS.md). Na kraju `"rezim": "puno"` u kickstart.json i commit `chore: kickstart lagano → puno`.
+

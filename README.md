@@ -33,6 +33,42 @@ Ne uređuj instalacijski cache.
 
 Detaljno: [podržane zaštite, ograničenja i dokaz testiranja](docs/UNIVERZALNI-PLUGINI.md).
 
+### Podešavanje po računaru (jednom)
+- **Korijen projekata:** kapija kickstarta važi samo za foldere ispod `C:dev`. Ako su projekti na laptopu negdje drugdje, upiši putanju (jednu po liniji) u `~/.claude/kickstart-korijeni.txt`.
+- **Lista ideja** (`/ideja`, `/novi-projekat`): privatni repo `vvladimirv/ideje`, kloniran u `<korijen>/ideje`:
+  ```bash
+  gh repo clone vvladimirv/ideje C:/dev/ideje
+  ```
+
+Na kraju otvori novi chat i otkucaj `/zdravlje`: pokaže šta još fali.
+
+## Cloud sesije (claude.ai/code, telefon)
+Cloud sesija svaki put dobije nov kontejner, a marketplace je tu ugašen (`SKIP_PLUGIN_MARKETPLACE=true`). Zato `claude plugin install` i `enabledPlugins` tu ne rade. Pluginovi se učitavaju iz foldera, preko varijable `CLAUDE_CODE_PLUGIN_DIRS` (folder sa više pluginova učita svaki od njih).
+
+Okruženje `moji-pluginsi` (meni okruženja u naslovu sesije → Edit):
+- **Environment variables** (dvije linije):
+  ```
+  CLAUDE_CODE_PLUGIN_DIRS=/opt/moji-pluginsi/plugins
+  CLAUDE_CODE_PLUGIN_DIR_WATCH=1
+  ```
+- **Setup script:**
+  ```bash
+  #!/bin/bash
+  # v2
+  LOG=/opt/moji-pluginsi.log
+  date > "$LOG"
+  if git clone --depth 1 https://github.com/vvladimirv/claude-plugins.git /opt/moji-pluginsi >> "$LOG" 2>&1; then
+    echo "OK" >> "$LOG"
+  else
+    echo "KLON NIJE USPIO" >> "$LOG"
+  fi
+  ```
+Sesije za bilo koji projekat pokreći u tom okruženju. Provjera u sesiji: `claude plugin list` (sva tri `√ loaded`), a ako ne radi, `cat /opt/moji-pluginsi.log`.
+
+- **Repo mora biti javan.** Git u cloud sesiji ima prijavu samo za repoe te sesije, pa privatni repo setup skripta ne može klonirati.
+- **Nova verzija stiže sama** (od project-guard 0.6.2). Okruženje pamti stanje poslije setup skripte i daje ga svakoj novoj sesiji, pa je klon u `/opt/moji-pluginsi` star. Zato project-guard na startu sesije povuče klon sa GitHuba (samo fast-forward i samo ako u klonu nema izmjena) i javi nove verzije. Izmijenjeni hookovi rade odmah. `CLAUDE_CODE_PLUGIN_DIR_WATCH=1` govori Claude Codeu da sam ponovo učita plugin kad mu se fajlovi promijene, pa bi i izmijenjeni skillovi i nove komande trebali važiti u istoj sesiji (to još nije provjereno u cloud sesiji). Ako nešto ipak ne stigne, ili je greška u `~/.claude/pravila.log` (`selfupdate`): izmijeni skriptu (`# v2` → `# v3`), pa nove sesije kloniraju svjež `main`.
+- Hookovi rade (Node je u kontejneru). Kapija kickstarta važi samo ispod korijena projekata (`C:\dev` ili `~/.claude/kickstart-korijeni.txt`), pa u cloudu ne smeta.
+
 ## Razvoj
 
 ```powershell
@@ -43,9 +79,11 @@ claude plugin validate .
 
 - Claude manifesti su izvor verzija; paketiranje generiše Codex manifeste i katalog.
 - Poslije izmjene šablona podigni verziju šablona, upiši changelog i pokreni `node test/sablon-hash.js --upisi`.
-- Testovi koriste privremene projekte; CI provjerava Windows i Linux.
+- Testovi koriste privremene projekte; CI na GitHubu (`.github/workflows/ci.yml`) provjerava Windows i Linux na svaki push i pull request.
 - `.agent-checks.json` definiše obavezne provjere. Stage namjeravanih fajlova, zatim `npm run check`, pa commit.
 - Neobjavljena grana nije isto što i instaliran paket. Setup koristi folder iz kojeg je pokrenut.
+- Probaj plugin bez instalacije, u probnom projektu: `claude --plugin-dir C:devclaude-pluginsplugins<plugin>`.
+- Objava: podigni `version` u `plugin.json` i `marketplace.json`, commit, push. Cloud sesije uzimaju `main` sa GitHuba; ostali računari `git pull` pa `node scripts/setup.js --apply`.
 
 ## Novi postupci
 

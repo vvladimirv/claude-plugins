@@ -2,10 +2,16 @@
 
 Nova verzija ide na vrh. Svaka stavka kaže koji fajl u projektu i šta tačno treba dodati. Nadogradnja nikad ne prepisuje sadržaj projekta: samo dodaje ono što fali.
 
+## 0.5.1
+- Spajanje grana: projekat koji je na 0.5.0 a nema stavke iz **0.4.5** (Flutter/Dart blok u `.github/workflows/ci.yml`) dobija ih sada, po uputstvu iz 0.4.5. Ostali ne mijenjaju ništa.
+
 ## 0.5.0
 - **scripts/checks.cjs**: samostalan runner obaveznih provjera i dokaz vezan za sadržaj i Git indeks worktreea.
 - **.githooks/pre-commit.mjs**: isti identitet sesije za Claude i Codex; sa `.agent-checks.json` traži važeći dokaz, bez njega zadržava postojeći test postupak.
 - **.agent-checks.json**: projektnim komandama popuniti kada postoje prvi stvarni testovi; ne prihvatati preskakanje obavezne grupe kao uspjeh. Nadogradnja čuva postojeće komande i konfiguraciju.
+
+## 0.4.5
+- **.github/workflows/ci.yml** (iz `github-ci.yml`): nov blok za Flutter/Dart projekte (`pubspec.yaml`): `subosito/flutter-action@v2` (kanal `stable`, keš), `flutter pub get`, pa puni testovi (`flutter test`, a za čisti Dart `dart test`). Važi samo za projekat sa `pubspec.yaml`: ako ci.yml već ima Flutter korake, uporedi ih sa šablonom i predloži samo razlike; ostali projekti ne mijenjaju ništa.
 
 ## 0.4.4
 - **AGENTS.md**, sekcija `## Pravila`: novo pravilo **Isti problem drugdje** (tekst iz šablona), poslije pravila o paralelnom radu. Ako projekat ima UI pravilo, ono ide poslije novog i dobija sljedeći broj. Ako projekat već ima isto pravilo drugim riječima (u AGENTS.md ili CLAUDE.md), ne dodaji drugo.

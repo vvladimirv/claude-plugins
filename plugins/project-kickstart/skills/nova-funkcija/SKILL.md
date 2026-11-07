@@ -9,6 +9,8 @@ model: sonnet
 
 **Prvo, projekat bez kickstarta:** ako projekat ima fajl `.claude/bez-kickstarta`, ovu komandu ovdje ne izvršavaj i ništa ne pravi (ni `STATUS.md`, ni `CHANGELOG.md`, ni `docs/*`, ni `.claude/kickstart.json`). Reci korisniku da projekat ima svoj sistem dokumenata i da pravila rada nađe u `AGENTS.md`/`CLAUDE.md` projekta. Ako ta pravila kažu kako se ovaj posao ovdje radi, navedi to u jednoj rečenici. Zatim stani.
 
+**Lagani projekat** (`.claude/kickstart.json` ima `"rezim": "lagano"`): radi smanjeno: korak 1 (obim) i test ponašanja prije koda ostaju. POJMOVI, ARHITEKTURA i INVENTAR ne postoje: preskoči korake 2 i 3, novi kod prati postojeću strukturu foldera, bez F-broja i bez upisa u inventar, EKRANI i POJMOVI. Commit: `feat(<ime>): kostur <ime>`.
+
 *Zašto:* agent najlakše dopisuje kod u fajl koji je već otvoren, i tako nastaju monoliti. Nova funkcija zato uvijek dobija svoj folder, svoj F-broj i svoj test prije prve linije koda.
 
 Zahtjev: `$ARGUMENTS`

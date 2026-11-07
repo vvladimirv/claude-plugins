@@ -9,6 +9,8 @@ model: sonnet
 
 **Prvo, projekat bez kickstarta:** ako projekat ima fajl `.claude/bez-kickstarta`, ovu komandu ovdje ne izvršavaj i ništa ne pravi (ni `STATUS.md`, ni `CHANGELOG.md`, ni `docs/*`, ni `.claude/kickstart.json`). Reci korisniku da projekat ima svoj sistem dokumenata i da pravila rada nađe u `AGENTS.md`/`CLAUDE.md` projekta. Ako ta pravila kažu kako se ovaj posao ovdje radi, navedi to u jednoj rečenici. Zatim stani.
 
+**Lagani projekat** (`.claude/kickstart.json` ima `"rezim": "lagano"`): radi isto. Ako `docs/adr/` ne postoji, napravi ga. Ako nema `docs/ARHITEKTURA.md`, link u koraku 4 preskoči, a u liniju `Stack:` u AGENTS.md dodaj samo ime biblioteke kad je odluka nova zavisnost.
+
 *Zašto:* za šest mjeseci niko se neće sjećati **zašto** je nešto urađeno baš tako. Bez zapisanog razloga odluka se ili slijepo poštuje, ili se slučajno pokvari.
 
 Naslov: `$ARGUMENTS`
