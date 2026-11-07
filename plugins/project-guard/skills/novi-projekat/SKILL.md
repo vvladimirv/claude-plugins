@@ -1,7 +1,7 @@
 ---
 name: novi-projekat
-description: Tema van obima postaje nov projekat: folder u C:\dev\<ime> sa IDEJA.md, a temelj postavlja /kickstart.
-argument-hint: <tema ili ime projekta>
+description: "Tema van obima postaje nov projekat: folder u C:\\dev\\<ime> sa IDEJA.md, a temelj postavlja /kickstart."
+argument-hint: "<tema ili ime projekta>"
 model: haiku
 allowed-tools: [Read, Write, Bash, Glob, AskUserQuestion]
 ---

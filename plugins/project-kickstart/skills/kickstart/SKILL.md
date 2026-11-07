@@ -1,7 +1,7 @@
 ---
 name: kickstart
-description: Ispravan start projekta. Intervju, pojmovi, stack, arhitektura i blueprint, pa temeljni dokumenti, git hookovi i prvi commit. Za nov projekat; --lagano za malu ličnu aplikaciju; --postojeci za projekat sa kodom; --nadogradi za nove šablone ili prelazak na puni.
-argument-hint: <tema projekta> [--lagano | --puno] | --postojeci | --nadogradi
+description: "Ispravan start projekta. Intervju, pojmovi, stack, arhitektura i blueprint, pa temeljni dokumenti, git hookovi i prvi commit. Za nov projekat; --lagano za malu ličnu aplikaciju; --postojeci za projekat sa kodom; --nadogradi za nove šablone ili prelazak na puni."
+argument-hint: "<tema projekta> [--lagano | --puno] | --postojeci | --nadogradi"
 ---
 
 # /kickstart: ispravan start projekta
@@ -76,7 +76,7 @@ Predloži:
 5. **Granice**: limit fajla 300 linija (upozorenje) / 500 (obavezna podjela). Gdje žive tajne (`.env`, nikad u repou), a gdje stvarni podaci (izvan repoa, u repou samo `fixtures/`).
 6. Ako ima UI: **dizajn sistem** (jedan fajl tokena, katalog komponenti) i lista ekrana.
 
-Prije nego pokažeš prijedlog, pošalji ga agentu **`arhitekta`** (Agent tool; agent iz plugina project-kickstart) zajedno sa sažetkom iz faza 1–2. Ispravi sve 🔴 stavke, a korisniku pokaži prijedlog i kratko šta je arhitekta promijenio. Ako agent nije dostupan, sam provjeri:
+Prije nego pokažeš prijedlog, pošalji ga agentu **`arhitekta`** (Claude: Agent tool; Codex: agent arhitekta i skill project-kickstart:arhitekta) zajedno sa sažetkom iz faza 1–2. Ispravi sve 🔴 stavke, a korisniku pokaži prijedlog i kratko šta je arhitekta promijenio. Ako agent nije dostupan, sam provjeri:
 - Da li je išta složenije nego što MVP traži?
 - Da li svaka MVP funkcija ima svoje mjesto?
 - Da li postoji fajl za koji se već vidi da će postati monolit?
@@ -128,7 +128,14 @@ Pročitaj sve šablone iz `templates/` i napravi fajlove u projektu. Popuni ih s
 
 Zatim napravi **kostur foldera** iz faze 3: prazni folderi sa `.gitkeep`. Ne piši aplikacijski kod, to je posao milestone-a M1.
 
-Napravi i **`scripts/test.mjs`**, Node skriptu za svaki stack: Node je već potreban za git hookove, pa ista skripta radi na Windowsu, Linuxu i Macu (`.ps1` bi na Linuxu i Macu tražio `pwsh`). Skripta pokrene brze testove sa tihim reporterom (npr. `pytest -q --tb=short`, `vitest run --reporter=dot`, `playwright test --reporter=line`), upiše pun izlaz u `test-log.txt` (dodaj ga u `.gitignore`), a na ekran ispiše samo sažetak i, ako testovi padnu, najviše 40 linija grešaka. Izlazni kod mora biti isti kao kod test runnera. Kad još nema nijednog testa, skripta vraća 0 (npr. `vitest run --passWithNoTests`, a za pytest izlazni kod 5 znači "nema testova"), jer je pokreće i pre-commit. *Zašto:* testovi ne troše tokene, ali njihov izlaz troši, kad ga agent čita.
+Napravi i **`scripts/test.mjs`**, Node skriptu za svaki stack: Node je već potreban za git hookove, pa ista skripta radi na Windowsu, Linuxu i Macu (`.ps1` bi na Linuxu i Macu tražio `pwsh`). Skripta pokrene brze testove sa tihim reporterom (npr. `pytest -q --tb=short`, `vitest run --reporter=dot`, `playwright test --reporter=line`), upiše pun izlaz u `test-log.txt` (dodaj ga u `.gitignore`), a na ekran ispiše samo sažetak i, ako testovi padnu, najviše 40 linija grešaka. Izlazni kod mora biti isti kao kod test runnera. Ako još nema testova u početnom kosturu, jasno ispiši "Temelj projekta: testovi još ne postoje"; taj početni commit nije dokaz testiranja. Čim postoje testovi, nula izvršenih testova i preskočena obavezna grupa moraju dati neuspješan izlaz. Ne koristi --passWithNoTests za provjeru gotove funkcije. *Zašto:* testovi ne troše tokene, ali njihov izlaz troši, kad ga agent čita.
+
+Kopiraj samostalni runner `templates/scripts/checks.cjs` u projekat. Kada projekat dobije prve stvarne testove,
+napravi `.agent-checks.json` prema njegovom stacku: `{"checks":[{"name":"brzi testovi","command":"node","args":["scripts/test.mjs"]}]}`.
+Sve navedene provjere su obavezne; za punu provjeru dodaj backend, JS i browser komande koje projekat zahtijeva.
+Komande ne smiju prijaviti uspjeh za preskočenu grupu. npm na Windowsu pokreći kroz Node i npm-cli.js ili kroz projektnu Node wrapper skriptu, bez shell stringova.
+Pre-commit sa planom traži svjež dokaz: prvo stage namjeravanih fajlova, zatim `node scripts/checks.cjs`, pa commit.
+Početni kostur bez testova još nema taj plan; ne predstavljaj ga kao testiranu aplikaciju.
 
 Pravila za sadržaj:
 - `AGENTS.md` ima zajednička pravila za sve agente (Claude, Codex). `CLAUDE.md` ga samo uvozi (`@AGENTS.md`) i dodaje ono što je specifično za Claude. Oba zajedno ispod 80 linija.
@@ -137,7 +144,7 @@ Pravila za sadržaj:
 
 Na kraju napravi `.claude/kickstart.json`:
 ```json
-{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.4.5", "rezim": "puno", "faza": "razvoj", "izdanja": [], "ui": <true|false>, "stack": "<kratko>" }
+{ "status": "gotovo", "datum": "<YYYY-MM-DD>", "verzija_sablona": "0.5.1", "rezim": "puno", "faza": "razvoj", "izdanja": [], "ui": <true|false>, "stack": "<kratko>" }
 ```
 
 ## Faza 6: git start
@@ -146,7 +153,7 @@ Na kraju napravi `.claude/kickstart.json`:
 
 1. Ako nema `.git`: `git init -b main`.
 2. Uključi git hookove: `git config core.hooksPath .githooks`.
-3. `git add -A`, zatim `git update-index --chmod=+x .githooks/pre-commit` (hook je tada izvršan i u klonu na Linuxu i Macu). Na Linuxu i Macu uradi i `chmod +x .githooks/pre-commit`: git preskoči hook bez izvršnog bita, pa commit prođe bez provjera. Zatim provjeri `git status`: u stagingu ne smije biti `.env`, `data/` ni stvarnih podataka.
+3. `git add -A`, zatim `git update-index --chmod=+x .githooks/pre-commit` (hook je tada izvršan i u klonu na Linuxu i Macu). Na Linuxu i Macu uradi i `chmod +x .githooks/pre-commit`: git preskoči hook bez izvršnog bita, pa commit prođe bez provjera. Ako postoji plan provjera, pokreni `node scripts/checks.cjs`. Zatim provjeri `git status`: u stagingu ne smije biti `.env`, `data/` ni stvarnih podataka.
 4. Commit: `chore: kickstart – temeljni dokumenti i struktura`. Pre-commit se pokreće već ovdje. Ako odbije, popravi uzrok. Nikad ne koristi `--no-verify`.
 5. Pitaj da li napraviti GitHub repo (privatni). Ako `gh` nije instaliran, daj uputstvo za ručno pravljenje repoa i `git remote add origin …` + `git push -u origin main`. Ništa ne pushaj bez izričitog "da".
 

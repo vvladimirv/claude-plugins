@@ -1,6 +1,6 @@
 ---
 name: napredak
-description: Napredak projekta po blueprintu: milestonei sa rokovima, funkcije po statusu, kašnjenje i prognoza završetka MVP-a. "/napredak" u terminalu, "/napredak html" kao vizuelni pregled.
+description: "Napredak projekta po blueprintu: milestonei sa rokovima, funkcije po statusu, kašnjenje i prognoza završetka MVP-a. \"/napredak\" u terminalu, \"/napredak html\" kao vizuelni pregled."
 argument-hint: "[html]"
 model: haiku
 allowed-tools: [Bash, Read]

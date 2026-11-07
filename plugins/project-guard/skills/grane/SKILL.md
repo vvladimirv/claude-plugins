@@ -1,7 +1,7 @@
 ---
 name: grane
-description: Pregled svih grana projekta: šta je koja grana, koja koju čeka, šta je gotovo, gdje je nesnimljen rad i šta je sljedeći korak. Čisti gotove grane i otvara novu granu sa preporukom modela. Za "/grane", "koja grana je gotova", "izgubio sam se u granama".
-argument-hint: [nova <zadatak> [--ceka <grana>] | pocisti | ceka <grana> <grana> | upisi …]
+description: "Pregled svih grana projekta: šta je koja grana, koja koju čeka, šta je gotovo, gdje je nesnimljen rad i šta je sljedeći korak. Čisti gotove grane i otvara novu granu sa preporukom modela. Za \"/grane\", \"koja grana je gotova\", \"izgubio sam se u granama\"."
+argument-hint: "[nova <zadatak> [--ceka <grana>] | pocisti | ceka <grana> <grana> | upisi …]"
 model: sonnet
 allowed-tools: [Bash, Read, AskUserQuestion, ToolSearch, mcp__ccd_session__spawn_task, mcp__ccd_session_mgmt__list_sessions, mcp__ccd_session_mgmt__get_session, mcp__ccd_session_mgmt__set_session_model, mcp__ccd_session_mgmt__set_session_effort, mcp__ccd_session_mgmt__archive_session, mcp__claude-code-remote__list_sessions, mcp__claude-code-remote__get_session, mcp__claude-code-remote__archive_session]
 ---
@@ -54,6 +54,8 @@ Opis trenutne grane, najčešće prvi korak nove sesije: `node "<grane>" upisi <
 Desktop aplikacija: `mcp__ccd_session_mgmt__*` (lista, detalji, model, effort, arhiviranje sa `session_id`). Cloud sesija (npr. sa telefona; `CLAUDE_CODE_REMOTE=true`): `mcp__claude-code-remote__list_sessions`, `get_session` i `archive_session`, bez alata za model. Koristi ono što ToolSearch nađe; arhiviranje ide uvijek sa `session_id` te sesije.
 
 ## Preporuka modela
+U Codexu zadrži korisnikov izabrani model; preporuči samo potreban nivo razmišljanja iz dostupnih postavki. Nazivi ispod važe za Claude Code.
+
 - **Opus, effort visok:** arhitektura, refaktor, istraživanje, analiza, plan, odluka, migracija, sigurnost, težak bug.
 - **Haiku, effort nizak:** STATUS, dokumentacija, pravopis, dijakritika, tekst, README, CHANGELOG, čišćenje.
 - **Sonnet, effort srednji:** sve ostalo (svakodnevno kodiranje po planu).

@@ -1,0 +1,44 @@
+{
+  "name": "moji-pluginsi",
+  "interface": {
+    "displayName": "Moji plugini — Claude i Codex"
+  },
+  "plugins": [
+    {
+      "name": "project-kickstart",
+      "source": {
+        "source": "local",
+        "path": "./plugins/project-kickstart"
+      },
+      "category": "Productivity",
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      }
+    },
+    {
+      "name": "project-memory",
+      "source": {
+        "source": "local",
+        "path": "./plugins/project-memory"
+      },
+      "category": "Productivity",
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      }
+    },
+    {
+      "name": "project-guard",
+      "source": {
+        "source": "local",
+        "path": "./plugins/project-guard"
+      },
+      "category": "Productivity",
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      }
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 ---
 name: adr
-description: Zapisuje arhitektonsku odluku (ADR) sa razlogom i alternativama u docs/adr/ i linkuje je iz ARHITEKTURA.md. Za izbor biblioteke, promjenu obima ili strukture.
-argument-hint: <naslov odluke>
+description: "Zapisuje arhitektonsku odluku (ADR) sa razlogom i alternativama u docs/adr/ i linkuje je iz ARHITEKTURA.md. Za izbor biblioteke, promjenu obima ili strukture."
+argument-hint: "<naslov odluke>"
 model: sonnet
 ---
 

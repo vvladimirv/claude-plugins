@@ -183,10 +183,11 @@ function describe(branch, meta, model) {
   parts.push(`baza: ${meta.base ? '`' + meta.base + '`' : 'nepoznata'}`);
   if (meta.ceka) parts.push(`čeka: \`${meta.ceka}\``);
   const rec = meta.model ? { model: meta.model, effort: meta.effort || 'medium' } : meta.zadatak ? recommend(meta.zadatak) : null;
-  if (rec) parts.push(`preporuka: ${label(rec)}`);
+  const codex = /gpt-|codex|o[134]/i.test(modelId(model));
+  if (rec) parts.push(codex ? `preporuka: effort ${EFFORTS[rec.effort] || rec.effort} (model prema dostupnim Codex postavkama)` : `preporuka: ${label(rec)}`);
   let line = parts.join(' · ');
   const id = modelId(model);
-  if (rec && id && MODELS[rec.model] && !id.includes(rec.model)) {
+  if (rec && id && !codex && MODELS[rec.model] && !id.includes(rec.model)) {
     line += `. Ova sesija radi na drugom modelu: predloži korisniku da u meniju modela izabere ${MODELS[rec.model]} `
       + `i effort ${EFFORTS[rec.effort] || rec.effort} (sesija sama sebi ne može promijeniti model).`;
   }

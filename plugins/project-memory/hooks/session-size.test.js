@@ -38,6 +38,14 @@ test('pragovi', () => {
   assert.strictEqual(levelFor(151000), 150000);
 });
 
+test('Codex: posljednji input već sadrži keš, ukupna potrošnja se ne sabira', () => {
+  const event = JSON.stringify({ type: 'event_msg', payload: { type: 'token_count', info: {
+    total_token_usage: { input_tokens: 900000 }, last_token_usage: { input_tokens: 120000, cached_input_tokens: 100000 }
+  } } });
+  assert.strictEqual(contextTokens(usageLine(4, 10) + '\n' + event), 120000);
+  assert.strictEqual(contextTokens(event + '\n' + usageLine(4, 10)), 14);
+});
+
 test('upozori jednom po pragu, i ponovo na višem pragu', () => {
   const session = 'test-' + process.pid + '-' + Date.now();
   const small = transcript([usageLine(100, 50000)]);

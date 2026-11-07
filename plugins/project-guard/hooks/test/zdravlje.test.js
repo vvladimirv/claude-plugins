@@ -38,3 +38,14 @@ test('zdravlje: bez loga i sa auto-updateom sve je zeleno, a isključeni git hoo
     fs.rmSync(path.join(h.HOME, 'settings.json'));
   }
 });
+
+test('zdravlje: lokalni izvor ne traži GitHub auto-update', () => {
+  const file = path.join(h.HOME, 'plugins', 'known_marketplaces.json');
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, JSON.stringify({ 'moji-pluginsi': { source: { source: 'directory', path: 'C:/dev/claude-plugins' } } }));
+  try {
+    const r = report({ now: NOW });
+    assert.ok(r.ok.some(l => /lokalni izvor plugina/.test(l)));
+    assert.ok(!r.warn.some(l => /auto-update/.test(l)));
+  } finally { fs.rmSync(file); }
+});

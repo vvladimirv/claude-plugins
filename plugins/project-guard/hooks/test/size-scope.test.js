@@ -90,7 +90,8 @@ test('proces: guard.js vraća ispravan JSON i ne pada na lošem ulazu', () => {
   const env = { ...process.env };
   const out = execFileSync('node', [guard], { env, encoding: 'utf8', input: JSON.stringify(h.pre(root, 'Write', { file_path: path.join(root, '.env') })) });
   assert.strictEqual(JSON.parse(out).hookSpecificOutput.permissionDecision, 'deny');
-  assert.strictEqual(execFileSync('node', [guard], { env, encoding: 'utf8', input: 'nije json' }), '');
+  const bad = JSON.parse(execFileSync('node', [guard], { env, encoding: 'utf8', input: 'nije json' }));
+  assert.match(bad.systemMessage, /nije završio provjeru/);
 });
 
 test('obim: poslije izdanja (faza odrzavanje) nove funkcije su zamrznute', () => {

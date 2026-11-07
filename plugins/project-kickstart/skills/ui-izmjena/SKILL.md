@@ -1,7 +1,7 @@
 ---
 name: ui-izmjena
-description: Siguran tok izmjene izgleda: pogođeni ekrani, mockup i OK, izmjena uz tokene, screenshot testovi, ux-recenzent. Za redizajn i promjenu izgleda.
-argument-hint: <šta treba promijeniti>
+description: "Siguran tok izmjene izgleda: pogođeni ekrani, mockup i OK, izmjena uz tokene, screenshot testovi, ux-recenzent. Za redizajn i promjenu izgleda."
+argument-hint: "<šta treba promijeniti>"
 model: sonnet
 ---
 
@@ -26,10 +26,13 @@ Zahtjev: `$ARGUMENTS`
    - pokreni testove ponašanja za sve F-funkcije iz tabele (brzi testovi, vidi **Brzi testovi** ispod),
    - pokreni screenshot testove pogođenih ekrana. Promijenjene snimke pokaži korisniku, a nove referentne snimke (baseline) usvoji **tek uz njegov OK**,
    - svaka F-funkcija sa tih ekrana mora i dalje biti dostupna. Ako neka nestaje, to je odluka korisnika, i onda ide status `uklonjena` + ADR,
-   - pokreni agenta **`ux-recenzent`** (Agent tool; agent iz plugina project-kickstart) nad izmjenom. Sve 🔴 stavke ispravi prije commita.
+   - pokreni agenta **`ux-recenzent`** (Claude: Agent tool; Codex: dostupni agent ux_recenzent i skill project-kickstart:ux-recenzent; ako nije dostupan, uradi i označi samopregled) nad izmjenom. Sve 🔴 stavke ispravi prije commita.
 6. Ažuriraj `docs/EKRANI.md` ako se raspored promijenio, pa commit: `feat(ui): <šta>`.
 
 ## Brzi testovi
+Ako postoji `.agent-checks.json`, koristi runner projekta `node scripts/checks.cjs` (ili `/provjera` iz project-guard). Prije commita stage samo namjeravanih fajlova, pa obnovi dokaz nad tim sadržajem i indeksom. Ne preskači obavezne grupe.
+
+Bez tog plana vrijedi postojeći postupak:
 Traži u folderu koji testiraš i uzmi prvo što postoji:
 1. `scripts/test` (ili `scripts/test.mjs`, `.js`, `.ps1`),
 2. komanda za brze testove iz `AGENTS.md` (sekcija „Komande" ili „Brzi testovi"),

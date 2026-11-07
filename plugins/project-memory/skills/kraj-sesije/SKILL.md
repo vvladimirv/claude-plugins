@@ -1,6 +1,6 @@
 ---
 name: kraj-sesije
-description: Kraj rada: testovi, STATUS.md, mali logični commitovi, push, pa nova sesija sa sljedećim zadatkom ili zatvaranje. Za "/kraj-sesije", "završavamo", "snimi sve".
+description: "Kraj rada: testovi, STATUS.md, mali logični commitovi, push, pa nova sesija sa sljedećim zadatkom ili zatvaranje. Za \"/kraj-sesije\", \"završavamo\", \"snimi sve\"."
 argument-hint: "[auto [bazna-grana]]"
 model: sonnet
 allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, ToolSearch, PushNotification, mcp__ccd_session__spawn_task, mcp__ccd_session_mgmt__archive_session, mcp__claude-code-remote__archive_session, mcp__claude-code-remote__get_session]
@@ -49,12 +49,17 @@ Kad je prvi argument `auto` (`$ARGUMENTS`), ovo je pomoćna sesija iz `/pomocna`
 6. **Ne ide** (crveni testovi, konflikt u rebaseu, bazne grane nema na GitHubu, push, PR ili spajanje odbijeno, zadatak nije gotov, treba odluka korisnika): ne spajaj i ne arhiviraj, brava ostaje (čuva rad), `PushNotification` „Čeka tebe: <razlog u par riječi>", pa poruka šta je urađeno i šta treba, sa `➡️ Sljedeće:`.
 7. Koraci 6, 8 i 9 (pitanje za push, nova sesija, zatvaranje) se u auto režimu ne izvode.
 
+Za važnu izmjenu obračuna, migracije ili pristupa prije završetka primijeni `/pregled-izmjene`. Ne predstavljaj samopregled kao nezavisnu recenziju.
+
 ## Alati sesije
 Desktop aplikacija i cloud sesija (npr. sa telefona; `CLAUDE_CODE_REMOTE=true`) imaju iste radnje pod različitim imenima. Koristi ono što ToolSearch nađe:
 - **Arhiviranje:** `mcp__ccd_session_mgmt__archive_session` sa `session_id: "self"` (desktop), ili `mcp__claude-code-remote__archive_session` (cloud) sa `session_id` = `ccr.id` iz `mcp__claude-code-remote__get_session` bez argumenata. Nema nijednog → `/exit`.
 - **Kartica nove sesije** (`mcp__ccd_session__spawn_task`): `cwd` šalji samo ako ga shema alata ima. Ako ga nema (cloud), prvi red prompta je `Korijen projekta: <putanja>`, a ostalo ide ispod.
 
 ## Brzi testovi
+Ako postoji `.agent-checks.json`, koristi runner projekta `node scripts/checks.cjs` (ili `/provjera` iz project-guard). Prije commita stage samo namjeravanih fajlova, pa obnovi dokaz nad tim sadržajem i indeksom. Ne preskači obavezne grupe.
+
+Bez tog plana vrijedi postojeći postupak:
 Traži u folderu koji testiraš i uzmi prvo što postoji:
 1. `scripts/test` (ili `scripts/test.mjs`, `.js`, `.ps1`),
 2. komanda za brze testove iz `AGENTS.md` (sekcija „Komande" ili „Brzi testovi"),
@@ -63,6 +68,8 @@ Traži u folderu koji testiraš i uzmi prvo što postoji:
 Ako nema ničega, pitaj korisnika koju komandu da pokreneš.
 
 ## Preporuka modela
+U Codexu zadrži korisnikov izabrani model; preporuči samo potreban nivo razmišljanja iz dostupnih postavki. Nazivi ispod važe za Claude Code.
+
 - **Opus, effort visok:** arhitektura, refaktor, istraživanje, analiza, plan, odluka, migracija, sigurnost, težak bug.
 - **Haiku, effort nizak:** STATUS, dokumentacija, pravopis, dijakritika, tekst, README, CHANGELOG, čišćenje.
 - **Sonnet, effort srednji:** sve ostalo (svakodnevno kodiranje po planu).

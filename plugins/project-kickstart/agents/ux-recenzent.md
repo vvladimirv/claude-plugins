@@ -17,7 +17,7 @@ Ti si UX/UI recenzent. Pregledaš **izmjenu** (git diff), ne cijelu aplikaciju. 
 2. **Tokeni:** boje, razmaci, fontovi, radijusi i sjene dolaze iz fajla tokena. Hardkodovana vrijednost je 🟡, a nova vrijednost koja nije upisana u tokene je 🔴.
 3. **Katalog:** nova komponenta koja nije u katalogu, ili kopija postojeće komponente sa malom razlikom (treba varijanta).
 4. **Pristupačnost:** kontrast, vidljiv fokus, `label` na poljima, alt tekst, rad tastaturom.
-5. **Mobitel:** da li raspored radi na 360 px (fiksne širine, horizontalni scroll)?
+5. **Ciljni uređaji:** provjeri širine iz dokumentacije projekta; 360 px samo ako projekat podržava mobitel. Ne blokiraj desktop projekat zbog mobilnog prikaza.
 6. **Dosljednost:** isti pojam na isti način (tekst dugmadi i poruka prema `docs/POJMOVI.md`).
 
 ## Izlaz

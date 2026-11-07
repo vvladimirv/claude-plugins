@@ -12,7 +12,7 @@ let n = 0;
 
 function env(extra = {}) {
   const e = { ...process.env, ...extra };
-  for (const k of ['CLAUDECODE', 'CLAUDE_CODE_SESSION_ID']) if (!(k in extra)) delete e[k];
+  for (const k of ['CLAUDECODE', 'CLAUDE_CODE_SESSION_ID', 'CODEX_THREAD_ID', 'CC_AGENT_SESSION_ID']) if (!(k in extra)) delete e[k];
   return e;
 }
 
@@ -77,7 +77,9 @@ test('brava: tuđa svježa brava odbija, vlastita i zastarjela ne', () => {
 
   fs.writeFileSync(path.join(r, '.agent-lock.json'), lock('C1', now, 'codex'));
   assert.match(commit(r, { 'a.js': '4' }, { CLAUDECODE: '1', CLAUDE_CODE_SESSION_ID: 'S1' }).err, /Brava/);
-  assert.ok(commit(r, { 'a.js': '5' }).ok);
+  assert.match(commit(r, { 'a.js': '5' }).err, /Brava/);
+  assert.match(commit(r, { 'a.js': '5' }, { CODEX_THREAD_ID: 'C2' }).err, /Brava/);
+  assert.ok(commit(r, { 'a.js': '5' }, { CODEX_THREAD_ID: 'C1' }).ok);
 
   fs.writeFileSync(path.join(r, '.agent-lock.json'), lock('S1', old));
   assert.ok(commit(r, { 'a.js': '6' }).ok);
@@ -87,6 +89,22 @@ test('testovi: crveni scripts/test.mjs odbija commit, zeleni ga pušta', () => {
   const r = repo();
   assert.match(commit(r, { 'scripts/test.mjs': 'process.exit(1)\n' }).err, /Testovi/);
   assert.ok(commit(r, { 'scripts/test.mjs': 'process.exit(0)\n' }).ok);
+});
+
+test('dokaz: pre-commit odbija neprovjeren plan, prihvata dokaz i odbija naknadnu izmjenu', () => {
+  const r = repo();
+  const runner = path.resolve(__dirname, '../../project-guard/scripts/checks.js');
+  fs.mkdirSync(path.join(r, 'scripts'));
+  fs.copyFileSync(runner, path.join(r, 'scripts/checks.cjs'));
+  const files = {
+    'a.js': 'process.exit(0)\n',
+    '.agent-checks.json': JSON.stringify({ checks: [{ name: 'node', command: process.execPath, args: ['a.js'] }] })
+  };
+  assert.match(commit(r, files).err, /dokaz/);
+  const checked = spawnSync(process.execPath, [runner, '--root', r], { encoding: 'utf8' });
+  assert.strictEqual(checked.status, 0, checked.stdout + checked.stderr);
+  assert.ok(commit(r, {}).ok);
+  assert.match(commit(r, { 'a.js': 'process.exit(0)\n// new\n' }).err, /dokaz/);
 });
 
 // Na Windowsu PowerShell uvijek postoji, pa se slučaj bez PowerShella provjerava samo na Linuxu i Macu bez pwsh.

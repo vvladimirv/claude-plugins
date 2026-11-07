@@ -33,23 +33,61 @@ function commonGitDir(root) {
   return fs.existsSync(common) ? path.resolve(wt, fs.readFileSync(common, 'utf8').trim()) : wt;
 }
 
-// HEAD bez pokretanja gita kad god može (brže na Windowsu); worktree i ostalo preko gita.
+// Folder sa HEAD-om ove kopije (u worktreeu je .git fajl koji pokazuje na njega).
+function ownGitDir(root) {
+  const gitPath = path.join(root, '.git');
+  if (fs.statSync(gitPath).isDirectory()) return gitPath;
+  return path.resolve(root, fs.readFileSync(gitPath, 'utf8').replace(/^gitdir:\s*/, '').trim());
+}
+
+// Hash grane iz fajlova (loose ref ili packed-refs); '' ako ga nema.
+function readRef(commonDir, ref) {
+  const loose = path.join(commonDir, ref);
+  if (fs.existsSync(loose)) return fs.readFileSync(loose, 'utf8').trim();
+  const packed = path.join(commonDir, 'packed-refs');
+  if (!fs.existsSync(packed)) return '';
+  const line = fs.readFileSync(packed, 'utf8').split(/\r?\n/).find((l) => l.endsWith(' ' + ref));
+  return line ? line.split(' ')[0] : '';
+}
+
+// HEAD bez pokretanja gita kad god može (git proces na Windowsu košta 100-300 ms); inače preko gita.
 function readHead(root) {
-  const gitDir = path.join(root, '.git');
   try {
-    if (fs.statSync(gitDir).isDirectory()) {
-      const h = fs.readFileSync(path.join(gitDir, 'HEAD'), 'utf8').trim();
-      if (!h.startsWith('ref: ')) return h;
-      const ref = h.slice(5);
-      if (fs.existsSync(path.join(gitDir, ref))) return fs.readFileSync(path.join(gitDir, ref), 'utf8').trim();
-      const line = fs.readFileSync(path.join(gitDir, 'packed-refs'), 'utf8').split(/\r?\n/).find((l) => l.endsWith(' ' + ref));
-      if (line) return line.split(' ')[0];
-      return '';
-    }
+    const h = fs.readFileSync(path.join(ownGitDir(root), 'HEAD'), 'utf8').trim();
+    if (!h.startsWith('ref: ')) return h;
+    return readRef(commonGitDir(root), h.slice(5));
   } catch {
-    // pada na git ispod
+    return git(root, ['rev-parse', 'HEAD']);
   }
-  return git(root, ['rev-parse', 'HEAD']);
+}
+
+// Hash grane na GitHubu (@{u}) iz .git/config i refova, bez gita. undefined: ne zna se, pitaj git.
+function readUpstream(root) {
+  try {
+    const h = fs.readFileSync(path.join(ownGitDir(root), 'HEAD'), 'utf8').trim();
+    if (!h.startsWith('ref: refs/heads/')) return undefined;
+    const branch = h.slice('ref: refs/heads/'.length);
+    const commonDir = commonGitDir(root);
+    const cfg = fs.readFileSync(path.join(commonDir, 'config'), 'utf8');
+    if (/^\s*\[include/im.test(cfg)) return undefined;
+    let inBranch = false;
+    let remote;
+    let merge;
+    for (const line of cfg.split(/\r?\n/)) {
+      const sec = line.match(/^\s*\[(.*)\]\s*$/);
+      if (sec) inBranch = sec[1].trim() === `branch "${branch}"`;
+      else if (inBranch) {
+        const kv = line.match(/^\s*(\w+)\s*=\s*(.+?)\s*$/);
+        if (kv && kv[1].toLowerCase() === 'remote') remote = kv[2];
+        if (kv && kv[1].toLowerCase() === 'merge') merge = kv[2].replace(/^refs\/heads\//, '');
+      }
+    }
+    if (!remote || !merge) return undefined;
+    const ref = remote === '.' ? `refs/heads/${merge}` : `refs/remotes/${remote}/${merge}`;
+    return readRef(commonDir, ref) || undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 // Kad je zadnji fetch (bilo čiji) završio; 0 ako ga nikad nije bilo.
@@ -88,6 +126,16 @@ function remoteState(root, s, now, wait) {
     s.fetchedAt = now;
     if (wait) fetchNow(root, 6000);
     else fetchInBackground(root);
+  }
+  // Broji samo kad se HEAD ili grana na GitHubu pomjerila (refovi se čitaju iz fajlova, bez gita).
+  const up = readUpstream(root);
+  if (up !== undefined) {
+    const head = readHead(root);
+    const key = `${head}..${up}`;
+    if (up === head) s.behind = 0;
+    else if (s.countKey !== key) s.behind = behindCount(root) || 0;
+    s.countKey = key;
+    return;
   }
   const ft = fetchedTime(root);
   if (s.behind > 0 || ft > (s.countedAt || 0)) {
@@ -169,4 +217,4 @@ function sessionMessage(input, root, now = Date.now()) {
   return msg;
 }
 
-module.exports = { check, afterTool, sessionMessage, readHead };
+module.exports = { check, afterTool, sessionMessage, readHead, readUpstream };

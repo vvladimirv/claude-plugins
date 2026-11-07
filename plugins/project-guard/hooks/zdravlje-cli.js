@@ -36,8 +36,10 @@ function report({ root, now = Date.now() } = {}) {
   const settings = readJson(path.join(CLAUDE_HOME, 'settings.json'), {});
   const known = readJson(path.join(CLAUDE_HOME, 'plugins', 'known_marketplaces.json'), {});
   const auto = [((settings.extraKnownMarketplaces || {})['moji-pluginsi']), known['moji-pluginsi']].some((m) => m && m.autoUpdate);
-  if (auto) ok.push('auto-update plugina uključen');
-  else warn.push('auto-update nije uključen: README → Instalacija (`"autoUpdate": true` pod `extraKnownMarketplaces.moji-pluginsi`)');
+  const localSource = known['moji-pluginsi']?.source?.source === 'directory';
+  if (localSource) ok.push('lokalni izvor plugina: ažuriranje kroz git pull i setup');
+  else if (auto) ok.push('auto-update plugina uključen');
+  else warn.push('auto-update nije uključen za udaljeni izvor: README → Instalacija');
 
   let entries = [];
   try {
@@ -71,6 +73,19 @@ function report({ root, now = Date.now() } = {}) {
     const hp = git(root, ['config', '--get', 'core.hooksPath']);
     if (hp === '.githooks') ok.push(`git hookovi uključeni u ${path.basename(root)}`);
     else warn.push(`git hookovi nisu uključeni u ${path.basename(root)}: \`git config core.hooksPath .githooks\``);
+  }
+  if (root && !fs.existsSync(path.join(root, '.githooks')) && fs.existsSync(path.join(root, '.git'))) {
+    warn.push('projekat nema .githooks/: nije potvrđena lokalna Git kontrola prije commita');
+  }
+  for (const item of require('./lib/runtime-status').inspect(CLAUDE_HOME, now)) {
+    if (item.fresh) ok.push(`${item.runtime}: zabilježeno izvršavanje guarda ${item.version}; nije dokaz pokrivenosti svih alata`);
+    else warn.push(`${item.runtime}: ${item.observed ? 'staro izvršavanje hooka' : 'nema zabilježenog izvršavanja hooka'}; provjerite učitavanje i povjerenje u novom chatu`);
+  }
+  const codexHome = process.env.CODEX_HOME || path.join(require('os').homedir(), '.codex');
+  if (!fs.existsSync(path.join(codexHome, 'hooks.json'))) warn.push('Codex nema korisnički registar hookova: u zajedničkom repozitoriju pokrenite node scripts/setup.js --apply --codex');
+  if (root && fs.existsSync(path.join(root, '.agent-checks.json'))) {
+    const verified = require('../scripts/checks').verify(root);
+    (verified.ok ? ok : warn).push(verified.message);
   }
   return { ok, warn };
 }

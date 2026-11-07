@@ -76,10 +76,15 @@ function postCheck(input, root) {
       ? now - Math.max(1, occurrences(text, t.new_string)) * lineDelta(t)
       : now - countLines(t.new_string || '') + countLines(t.old_string || '');
   }
+  if (input._patch?.action === 'Update' && !input._patch.move) {
+    before = now - input._patch.lines.filter(l => l.startsWith('+')).length
+      + input._patch.lines.filter(l => l.startsWith('-')).length;
+  }
   if (now > tg.lim.upozorenje && now > before) {
     notes.push(`📏 \`${tg.rel}\` ima ${now} linija (upozorenje od ${tg.lim.upozorenje}, maks ${tg.lim.maks}). Planiraj podjelu prije sljedećeg dodavanja.`);
   }
-  const added = input.tool_name === 'Write' ? t.content : t.new_string;
+  const added = input._patch ? input._patch.lines.filter(l => l.startsWith('+')).map(l => l.slice(1)).join('\n')
+    : input.tool_name === 'Write' ? t.content : t.new_string;
   if (STYLE_EXT.test(tg.rel) && !TOKEN_FILE.test(path.basename(tg.rel))
     && fs.existsSync(path.join(root, 'docs', 'DIZAJN-SISTEM.md')) && HARDCODED_COLOR.test(added || '')) {
     notes.push(`🎨 \`${tg.rel}\`: hardkodovana boja. Koristi token iz fajla tokena (docs/DIZAJN-SISTEM.md); ako token ne postoji, prvo ga dodaj tamo.`);

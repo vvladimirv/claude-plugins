@@ -1,6 +1,6 @@
 ---
 name: pravila-pauza
-description: Privremeno pauzira blokirajuća pravila project-guard (tajne ostaju zaštićene). "/pravila-pauza [min]" ili "stop".
+description: "Privremeno pauzira blokirajuća pravila project-guard (tajne ostaju zaštićene). \"/pravila-pauza [min]\" ili \"stop\"."
 argument-hint: "[minuta, npr. 30] | stop"
 model: haiku
 allowed-tools: [Bash]

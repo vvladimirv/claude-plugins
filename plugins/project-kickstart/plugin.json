@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "project-kickstart",
+  "version": "0.5.2",
+  "description": "Start projekta: intervju, stack, arhitektura, blueprint, dokumenti, pre-commit i CI, ili lagani start za male aplikacije (/kickstart, /nova-funkcija, /ui-izmjena, /adr, /pomoc; agenti arhitekta i ux-recenzent)",
+  "author": {
+    "name": "vvladimirv",
+    "email": "330362@gmail.com"
+  }
+}

@@ -1,6 +1,6 @@
 ---
 name: izdanje
-description: Izdaje gotov MVP ili verziju. Provjeri da je sve gotovo i testovi zeleni, zapiše CHANGELOG i git tag, pa zamrzne obim (održavanje) ili otvori plan sljedeće verzije.
+description: "Izdaje gotov MVP ili verziju. Provjeri da je sve gotovo i testovi zeleni, zapiše CHANGELOG i git tag, pa zamrzne obim (održavanje) ili otvori plan sljedeće verzije."
 argument-hint: "[verzija, npr. v1.0]"
 model: sonnet
 ---

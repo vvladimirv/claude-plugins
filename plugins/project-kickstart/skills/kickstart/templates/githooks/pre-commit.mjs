@@ -14,11 +14,11 @@ const problems = [];
 // 1. Brava: u folderu u kojem radi druga sesija ne commituje niko drugi.
 const lock = readJson(path.join(root, '.agent-lock.json'), null);
 if (lock && Date.now() - Date.parse(lock.heartbeat) < 20 * 60 * 1000) {
-  const claudeSession = process.env.CLAUDE_CODE_SESSION_ID;
-  const mine = lock.agent === 'claude' ? claudeSession === lock.session_id : !process.env.CLAUDECODE;
+  const session = process.env.CC_AGENT_SESSION_ID || process.env.CLAUDE_CODE_SESSION_ID || process.env.CODEX_THREAD_ID;
+  const mine = session === lock.session_id;
   if (!mine) {
     problems.push(`Brava: ovaj folder uređuje druga sesija (${lock.agent}, od ${new Date(lock.since).toLocaleTimeString()}). `
-      + 'Radi u svom worktreeu. Ako je ta sesija zatvorena, obriši .agent-lock.json.');
+      + 'Radi u svom worktreeu. Ako je ta sesija zatvorena, provjeri vlasnika i preuzmi bravu kroz /preuzmi-lock.');
   }
 }
 
@@ -57,7 +57,15 @@ for (const f of staged) {
 
 // 3. Brzi testovi (crveno = stop).
 const testScript = ['scripts/test.mjs', 'scripts/test.js', 'scripts/test.ps1', 'scripts/test'].find((s) => fs.existsSync(path.join(root, s)));
-if (!problems.length && testScript) {
+const hasPlan = fs.existsSync(path.join(root, '.agent-checks.json'));
+if (!problems.length && hasPlan) {
+  const runner = path.join(root, 'scripts', 'checks.cjs');
+  if (!fs.existsSync(runner)) problems.push('Testovi: postoji plan, ali nema scripts/checks.cjs.');
+  else {
+    const r = spawnSync(process.execPath, [runner, '--verify', '--root', root], { cwd: root, stdio: 'inherit' });
+    if (r.error || r.status !== 0) problems.push('Testovi: dokaz nedostaje ili je zastario; git add pa node scripts/checks.cjs.');
+  }
+} else if (!problems.length && testScript) {
   // PowerShell se na Windowsu zove `powershell`, a na Linuxu i Macu `pwsh`.
   const ps = process.platform === 'win32' ? 'powershell' : 'pwsh';
   const cmd = testScript.endsWith('.ps1') ? [ps, ['-NoProfile', '-File', testScript]]

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "project-memory",
+  "version": "0.6.2",
+  "description": "Memorija i napredak: STATUS.md, git log i napredak po blueprintu na startu sesije, upozorenje na veliku sesiju, pomoćne sesije koje same spoje rad (/stanje, /kraj-sesije, /pomocna, /vrati, /napredak, /objavi, /izdanje, /docs-audit)",
+  "author": {
+    "name": "vvladimirv",
+    "email": "330362@gmail.com"
+  },
+  "extensions": {
+    "com.openai": {
+      "hooks": []
+    }
+  }
+}

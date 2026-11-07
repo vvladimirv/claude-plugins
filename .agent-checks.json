@@ -1,0 +1,9 @@
+{
+  "checks": [
+    {
+      "name": "Testovi plugina, pakovanja i projektnih hookova",
+      "command": "node",
+      "args": ["--test", "--test-concurrency=2", "plugins/**/*.test.js", "test/*.test.js"]
+    }
+  ]
+}
