@@ -170,6 +170,16 @@ test('grane: čišćenje briše samo gotove i prazne, nikad folder sesije ni gla
   assert.deepStrictEqual(out(root, 'branch', '--format=%(refname:short)').split('\n').sort(), ['ceka', 'main', 'otvorena', 'pr', 'stala']);
 });
 
+// Na Windowsu sesija može dobiti kratko 8.3 ime foldera (RUNNER~1), a git daje dugo. Ovdje isto glumi symlink.
+test('grane: folder sesije se prepoznaje i preko druge putanje do iste mape', { skip: process.platform === 'win32' }, async () => {
+  const { root, wt, prs } = sampleRepo();
+  const alias = path.join(path.dirname(root), `${path.basename(root)}-alias`);
+  fs.symlinkSync(wt('cist'), alias);
+  const plan = map.cleanupPlan(await map.collect(root, { prs, now: Date.now() + 2 * DAY }), { here: alias });
+  assert.ok(plan.kept.some((k) => k.branch === 'cist'), 'cist je folder ove sesije');
+  assert.ok(!plan.items.some((i) => i.branch === 'cist'));
+});
+
 test('grane: upisi prebaci novu granu na traženu bazu, a granu sa radom ne dira', async () => {
   const { root } = sampleRepo();
   h.git(root, 'switch', '-qc', 'claude/nova', 'main');

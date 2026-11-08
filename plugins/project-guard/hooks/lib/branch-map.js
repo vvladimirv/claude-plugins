@@ -244,7 +244,10 @@ function format(rep) {
 function cleanupPlan(rep, { here = null, skip = [] } = {}) {
   const items = [];
   const kept = [];
-  const isHere = (p) => Boolean(here) && norm(p) === norm(here);
+  // Stvarna putanja: na Windowsu ista mapa može doći kao kratko 8.3 ime (RUNNER~1) i kao dugo ime iz gita.
+  const real = (p) => { try { return norm(fs.realpathSync.native(p)); } catch { return norm(p); } };
+  const hereReal = here ? real(here) : null;
+  const isHere = (p) => Boolean(hereReal) && real(p) === hereReal;
   for (const r of rep.rows) {
     if (!CLEANABLE.has(r.state) || skip.includes(r.branch)) continue;
     if (r.worktreeIsMain) kept.push({ branch: r.branch, reason: `glavni folder je na njoj (prebaci ga na \`${rep.main}\`)` });
