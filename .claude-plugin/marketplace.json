@@ -10,7 +10,7 @@
     {
       "name": "project-kickstart",
       "description": "Start projekta: intervju, stack, arhitektura, blueprint, dokumenti, pre-commit i CI, ili lagani start za male aplikacije (/kickstart, /nova-funkcija, /ui-izmjena, /adr, /pomoc; agenti arhitekta i ux-recenzent)",
-      "version": "0.5.3",
+      "version": "0.5.4",
       "source": "./plugins/project-kickstart",
       "category": "development"
     },
@@ -33,6 +33,13 @@
       "description": "Dubinske provjere kvaliteta za bilo koji stack: invarijante na hiljadama slučajnih primjera, mutacije testova, simulacija više perioda, statička analiza (/dubinska-provjera), snimci ekrana po ulogama i širinama s pristupačnošću (/provjera-izgleda) i HTML mockupi varijanti izgleda (/mockup-izgleda)",
       "version": "0.1.1",
       "source": "./plugins/project-quality",
+      "category": "development"
+    },
+    {
+      "name": "project-market",
+      "description": "Tržište i isplativost aplikacije prije i tokom razvoja: konkurenti, cijene, potražnja i niše sa izvorima za svaki broj (/trziste), troškovi, prihodi, prag isplativosti u tri scenarija i presuda (/isplativost)",
+      "version": "0.1.0",
+      "source": "./plugins/project-market",
       "category": "development"
     }
   ]

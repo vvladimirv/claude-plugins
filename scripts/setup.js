@@ -4,7 +4,7 @@ const path = require('node:path');
 const os = require('node:os');
 const { spawnSync } = require('node:child_process');
 const root = path.resolve(__dirname, '..');
-const names = ['project-guard', 'project-kickstart', 'project-memory', 'project-quality'];
+const names = ['project-guard', 'project-kickstart', 'project-memory', 'project-quality', 'project-market'];
 
 function operations(surface, source = root) {
   const result = [];

@@ -1,0 +1,9 @@
+{
+  "name": "project-market",
+  "version": "0.1.0",
+  "description": "Tržište i isplativost aplikacije prije i tokom razvoja: konkurenti, cijene, potražnja i niše sa izvorima za svaki broj (/trziste), troškovi, prihodi, prag isplativosti u tri scenarija i presuda (/isplativost)",
+  "author": {
+    "name": "vvladimirv",
+    "email": "330362@gmail.com"
+  }
+}

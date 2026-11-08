@@ -51,6 +51,18 @@
         "installation": "AVAILABLE",
         "authentication": "ON_INSTALL"
       }
+    },
+    {
+      "name": "project-market",
+      "source": {
+        "source": "local",
+        "path": "./plugins/project-market"
+      },
+      "category": "Productivity",
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      }
     }
   ]
 }
