@@ -11,6 +11,8 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | Početak svakog rada | otvori folder projekta, pa `nastavi` ili `šta je sljedeće?` |
 | Nova mogućnost aplikacije | napiši šta hoćeš (ili `/nova-funkcija <ime>`) |
 | Promjena izgleda | `/ui-izmjena <šta promijeniti>` |
+| Šta ne valja u izgledu (snimci svih ekrana, pristupačnost) | `/provjera-izgleda` · prijedlog novog izgleda u varijantama: `/mockup-izgleda` |
+| Prije izdanja ili poslije izmjene obračuna: greške koje obični testovi ne vide | `/dubinska-provjera` |
 | Vidi koliko ste odmakli | `/napredak html` |
 | Samostalan zadatak usput (npr. popravka sa strane) | ništa: Claude sam napravi karticu **pomoćne sesije**, ti klikneš · ručno: `/pomocna <zadatak>` |
 | Ideja za nešto drugo | `/ideja <opis>` |
@@ -44,7 +46,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | **Napredak** | ✅ na startu sesije linija: milestone, % funkcija, kašnjenje, prognoza MVP-a | `/napredak` (terminal) · `/napredak html` (vizuelni pregled) · kad se kasni: smanji obim (`odloženo (v2)`), novi rok ili nastavi |
 | **Aplikacija za korištenje** | — | `/objavi`: samo na ovom računaru (`Pokreni.cmd`, dvoklik), na kućnoj mreži (i telefon u kući) ili na internetu (hosting, instalacija na telefon). Kickstart zapisuje izbor u VIZIJA.md → `Gdje se koristi` |
 | **MVP gotov** | ✅ Claude predloži izdanje umjesto novih funkcija (i prvo `/objavi`, ako README nema `Kako se koristi`) | `/izdanje`: CHANGELOG, tag v1.0, obim se zamrzava (održavanje). Nova verzija samo kroz plan sa rokovima |
-| **Povremeno** | — | `/stanje` · `/docs-audit` (red u dokumentima) · `/kickstart --nadogradi` (novi šabloni u starom projektu) · `/pravilo-u-hook` (pravilo koje se zaboravlja postaje provjera) |
+| **Povremeno** | — | `/dubinska-provjera` (invarijante, mutacije testova, simulacija više perioda, statička analiza; uz ugrađene `/code-review` i `/security-review`) · `/provjera-izgleda` (`--regresija` kad je izgled usvojen) · `/stanje` · `/docs-audit` (red u dokumentima) · `/kickstart --nadogradi` (novi šabloni u starom projektu) · `/pravilo-u-hook` (pravilo koje se zaboravlja postaje provjera) |
 | **Hook smeta ili ima grešku** | — | `/zdravlje` (provjera instalacije, greške i spori hookovi) · `/pravila-pauza [minuta]` (tajne ostaju zaštićene) · `/pravila-pauza stop` · greške: `~/.claude/pravila.log` |
 
 ## Gdje je šta u projektu
@@ -84,7 +86,7 @@ Repo: `C:\dev\claude-plugins` (GitHub: vvladimirv/claude-plugins) · instalacija
 
 
 ## Claude Code i Codex — jedan izvor
-- Isti repozitorij i tri paketa. `node scripts/setup.js` u repozitoriju prikazuje plan, `--apply` ažurira korisničku instalaciju oba alata; profili Codex agenata imaju backup. Projektne instalacije se ne brišu.
+- Isti repozitorij i četiri paketa. `node scripts/setup.js` u repozitoriju prikazuje plan, `--apply` ažurira korisničku instalaciju oba alata; profili Codex agenata imaju backup. Projektne instalacije se ne brišu.
 - Codex patch se prevodi u iste provjere putanja, brave i veličine. Shell i MCP nisu opći sigurnosni sandbox; nepodržane putanje ne predstavljaju potvrđenu zaštitu. Nakon promjene hooka pregledaj povjerenje kroz `/hooks`.
 - `/zdravlje`: razlikuje opaženo izvršavanje hooka od potpune pokrivenosti; provjerava i svježinu dokaza projekta.
 - `/provjera`: `.agent-checks.json` definiše obavezne komande; stage namjeravanih fajlova → runner → commit. Novi sadržaj ili Git indeks poništava raniji dokaz. Runner provjerava izlazni status, a projektna skripta mora odbiti nula testova i preskočene obavezne grupe.

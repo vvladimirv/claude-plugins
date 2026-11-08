@@ -14,7 +14,8 @@ const STOP = ['docs-audit', 'napredak', 'izdanje', 'objavi', 'nova-funkcija', 'u
 const STOP_WITHOUT_STATUS = ['stanje', 'kraj-sesije'];
 const GUARDED = [...STOP, ...STOP_WITHOUT_STATUS];
 // Rade i u projektu sa svojim sistemom dokumenata. /kickstart ima svoj korak u Fazi 0.
-const KEEP = ['vrati', 'ideja', 'novi-projekat', 'pravila-pauza', 'preuzmi-lock', 'codex-worktree', 'pravilo-u-hook', 'pomoc', 'zdravlje', 'grane', 'pomocna', 'provjera', 'arhitekta', 'ux-recenzent', 'poslovna-pravila', 'pregled-izmjene'];
+const KEEP = ['vrati', 'ideja', 'novi-projekat', 'pravila-pauza', 'preuzmi-lock', 'codex-worktree', 'pravilo-u-hook', 'pomoc', 'zdravlje', 'grane', 'pomocna', 'provjera', 'arhitekta', 'ux-recenzent', 'poslovna-pravila', 'pregled-izmjene',
+  'dubinska-provjera', 'provjera-izgleda', 'mockup-izgleda'];
 
 function skills() {
   const out = {};
