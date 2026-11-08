@@ -7,6 +7,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
 const { createRequire } = require('node:module');
+const { spawnSync } = require('node:child_process');
 
 const DEFAULT_WIDTHS = [1440, 1280, 1024];
 
@@ -93,7 +94,7 @@ function summarize(results, meta = {}) {
   lines.push('| Uloga | Širina | Ekran | HTTP | Prelom | Šire od prozora | Konzola | Pristupačnost |', '|---|---|---|---|---|---|---|---|');
   const rules = new Map();
   for (const r of results) {
-    const a11y = r.axe ? r.axe.map(v => `${v.impact}:${v.id}`).join(', ') || '—' : 'n/a';
+    const a11y = r.axe ? r.axe.map(v => `${v.impact}:${v.id}`).join(', ') || '—' : r.axeGreska ? 'nije izmjereno' : 'n/a';
     lines.push(`| ${r.uloga} | ${r.sirina} | [${r.ekran}](${r.snimak.split(path.sep).join('/')}) | ${r.greska ? 'GREŠKA' : r.status ?? '?'} | `
       + `${r.prelom ? 'DA' : '—'} | ${r.siroki?.length || '—'} | ${r.konzola?.length || '—'} | ${a11y} |`);
     for (const v of r.axe || []) {
@@ -106,6 +107,16 @@ function summarize(results, meta = {}) {
     lines.push('', '## Pristupačnost po pravilu', '');
     const sorted = [...rules.values()].sort((a, b) => (IMPACT[a.impact] ?? 9) - (IMPACT[b.impact] ?? 9) || b.ekrani.size - a.ekrani.size);
     for (const v of sorted) lines.push(`- **${v.impact}** \`${v.id}\`: ${v.help} (ekrana: ${v.ekrani.size}: ${[...v.ekrani].join(', ')})`);
+  }
+  const forbidden = results.filter(r => !r.greska && r.status >= 400);
+  if (forbidden.length) {
+    lines.push('', '## Ekrani zabranjeni ulozi (HTTP 4xx)', '', 'Provjeri da je zabrana namjerna (prava pristupa). Pristupačnost se tu ne mjeri.', '');
+    for (const key of new Set(forbidden.map(r => `${r.uloga}: ${r.ekran} (${r.status})`))) lines.push(`- ${key}`);
+  }
+  const axeFailed = results.filter(r => r.axeGreska);
+  if (axeFailed.length) {
+    lines.push('', '## Pristupačnost nije izmjerena (snimak postoji)', '');
+    for (const r of axeFailed) lines.push(`- ${r.uloga} / ${r.sirina} / ${r.ekran}: ${r.axeGreska}`);
   }
   const failed = results.filter(r => r.greska || r.prijavaPala);
   if (failed.length) {
@@ -130,10 +141,25 @@ function parseArgs(argv) {
   return out;
 }
 
-function findModule(name, cwd = process.cwd()) {
+let globalRoot;
+function npmGlobalRoot() {
+  if (globalRoot === undefined) {
+    const r = spawnSync('npm', ['root', '-g'], { encoding: 'utf8', shell: process.platform === 'win32', timeout: 15000, windowsHide: true });
+    globalRoot = r.status === 0 && r.stdout.trim() ? r.stdout.trim() : null;
+  }
+  return globalRoot;
+}
+
+// Redom: projekt, ~/.cache/provjera-izgleda, NODE_PATH/folder plugina, pa globalni npm. Globalna instalacija
+// je često ona uz koju je već instaliran Chromium, pa je bolja od nove kopije druge verzije.
+function findModule(name, cwd = process.cwd(), opts = {}) {
   const bases = [path.join(cwd, 'package.json'), path.join(os.homedir(), '.cache', 'provjera-izgleda', 'package.json'), __filename];
   for (const base of bases) {
     try { return createRequire(base).resolve(name); } catch { /* sljedeće mjesto */ }
+  }
+  const global = opts.globalRoot !== undefined ? opts.globalRoot : npmGlobalRoot();
+  if (global) {
+    try { return require.resolve(path.join(global, name)); } catch { /* nema ni globalno */ }
   }
   return null;
 }
@@ -181,11 +207,18 @@ async function main(argv) {
     for (const role of config.uloge) {
       const mine = items.filter(i => i.role === role);
       if (!mine.length) continue;
-      const context = await browser.newContext({ viewport: { width: config.sirine[0], height: config.visina }, deviceScaleFactor: 1 });
+      // bypassCSP: axe se ubacuje kao inline skripta, a stroga CSP (script-src 'self') bi je blokirala.
+      const context = await browser.newContext({ viewport: { width: config.sirine[0], height: config.visina }, deviceScaleFactor: 1, bypassCSP: true });
       const page = await context.newPage();
       let loginError = null;
       if (role.prijava) { try { await login(page, config.adresa, role); } catch (e) { loginError = 'prijava nije uspjela: ' + e.message.split('\n')[0]; } }
+      const total = new Map();
+      for (const item of mine) total.set(item.width, (total.get(item.width) || 0) + 1);
+      const doneCount = new Map();
       for (const item of mine) {
+        doneCount.set(item.width, (doneCount.get(item.width) || 0) + 1);
+        const n = doneCount.get(item.width), all = total.get(item.width);
+        if (n === all || n % 10 === 0) console.log(`${role.ime} ${item.width}: ${n}/${all}`);
         const row = { uloga: role.ime, sirina: item.width, ekran: item.screen.ime, snimak: item.file };
         results.push(row);
         if (loginError) { row.greska = loginError; continue; }
@@ -202,11 +235,15 @@ async function main(argv) {
           fs.mkdirSync(path.dirname(file), { recursive: true });
           const mask = (config.sakrij || []).map(s => page.locator(s));
           await page.screenshot({ path: file, fullPage: true, mask, animations: 'disabled' });
-          if (axeSource) {
-            await page.addScriptTag({ content: axeSource });
-            const res = await page.evaluate(() => window.axe.run(document, { resultTypes: ['violations'] }));
-            row.axe = res.violations.map(v => ({ id: v.id, impact: v.impact, help: v.help, cvorova: v.nodes.length,
-              primjeri: v.nodes.slice(0, 3).map(n => n.target.join(' ')) }));
+          if (axeSource && !(row.status >= 400) && !row.prijavaPala) {
+            try {
+              await page.addScriptTag({ content: axeSource });
+              const res = await page.evaluate(() => window.axe.run(document, { resultTypes: ['violations'] }));
+              row.axe = res.violations.map(v => ({ id: v.id, impact: v.impact, help: v.help, cvorova: v.nodes.length,
+                primjeri: v.nodes.slice(0, 3).map(n => n.target.join(' ')) }));
+            } catch (e) {
+              row.axeGreska = e.message.split('\n')[0]; // snimak postoji; samo mjerenje nije uspjelo
+            }
           }
         } catch (e) {
           row.greska = e.message.split('\n')[0];

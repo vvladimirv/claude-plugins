@@ -40,9 +40,9 @@ Ako projekt već ima svoju skriptu za snimke ili raspored (npr. `scripts/layout_
 
 ## 2. Snimanje
 1. Pokreni aplikaciju s demo podacima kako projekt to radi (`AGENTS.md`, `DEVELOPMENT.md`, README).
-2. Playwright i axe-core: ako ih projekt nema, instaliraj ih van projekta, da ne mijenjaš njegove zavisnosti: `npm i --prefix ~/.cache/provjera-izgleda playwright axe-core` i `npx --prefix ~/.cache/provjera-izgleda playwright install chromium`.
+2. Playwright i axe-core: skripta ih traži u projektu, u `~/.cache/provjera-izgleda`, kroz `NODE_PATH` i u globalnoj npm instalaciji. Ako je Playwright već negdje instaliran zajedno s Chromiumom, koristi tu kopiju, jer nova kopija druge verzije ne nalazi taj preglednik. Ako ga nema nigdje, instaliraj ih van projekta, da ne mijenjaš njegove zavisnosti: `npm i --prefix ~/.cache/provjera-izgleda playwright axe-core` i `npx --prefix ~/.cache/provjera-izgleda playwright install chromium`.
 3. Skripta je u folderu ovog skilla: `<folder ovog skilla>/snimci.js`. Iz korijena projekta: `node <folder ovog skilla>/snimci.js --izlaz <folder>` (opcije: `--config`, `--uloga`, `--ekran`, `--sirina`, `--bez-axe`; `PROVJERA_IZGLEDA_CHROMIUM` = putanja do već instaliranog Chromiuma). Snimci idu van repoa (scratch ili `docs/provjere/izgled-<datum>/` samo ako ih korisnik želi čuvati).
-4. Skripta piše `izvjestaj.md` i `izvjestaj.json`: HTTP status, prelom, preširoki elementi, greške u konzoli i pravila pristupačnosti. Izlaz 1 znači da neki ekran nije snimljen; prijavi ga, ne preskači.
+4. Skripta ispisuje napredak po ulozi i širini i piše `izvjestaj.md` i `izvjestaj.json`: HTTP status, prelom, preširoki elementi, greške u konzoli, pravila pristupačnosti, ekrani zabranjeni ulozi (4xx; provjeri da je zabrana namjerna) i ekrani gdje snimak postoji, ali pristupačnost nije izmjerena. Stroga CSP aplikacije ne smeta, jer se axe ubacuje uz `bypassCSP` samo u pregledniku za provjeru. Izlaz 1 znači da neki ekran nije snimljen; prijavi ga, ne preskači.
 5. **Lighthouse** (po želji, za brzinu učitavanja i ocjenu pristupačnosti): `npx lighthouse <adresa ekrana> --only-categories=performance,accessibility --output=json --output-path=<folder>/lh-<ekran>.json --chrome-flags="--headless"`. Za ekran iza prijave Lighthouse treba sesiju; ako to ne ide jednostavno, mjeri samo javne ekrane i reci to.
 
 ## 3. Pregled snimaka

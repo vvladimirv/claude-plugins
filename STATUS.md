@@ -3,7 +3,7 @@
 **Ažurirano:** 2026-11-08 · nov plugin `project-quality` (dubinska provjera i provjera izgleda)
 
 ## Radi
-- Jedan izvor za Claude Code i Codex; guard 0.7.3, kickstart 0.5.3, memory 0.6.2, quality 0.1.0; šabloni 0.5.1.
+- Jedan izvor za Claude Code i Codex; guard 0.7.4, kickstart 0.5.3, memory 0.6.2, quality 0.1.1; šabloni 0.5.1.
 - `project-quality` (bez hookova): `/dubinska-provjera` (invarijante, mutacije, simulacija perioda, statička analiza; alati po stacku u `ALATI.md`), `/provjera-izgleda` (skripta `snimci.js`: Playwright + axe-core iz projekta ili `~/.cache/provjera-izgleda`, bez npm zavisnosti plugina), `/mockup-izgleda`
 - `project-kickstart`: `/kickstart` (+ `--lagano` za male lične aplikacije, `--postojeci`, `--nadogradi` sa prelaskom lagano → puno), `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`; šabloni sa CI i za Flutter/Dart i runnerom provjera
 - `project-memory`: SessionStart kontekst (STATUS po sekcijama: „Sljedeće“ i „Blokeri“ uvijek cijeli), napredak, „➡️ Sljedeće:“, pomoćne sesije (`/pomocna`, `/kraj-sesije auto`), `/stanje`, `/kraj-sesije`, `/vrati`, `/objavi`, `/napredak`, `/izdanje`, `/docs-audit`

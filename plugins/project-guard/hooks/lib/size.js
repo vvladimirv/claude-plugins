@@ -8,6 +8,8 @@ const CODE_EXT = /\.(js|jsx|ts|tsx|mjs|cjs|py|rb|go|rs|java|kt|cs|php|vue|svelte
 const SKIP = /(^|\/)(node_modules|dist|build|out|vendor|fixtures|coverage|__snapshots__|\.next|\.venv|venv|migrations)\/|\.min\.|generated/i;
 const STYLE_EXT = /\.(css|scss|sass|less|jsx|tsx|vue|svelte|html?)$/i;
 const TOKEN_FILE = /token|theme|variables|palette/i;
+// Mockup i prototip namjerno predlažu nove boje (prijedlog tokena), pa tu nema upozorenja na boju.
+const MOCKUP_DIR = /(^|\/)(mockupi?|mockups?|prototipi?|prototypes?)\//i;
 const HARDCODED_COLOR = /(color|background|border|fill|stroke|shadow|outline)[\w-]*\s*[:=]\s*[^;{}\n]*?(#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})\b|rgba?\(|hsla?\()/i;
 
 function target(input, root) {
@@ -85,7 +87,7 @@ function postCheck(input, root) {
   }
   const added = input._patch ? input._patch.lines.filter(l => l.startsWith('+')).map(l => l.slice(1)).join('\n')
     : input.tool_name === 'Write' ? t.content : t.new_string;
-  if (STYLE_EXT.test(tg.rel) && !TOKEN_FILE.test(path.basename(tg.rel))
+  if (STYLE_EXT.test(tg.rel) && !TOKEN_FILE.test(path.basename(tg.rel)) && !MOCKUP_DIR.test(tg.rel)
     && fs.existsSync(path.join(root, 'docs', 'DIZAJN-SISTEM.md')) && HARDCODED_COLOR.test(added || '')) {
     notes.push(`🎨 \`${tg.rel}\`: hardkodovana boja. Koristi token iz fajla tokena (docs/DIZAJN-SISTEM.md); ako token ne postoji, prvo ga dodaj tamo.`);
   }

@@ -61,7 +61,14 @@ test('snimci: izvještaj rangira pristupačnost po ozbiljnosti i navodi neuspjel
       axe: [{ id: 'color-contrast', impact: 'serious', help: 'Kontrast' }, { id: 'label', impact: 'critical', help: 'Polje bez naziva' }] },
     { uloga: 'k', sirina: 1024, ekran: 'b', snimak: 'k/1024/b.png', status: 200, prijavaPala: true, konzola: ['x'], axe: [] },
     { uloga: 'r', sirina: 1440, ekran: 'c', snimak: 'r/1440/c.png', greska: 'prijava nije uspjela: timeout', konzola: [] },
+    { uloga: 'm', sirina: 1440, ekran: 'plate', snimak: 'm/1440/plate.png', status: 404, konzola: [] },
+    { uloga: 'm', sirina: 1024, ekran: 'plate', snimak: 'm/1024/plate.png', status: 404, konzola: [] },
+    { uloga: 'm', sirina: 1440, ekran: 'd', snimak: 'm/1440/d.png', status: 200, axeGreska: 'CSP blokirao skriptu', konzola: [] },
   ], { adresa: 'http://x', axe: true });
+  assert.match(md, /## Ekrani zabranjeni ulozi[\s\S]*- m: plate \(404\)\n(?!- m: plate)/, 'zabrana jednom po ulozi i ekranu');
+  assert.match(md, /\| m \| 1440 \| \[d\]\(m\/1440\/d\.png\) \| 200 \| — \| — \| — \| nije izmjereno \|/);
+  assert.match(md, /## Pristupačnost nije izmjerena \(snimak postoji\)\n\n- m \/ 1440 \/ d: CSP blokirao skriptu/);
+  assert.doesNotMatch(md.split('## Nije snimljeno')[1], /\/ d:/, 'greška axe-a nije greška snimanja');
   assert.match(md, /\| k \| 1440 \| \[a\]\(k\/1440\/a\.png\) \| 200 \| DA \| 1 \|/);
   assert.ok(md.indexOf('`label`') < md.indexOf('`color-contrast`'), 'critical ide prije serious');
   assert.match(md, /k \/ 1024 \/ b: stranica je preusmjerila na prijavu/);
@@ -73,4 +80,12 @@ test('snimci: argumenti komandne linije, nepoznat argument je greška', () => {
   assert.deepEqual(s.parseArgs(['--uloga', 'k', '--sirina', '1280', '--bez-axe']),
     { config: '.claude/izgled.json', izlaz: null, axe: false, uloga: 'k', sirina: 1280 });
   assert.throws(() => s.parseArgs(['--nesto']), /nepoznat argument/);
+});
+
+test('snimci: modul se nalazi i u globalnoj npm instalaciji, a bez nje je null', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'npm-global-'));
+  fs.mkdirSync(path.join(dir, 'lazni-modul'));
+  fs.writeFileSync(path.join(dir, 'lazni-modul', 'index.js'), 'module.exports = 1;');
+  assert.equal(s.findModule('lazni-modul', dir, { globalRoot: dir }), path.join(dir, 'lazni-modul', 'index.js'));
+  assert.equal(s.findModule('lazni-modul-nema', dir, { globalRoot: null }), null);
 });

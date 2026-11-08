@@ -41,6 +41,10 @@ test('upozorenja: fajl preko 300 linija i hardkodovana boja u UI projektu', () =
 
   h.write(root, 'src/tokens.css', ':root { --c: #ff0000; }\n');
   assert.strictEqual(post(root, 'Write', { file_path: path.join(root, 'src/tokens.css'), content: ':root { --c: #ff0000; }\n' }), null);
+  const mock = '<style>.b { color: #123456; }</style>\n';
+  h.write(root, 'docs/mockupi/2026-11-08-izgled.html', mock);
+  assert.strictEqual(post(root, 'Write', { file_path: path.join(root, 'docs/mockupi/2026-11-08-izgled.html'), content: mock }), null,
+    'mockup predlaže tokene, pa boja tu nije greška');
   h.write(root, 'src/Link.jsx', '<a href="#add">x</a>\n');
   assert.strictEqual(post(root, 'Write', { file_path: path.join(root, 'src/Link.jsx'), content: '<a href="#add">x</a>\n' }), null);
 });

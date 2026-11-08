@@ -26,7 +26,7 @@ Napravi 2–3 varijante koje se stvarno razlikuju (npr. gusta za stručnog koris
 - Svaka varijanta definiše svoje vrijednosti kao CSS varijable (tokene) na jednom mjestu, da se izabrana kasnije direktno prenese u fajl tokena.
 
 ## 3. Isporuka
-- Jedan samostalan HTML fajl (CSS i JS u njemu, bez vanjskih zavisnosti), s prekidačem varijante, ekrana i uloge. Ako alat podržava objavu stranice (Artifact), objavi je i pošalji link; inače fajl u `docs/mockupi/<datum>-<tema>.html` ili u zajednički folder projekta.
+- Jedan samostalan HTML fajl (CSS i JS u njemu, bez vanjskih zavisnosti osim fontova, ako ih mjesto objave dozvoljava, npr. Google Fonts u Artifactu). Font iz mockupa je samo za prikaz: ako aplikacija radi bez interneta (LAN), izabrani font mora nositi sa sobom, pa to navedi u tabeli varijanti. Mockup ima prekidač varijante, ekrana i uloge. Ako alat podržava objavu stranice (Artifact), objavi je i pošalji link; inače fajl u `docs/mockupi/<datum>-<tema>.html` ili u zajednički folder projekta.
 - Mockup nije dio aplikacije: ne ide u `templates/`, `src/` ni `static/`.
 - Uz mockup kratka tabela: varijanta → za koga → šta se mijenja → novi tokeni/komponente → procjena rada.
 - Pitaj korisnika da izabere varijantu (ili kombinaciju). Ne mijenjaj aplikaciju prije izbora.
