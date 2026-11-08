@@ -16,7 +16,7 @@ Instalacijski cache nije mjesto za ručne popravke. Izmjena ide u izvor, pa test
 ## Instalacija i ažuriranje na računaru
 
 1. `node scripts/setup.js` prikazuje tačne komande bez izmjena.
-2. `node scripts/setup.js --apply` registruje ovaj lokalni izvor i osvježava četiri korisničke instalacije u oba alata.
+2. `node scripts/setup.js --apply` registruje ovaj lokalni izvor i osvježava pet korisničkih instalacije u oba alata.
    `--claude` ili `--codex` bira samo jedan alat. Koriste se javni CLI-jevi; skripta ne prepisuje korisnički config.
 3. Codex profili arhitekta/ux_recenzent kopiraju se iz paketa u korisnički agents folder. Različita prethodna datoteka dobija backup.
    Codex hookovi se registruju u korisnički `~/.codex/hooks.json`, jer neki CLI runtimeovi prikazuju praznu listu za hookove iz plugina.

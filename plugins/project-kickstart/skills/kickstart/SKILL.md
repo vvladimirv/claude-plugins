@@ -40,6 +40,8 @@ Korisnik uči kroz rad: uz svaku fazu u 1–2 rečenice objasni **zašto** ta fa
 
 *Zašto:* bez jasnog obima projekat raste u svim smjerovima. Bez rječnika agent isti pojam zove na tri načina.
 
+Ako postoji `docs/TRZISTE.md` (od `/trziste` i `/isplativost`), pročitaj ga prije pitanja. Pitanja 1, 2 i 8 popuni iz njega (kupac i niša, MVP iz „Prijedlozi razvoja“, budžet iz „Isplativost“) i samo ih potvrdi. Ako je presuda „Ne gradi u ovom obliku“, reci to jednom i pitaj da li nastaviti.
+
 Postavi najviše 8 pitanja, grupisano (AskUserQuestion, do 4 po pozivu). Ne pitaj ono što se vidi iz teme:
 1. Koji problem rješava i za koga (ko su korisnici)?
 2. Šta je MVP: 3–7 funkcija bez kojih nema smisla?
