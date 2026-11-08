@@ -1,9 +1,10 @@
 # STATUS
 
-**Ažurirano:** 2026-11-07 · spojeni univerzalni lokalni plugini (grana `fix/guard-brzi-sync`) i talas D sa `main`
+**Ažurirano:** 2026-11-08 · nov plugin `project-quality` (dubinska provjera i provjera izgleda)
 
 ## Radi
-- Jedan izvor za Claude Code i Codex; guard 0.7.3, kickstart 0.5.2, memory 0.6.2; šabloni 0.5.1.
+- Jedan izvor za Claude Code i Codex; guard 0.7.3, kickstart 0.5.3, memory 0.6.2, quality 0.1.0; šabloni 0.5.1.
+- `project-quality` (bez hookova): `/dubinska-provjera` (invarijante, mutacije, simulacija perioda, statička analiza; alati po stacku u `ALATI.md`), `/provjera-izgleda` (skripta `snimci.js`: Playwright + axe-core iz projekta ili `~/.cache/provjera-izgleda`, bez npm zavisnosti plugina), `/mockup-izgleda`
 - `project-kickstart`: `/kickstart` (+ `--lagano` za male lične aplikacije, `--postojeci`, `--nadogradi` sa prelaskom lagano → puno), `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`; šabloni sa CI i za Flutter/Dart i runnerom provjera
 - `project-memory`: SessionStart kontekst (STATUS po sekcijama: „Sljedeće“ i „Blokeri“ uvijek cijeli), napredak, „➡️ Sljedeće:“, pomoćne sesije (`/pomocna`, `/kraj-sesije auto`), `/stanje`, `/kraj-sesije`, `/vrati`, `/objavi`, `/napredak`, `/izdanje`, `/docs-audit`
 - `project-guard`: tajne, kapija, brava (i po worktreeu), sinhronizacija, čuvar obima, zavisnosti = ADR (i `pubspec.yaml`), limit fajlova, `/grane`, `/zdravlje`, `/codex-worktree`, samoosvježavanje u cloudu
@@ -20,7 +21,7 @@
 - Detalji i ograničenja: docs/UNIVERZALNI-PLUGINI.md.
 
 ## Sljedeće
-1. Spojiti granu `fix/guard-brzi-sync` u `main` (PR) kad CI prođe; poslije na oba računara `git pull` i `node scripts/setup.js --apply`, pa novi chat (u Codexu pregledati hookove kroz `/hooks`)
+1. Na oba računara `git pull` i `node scripts/setup.js --apply` (instalira i nov `project-quality`), pa novi chat (u Codexu pregledati hookove kroz `/hooks`); prva stvarna proba `/dubinska-provjera` i `/provjera-izgleda` na projektu `Sole-KP`
 2. Postojeće projekte nadograđivati ciljano: sačuvati njihove komande, dodati plan i Git kontrole kad imaju stvarne testove
 3. Probati `/kraj-sesije` u cloud sesiji sa telefona: kartica bez `cwd` i arhiviranje preko `get_session` id-a
 4. Probati `/kickstart --lagano` na sljedećem malom projektu

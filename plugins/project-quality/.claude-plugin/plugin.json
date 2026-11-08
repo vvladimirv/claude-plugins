@@ -1,0 +1,9 @@
+{
+  "name": "project-quality",
+  "version": "0.1.0",
+  "description": "Dubinske provjere kvaliteta za bilo koji stack: invarijante na hiljadama slučajnih primjera, mutacije testova, simulacija više perioda, statička analiza (/dubinska-provjera), snimci ekrana po ulogama i širinama s pristupačnošću (/provjera-izgleda) i HTML mockupi varijanti izgleda (/mockup-izgleda)",
+  "author": {
+    "name": "vvladimirv",
+    "email": "330362@gmail.com"
+  }
+}

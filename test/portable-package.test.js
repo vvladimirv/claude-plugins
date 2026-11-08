@@ -17,7 +17,7 @@ test('paketi: Claude i Codex imaju iste identitete i verzije iz jednog izvora', 
     assert.equal(codex.plugins.find(p => p.name === entry.name).source.path, entry.source);
     const compatibility = json(entry.source + '/.codex-plugin/plugin.json');
     assert.equal(compatibility.version, manifest.version);
-    if (entry.name !== 'project-kickstart') {
+    if (fs.existsSync(path.join(root, entry.source, 'hooks/hooks.json'))) {
       assert.deepEqual(manifest.extensions['com.openai'].hooks, []);
       assert.deepEqual(compatibility.hooks, []);
     }
