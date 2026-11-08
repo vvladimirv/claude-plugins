@@ -31,7 +31,7 @@
     {
       "name": "project-quality",
       "description": "Dubinske provjere kvaliteta za bilo koji stack: invarijante na hiljadama slučajnih primjera, mutacije testova, simulacija više perioda, statička analiza (/dubinska-provjera), snimci ekrana po ulogama i širinama s pristupačnošću (/provjera-izgleda) i HTML mockupi varijanti izgleda (/mockup-izgleda)",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "source": "./plugins/project-quality",
       "category": "development"
     }
