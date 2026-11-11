@@ -9,5 +9,6 @@ Lični marketplace `moji-pluginsi`. Plan razvoja (3 talasa) je u STATUS.md.
 - Skillovi imaju `model:` u frontmatteru: haiku za rutinu, sonnet za commit/pregled, a bez `model:` (glavni model) samo za odluke.
 - Šabloni projekta su u `plugins/project-kickstart/skills/kickstart/templates/`. Svaka izmjena šablona podiže `verzija_sablona` u kickstart SKILL.md i dobija stavku u CHANGELOG-SABLONA.md, pa `node test/sablon-hash.js --upisi` (`npm test` pada dok se to ne uradi).
 - Verzija plugina je u `plugin.json` i u `marketplace.json`. Test pazi da su iste.
+- `project-memory` nema `dependencies` na `project-guard` (tvrda zavisnost bi ugasila cijeli memory kad je guard isključen). Memory skill komandu iz guarda pominje samo uslovno, a test `test/bez-guarda.test.js` to čuva.
 - Podsjetnik je jedan izvor istine: `plugins/project-kickstart/skills/pomoc/PODSJETNIK.md`. Kad dodaš komandu ili hook, ažuriraj ga.
 - Prije commita: `npm test` i `claude plugin validate .` moraju proći.

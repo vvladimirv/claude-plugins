@@ -1,9 +1,9 @@
 # STATUS
 
-**Ažurirano:** 2026-11-08 · nov plugin `project-market` (tržište i isplativost)
+**Ažurirano:** 2026-11-11 · memory radi i bez guarda (odluka: bez `dependencies`); nov plugin `project-market` (tržište i isplativost)
 
 ## Radi
-- Jedan izvor za Claude Code i Codex; guard 0.7.4, kickstart 0.5.4, memory 0.6.2, quality 0.1.1, market 0.1.0; šabloni 0.5.1.
+- Jedan izvor za Claude Code i Codex; guard 0.7.5, kickstart 0.5.4, memory 0.6.3, quality 0.1.1, market 0.1.0; šabloni 0.5.1.
 - `project-quality` (bez hookova): `/dubinska-provjera` (invarijante, mutacije, simulacija perioda, statička analiza; alati po stacku u `ALATI.md`), `/provjera-izgleda` (skripta `snimci.js`: Playwright + axe-core iz projekta ili `~/.cache/provjera-izgleda`, bez npm zavisnosti plugina), `/mockup-izgleda`
 - `project-market` (bez hookova): `/trziste` (konkurenti, potražnja, niše, prijedlozi razvoja; izvor za svaki broj) i `/isplativost` (tri scenarija, prag, presuda); oba pišu `docs/TRZISTE.md`, a `/kickstart` ga čita u intervjuu
 - `project-kickstart`: `/kickstart` (+ `--lagano` za male lične aplikacije, `--postojeci`, `--nadogradi` sa prelaskom lagano → puno), `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`; šabloni sa CI i za Flutter/Dart i runnerom provjera
@@ -31,9 +31,8 @@
 7. `/grane pocisti` u `inhome` i ovdje; grane spojenih PR-ova samo na GitHubu (`claude/admiring-curie-t5f1u9`, `claude/sleepy-edison-bnoe2w`, `claude/great-franklin-ehmh5c`) obrisati i uključiti *Automatically delete head branches*
 
 ## Blokeri / otvorena pitanja
-- `dependencies` u plugin.json (memory → guard): `claude plugin validate .` ga ne provjerava, a bez guarda gasi cijeli memory. Nije dodano; odlučiti da li je tvrda zavisnost bolja od rada „bez /grane smanjeno“
 - Worktreeovi: odluka (a), ostaje kako je. `/pomocna` već koristi nativni worktree, a `/codex-worktree` ostaje jer nativni ne radi za Codex
-- Cloud: klon `/opt/moji-pluginsi` u ovom okruženju bio je zastario (guard 0.6.1, stari `/kraj-sesije`); setup skriptu `# v2` → `# v3` uz `CLAUDE_CODE_PLUGIN_DIR_WATCH=1`, pa provjeriti „Pluginovi su osvježeni“
+- Cloud: klon `/opt/moji-pluginsi` u ovom okruženju bio je zastario (guard 0.6.1, stari `/kraj-sesije`); u okruženju `moji-pluginsi` zamijeniti setup skriptu verzijom `# v3` iz README.md (i provjeriti da je `CLAUDE_CODE_PLUGIN_DIR_WATCH=1`), pa u novoj sesiji tog okruženja provjeriti „Pluginovi su osvježeni“ i verzije u `claude plugin list`
 - Ostaje iz ranije: ručna proba pomoćne sesije sa glavnom na posebnoj grani; plugini na laptopu (`/zdravlje`); stranica komandi iz PODSJETNIK.md
 
 ## Ograničenja
