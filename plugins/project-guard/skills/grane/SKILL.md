@@ -60,4 +60,4 @@ U Codexu zadrži korisnikov izabrani model; preporuči samo potreban nivo razmi�
 - **Haiku, effort nizak:** STATUS, dokumentacija, pravopis, dijakritika, tekst, README, CHANGELOG, čišćenje.
 - **Sonnet, effort srednji:** sve ostalo (svakodnevno kodiranje po planu).
 
-Sesija sama sebi ne može promijeniti model: bira ga korisnik u meniju modela, a drugoj sesiji ga može postaviti `/grane`.
+Sesija sama sebi ne može promijeniti model: bira ga korisnik u meniju modela, a drugoj sesiji ga može postaviti `/grane` (komanda iz project-guard).

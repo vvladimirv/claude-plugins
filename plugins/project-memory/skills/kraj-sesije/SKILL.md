@@ -18,7 +18,7 @@ allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, ToolSearch
 4. **STATUS.md:** osvježi ga po pravilima iz `/stanje` (prepiši, ≤ 30 linija, samo sadašnjost).
 5. **Commitovi:** grupiši izmjene u logične cjeline (jedna cjelina = jedan commit). Poruke idu po Conventional Commits, opis na bosanskom, npr. `feat(budzet): unos troška`. STATUS.md ide u zadnji commit.
 6. **Push:** ako repo ima `origin`, a grana ima commitove koji nisu na GitHubu, pitaj da li da pushujem. Push samo uz izričito "da".
-7. **Završna poruka** (kratko): commitovi (hash + poruka), stanje testova, da li je pushovano i prva stavka iz "Sljedeće" za sutra. Ako sekcija „Grane" sa starta sesije kaže da ima gotovih grana, dodaj jednu liniju: „<N> grana je gotovo → `/grane pocisti`".
+7. **Završna poruka** (kratko): commitovi (hash + poruka), stanje testova, da li je pushovano i prva stavka iz "Sljedeće" za sutra. Ako sekcija „Grane" sa starta sesije kaže da ima gotovih grana, dodaj jednu liniju: „<N> grana je gotovo → `/grane pocisti`". Tu sekciju daje project-guard, pa je bez njega nema ni ove linije.
 8. **Nova sesija sa sljedećim zadatkom:** samo ako je sve prije uspjelo: testovi prošli, `git status` čist i push urađen (ili repo nema `origin`). Ako su testovi pali, commit nije uspio, push nije uspio ili ga je korisnik odbio, ili „Sljedeće" u STATUS.md nema nijednu stavku, ovaj korak preskoči i idi na korak 9.
    - Uzmi prvu stavku iz „Sljedeće" u STATUS.md (bez rednog broja). Za pitanje je skrati na jednu rečenicu, a u prompt ide cijela.
    - Model i effort za nju odredi po **Preporuka modela** ispod.
@@ -74,4 +74,4 @@ U Codexu zadrži korisnikov izabrani model; preporuči samo potreban nivo razmi�
 - **Haiku, effort nizak:** STATUS, dokumentacija, pravopis, dijakritika, tekst, README, CHANGELOG, čišćenje.
 - **Sonnet, effort srednji:** sve ostalo (svakodnevno kodiranje po planu).
 
-Sesija sama sebi ne može promijeniti model: bira ga korisnik u meniju modela, a drugoj sesiji ga može postaviti `/grane`.
+Sesija sama sebi ne može promijeniti model: bira ga korisnik u meniju modela, a drugoj sesiji ga može postaviti `/grane` (komanda iz project-guard).

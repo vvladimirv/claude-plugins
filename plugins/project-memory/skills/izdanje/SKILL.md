@@ -27,5 +27,5 @@ Verzija: `$ARGUMENTS` (ako je prazno: `v1.0` za prvo izdanje, inače sljedeća m
    - `.claude/kickstart.json`: `"faza": "odrzavanje"` i dodaj `{"verzija": "<verzija>", "datum": "YYYY-MM-DD"}` u niz `"izdanja"`.
 4. **Commit i tag:** `chore(izdanje): <verzija>`, pa `git tag -a <verzija> -m "<verzija>: <jedna rečenica>"`. Push commita i taga **samo uz izričito da**.
 5. **Šta dalje** (AskUserQuestion):
-   - **Održavanje** (preporuka odmah poslije v1.0): popravke bugova su slobodne. Nove funkcije idu u `/ideja`, a čuvar obima to provodi.
+   - **Održavanje** (preporuka odmah poslije v1.0): popravke bugova su slobodne. Nove funkcije idu u `/ideja`, a čuvar obima to provodi (oboje je iz project-guard; ako ga nema, nove funkcije idu u „Sljedeće“ u STATUS.md).
    - **Planiraj sljedeću verziju:** kratak intervju (3–5 funkcija, šta nije u obimu, tempo), pa u BLUEPRINT.md nova sekcija `## Verzija <sljedeća>` sa milestoneima, **rokovima** i statusom `planirano`. Nove funkcije dobijaju F-brojeve u inventaru. Uz to ide ADR "obim <sljedeća verzija>", dopuna `## Obim` u VIZIJA.md i `"faza": "razvoj"` u kickstart.json.
