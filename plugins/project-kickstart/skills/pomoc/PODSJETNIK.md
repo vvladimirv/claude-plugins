@@ -7,6 +7,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 
 | Kad | Kucaš |
 |---|---|
+| Ideja za aplikaciju: ima li kupaca i isplati li se (prije kickstarta) | `/trziste <ideja>`, pa `/isplativost` |
 | Nov projekat (jednom) | napravi folder `C:\dev\<ime>`, otvori ga, pa `/kickstart <o čemu je aplikacija>` |
 | Početak svakog rada | otvori folder projekta, pa `nastavi` ili `šta je sljedeće?` |
 | Nova mogućnost aplikacije | napiši šta hoćeš (ili `/nova-funkcija <ime>`) |
@@ -46,7 +47,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | **Napredak** | ✅ na startu sesije linija: milestone, % funkcija, kašnjenje, prognoza MVP-a | `/napredak` (terminal) · `/napredak html` (vizuelni pregled) · kad se kasni: smanji obim (`odloženo (v2)`), novi rok ili nastavi |
 | **Aplikacija za korištenje** | — | `/objavi`: samo na ovom računaru (`Pokreni.cmd`, dvoklik), na kućnoj mreži (i telefon u kući) ili na internetu (hosting, instalacija na telefon). Kickstart zapisuje izbor u VIZIJA.md → `Gdje se koristi` |
 | **MVP gotov** | ✅ Claude predloži izdanje umjesto novih funkcija (i prvo `/objavi`, ako README nema `Kako se koristi`) | `/izdanje`: CHANGELOG, tag v1.0, obim se zamrzava (održavanje). Nova verzija samo kroz plan sa rokovima |
-| **Povremeno** | — | `/dubinska-provjera` (invarijante, mutacije testova, simulacija više perioda, statička analiza; uz ugrađene `/code-review` i `/security-review`) · `/provjera-izgleda` (`--regresija` kad je izgled usvojen) · `/stanje` · `/docs-audit` (red u dokumentima) · `/kickstart --nadogradi` (novi šabloni u starom projektu) · `/pravilo-u-hook` (pravilo koje se zaboravlja postaje provjera) |
+| **Povremeno** | — | `/dubinska-provjera` (invarijante, mutacije testova, simulacija više perioda, statička analiza; uz ugrađene `/code-review` i `/security-review`) · `/provjera-izgleda` (`--regresija` kad je izgled usvojen) · `/trziste` u projektu (šta dalje razvijati prema konkurenciji) · `/isplativost <nova cijena>` · `/stanje` · `/docs-audit` (red u dokumentima) · `/kickstart --nadogradi` (novi šabloni u starom projektu) · `/pravilo-u-hook` (pravilo koje se zaboravlja postaje provjera) |
 | **Hook smeta ili ima grešku** | — | `/zdravlje` (provjera instalacije, greške i spori hookovi) · `/pravila-pauza [minuta]` (tajne ostaju zaštićene) · `/pravila-pauza stop` · greške: `~/.claude/pravila.log` |
 
 ## Gdje je šta u projektu
@@ -57,6 +58,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | `STATUS.md` | trenutno stanje (≤ 30 linija, prepisuje se) |
 | `git log` | historija (ne piše se u .md) |
 | `docs/VIZIJA.md` | problem, **Obim**, **Van obima** (čita ih čuvar obima) |
+| `docs/TRZISTE.md` | (opciono) tržište, niše, isplativost i izvori (`/trziste`, `/isplativost`) |
 | `docs/POJMOVI.md` | rječnik pojmova domene |
 | `docs/ARHITEKTURA.md` | moduli, folderi, slojevi |
 | `docs/INVENTAR-FUNKCIJA.md` | F-lista = ugovor (redizajn ne smije izgubiti funkciju) |

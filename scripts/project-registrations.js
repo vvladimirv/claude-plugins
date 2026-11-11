@@ -2,7 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const names = new Set(['project-guard', 'project-kickstart', 'project-memory', 'project-quality']);
+const names = new Set(['project-guard', 'project-kickstart', 'project-memory', 'project-quality', 'project-market']);
 
 function inspect(home, source, now = Date.now()) {
   const registry = path.join(home, 'plugins/installed_plugins.json');

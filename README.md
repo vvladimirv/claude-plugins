@@ -7,6 +7,7 @@ Lični plugini za Claude Code i Codex za ispravan start i vođenje projekata.
 | `project-kickstart` | `/kickstart`: intervju → stack → arhitektura → blueprint → temeljni dokumenti + prvi commit · `--nadogradi` · `/nova-funkcija` · `/ui-izmjena` · `/adr` · agenti `arhitekta` (Opus) i `ux-recenzent` (Sonnet) · pre-commit i CI šabloni · `/pomoc`: podsjetnik |
 | `project-memory` | na startu sesije: STATUS.md, zadnjih 10 commitova i linija napretka (rokovi, kašnjenje, prognoza) i pravilo „➡️ Sljedeće:“ · upozorenje kad razgovor postane velik · `/stanje` · `/kraj-sesije [auto]` · `/pomocna` (pomoćna sesija u worktreeu, sama spoji i zatvori se) · `/vrati` · `/napredak [html]` · `/objavi` · `/izdanje` · `/docs-audit` |
 | `project-quality` | `/dubinska-provjera`: pravila koja ne smiju pasti na hiljadama slučajnih primjera, mutacije testova, simulacija više perioda i statička analiza, alati po stacku · `/provjera-izgleda`: snimci ekrana po ulogama i širinama, prelom, konzola, pristupačnost (axe-core), Lighthouse, `--regresija` · `/mockup-izgleda`: HTML varijante novog izgleda prije izmjene |
+| `project-market` | `/trziste`: kupci, konkurenti, cijene, signali potražnje, bodovanje niša i prijedlozi razvoja, sa izvorom za svaki broj · `/isplativost`: troškovi, marža, prag isplativosti u tri scenarija, presuda i test najrizičnije pretpostavke · rezultat u `docs/TRZISTE.md`, koji `/kickstart` čita |
 | `project-guard` | hookovi: zaštita tajni, kapija kickstarta, brava sesija, limit fajlova, boje iz tokena, čuvar obima (i zamrzavanje poslije izdanja), podsjetnik na commit, nova zavisnost = ADR, opis grana (baza, zadatak, preporuka modela) · `/grane` · `/zdravlje` · `/pravila-pauza` · `/preuzmi-lock` · `/novi-projekat` · `/ideja` · `/codex-worktree` · `/pravilo-u-hook` |
 
 Svakodnevni podsjetnik (šta je automatski, a šta radiš ti): [PODSJETNIK.md](plugins/project-kickstart/skills/pomoc/PODSJETNIK.md). U Claude Codeu ga prikazuje `/pomoc`.
@@ -64,7 +65,7 @@ Okruženje `moji-pluginsi` (meni okruženja u naslovu sesije → Edit):
     echo "KLON NIJE USPIO" >> "$LOG"
   fi
   ```
-Sesije za bilo koji projekat pokreći u tom okruženju. Provjera u sesiji: `claude plugin list` (sva četiri `√ loaded`), a ako ne radi, `cat /opt/moji-pluginsi.log`.
+Sesije za bilo koji projekat pokreći u tom okruženju. Provjera u sesiji: `claude plugin list` (svih pet `√ loaded`), a ako ne radi, `cat /opt/moji-pluginsi.log`.
 
 - **Repo mora biti javan.** Git u cloud sesiji ima prijavu samo za repoe te sesije, pa privatni repo setup skripta ne može klonirati.
 - **Nova verzija stiže sama** (od project-guard 0.6.2). Okruženje pamti stanje poslije setup skripte i daje ga svakoj novoj sesiji, pa je klon u `/opt/moji-pluginsi` star. Zato project-guard na startu sesije povuče klon sa GitHuba (samo fast-forward i samo ako u klonu nema izmjena) i javi nove verzije. Izmijenjeni hookovi rade odmah. `CLAUDE_CODE_PLUGIN_DIR_WATCH=1` govori Claude Codeu da sam ponovo učita plugin kad mu se fajlovi promijene, pa bi i izmijenjeni skillovi i nove komande trebali važiti u istoj sesiji (to još nije provjereno u cloud sesiji). Ako nešto ipak ne stigne, ili je greška u `~/.claude/pravila.log` (`selfupdate`): izmijeni skriptu (podigni broj u `# v3`), pa nove sesije kloniraju svjež `main`.

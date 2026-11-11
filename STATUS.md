@@ -1,10 +1,11 @@
 # STATUS
 
-**Ažurirano:** 2026-11-11 · memory radi i bez guarda (odluka: bez `dependencies`)
+**Ažurirano:** 2026-11-11 · memory radi i bez guarda (odluka: bez `dependencies`); nov plugin `project-market` (tržište i isplativost)
 
 ## Radi
-- Jedan izvor za Claude Code i Codex; guard 0.7.5, kickstart 0.5.3, memory 0.6.3, quality 0.1.1; šabloni 0.5.1.
+- Jedan izvor za Claude Code i Codex; guard 0.7.5, kickstart 0.5.4, memory 0.6.3, quality 0.1.1, market 0.1.0; šabloni 0.5.1.
 - `project-quality` (bez hookova): `/dubinska-provjera` (invarijante, mutacije, simulacija perioda, statička analiza; alati po stacku u `ALATI.md`), `/provjera-izgleda` (skripta `snimci.js`: Playwright + axe-core iz projekta ili `~/.cache/provjera-izgleda`, bez npm zavisnosti plugina), `/mockup-izgleda`
+- `project-market` (bez hookova): `/trziste` (konkurenti, potražnja, niše, prijedlozi razvoja; izvor za svaki broj) i `/isplativost` (tri scenarija, prag, presuda); oba pišu `docs/TRZISTE.md`, a `/kickstart` ga čita u intervjuu
 - `project-kickstart`: `/kickstart` (+ `--lagano` za male lične aplikacije, `--postojeci`, `--nadogradi` sa prelaskom lagano → puno), `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`; šabloni sa CI i za Flutter/Dart i runnerom provjera
 - `project-memory`: SessionStart kontekst (STATUS po sekcijama: „Sljedeće“ i „Blokeri“ uvijek cijeli), napredak, „➡️ Sljedeće:“, pomoćne sesije (`/pomocna`, `/kraj-sesije auto`), `/stanje`, `/kraj-sesije`, `/vrati`, `/objavi`, `/napredak`, `/izdanje`, `/docs-audit`
 - `project-guard`: tajne, kapija, brava (i po worktreeu), sinhronizacija, čuvar obima, zavisnosti = ADR (i `pubspec.yaml`), limit fajlova, `/grane`, `/zdravlje`, `/codex-worktree`, samoosvježavanje u cloudu
@@ -21,12 +22,13 @@
 - Detalji i ograničenja: docs/UNIVERZALNI-PLUGINI.md.
 
 ## Sljedeće
-1. Na oba računara `git pull` i `node scripts/setup.js --apply` (instalira i nov `project-quality`), pa novi chat (u Codexu pregledati hookove kroz `/hooks`); prva stvarna proba `/dubinska-provjera` i `/provjera-izgleda` na projektu `Sole-KP`
-2. Postojeće projekte nadograđivati ciljano: sačuvati njihove komande, dodati plan i Git kontrole kad imaju stvarne testove
-3. Probati `/kraj-sesije` u cloud sesiji sa telefona: kartica bez `cwd` i arhiviranje preko `get_session` id-a
-4. Probati `/kickstart --lagano` na sljedećem malom projektu
-5. `budzet`: M3 (Cloudflare Pages + PWA na Androidu), pa `/izdanje` v1.0; CI uključiti kad se sredi naplata na GitHubu
-6. `/grane pocisti` u `inhome` i ovdje; grane spojenih PR-ova samo na GitHubu (`claude/admiring-curie-t5f1u9`, `claude/sleepy-edison-bnoe2w`, `claude/great-franklin-ehmh5c`) obrisati i uključiti *Automatically delete head branches*
+1. Na oba računara `git pull` i `node scripts/setup.js --apply` (instalira i nove `project-quality` i `project-market`), pa novi chat (u Codexu pregledati hookove kroz `/hooks`); prva stvarna proba `/dubinska-provjera` i `/provjera-izgleda` na projektu `Sole-KP`
+2. Prva proba `/trziste <ideja>` i `/isplativost` na stvarnoj ideji; tek onda `/nisa`, `/go-no-go` i agent `analiticar` (odloženo)
+3. Postojeće projekte nadograđivati ciljano: sačuvati njihove komande, dodati plan i Git kontrole kad imaju stvarne testove
+4. Probati `/kraj-sesije` u cloud sesiji sa telefona: kartica bez `cwd` i arhiviranje preko `get_session` id-a
+5. Probati `/kickstart --lagano` na sljedećem malom projektu
+6. `budzet`: M3 (Cloudflare Pages + PWA na Androidu), pa `/izdanje` v1.0; CI uključiti kad se sredi naplata na GitHubu
+7. `/grane pocisti` u `inhome` i ovdje; grane spojenih PR-ova samo na GitHubu (`claude/admiring-curie-t5f1u9`, `claude/sleepy-edison-bnoe2w`, `claude/great-franklin-ehmh5c`) obrisati i uključiti *Automatically delete head branches*
 
 ## Blokeri / otvorena pitanja
 - Worktreeovi: odluka (a), ostaje kako je. `/pomocna` već koristi nativni worktree, a `/codex-worktree` ostaje jer nativni ne radi za Codex
