@@ -42,7 +42,14 @@ Korisnik uči kroz rad: uz svaku fazu u 1–2 rečenice objasni **zašto** ta fa
 
 Ako postoji `docs/TRZISTE.md` (od `/trziste` i `/isplativost`), pročitaj ga prije pitanja. Pitanja 1, 2 i 8 popuni iz njega (kupac i niša, MVP iz „Prijedlozi razvoja“, budžet iz „Isplativost“) i samo ih potvrdi. Ako je presuda „Ne gradi u ovom obliku“, reci to jednom i pitaj da li nastaviti.
 
-Postavi najviše 8 pitanja, grupisano (AskUserQuestion, do 4 po pozivu). Ne pitaj ono što se vidi iz teme:
+**Predaja iz Oblaka ideja** (u `docs/TRZISTE.md` je `<!-- oblak-predaja: … -->`, pravi ga `npm run predaj` u Oblaku): pročitaj cijeli fajl i `docs/maketa/`. Ulaz za intervju je sekcija `## Za intervju`:
+- „Poznato iz Oblaka“ potvrdi jednim pitanjem i ne pitaj ponovo (problem, korisnici, model zarade, prvi eksperiment).
+- Svaka stavka iz „Praznine i rizici“ postaje dodatno pitanje, uz razlog iz fajla (npr. „Spremnost na plaćanje ima 2/5, pa …“).
+- MVP (pitanje 2) predloži iz ekrana makete i pritužbi iz provjere tržišta, pa ga korisnik potvrdi.
+- Ako isplativost fali, ponudi `/isplativost` prije faze 4. Korisnik je može preskočiti, a to ide u STATUS.md kao otvoreno pitanje.
+- U `.claude/kickstart.json` (faza 5) dodaj `"oblak": "<id iz oznake>"`, da se ideja u Oblaku može povezati sa repoom.
+
+Postavi osnovna pitanja (najviše 8), grupisano (AskUserQuestion, do 4 po pozivu). Ne pitaj ono što se vidi iz teme ili iz `docs/TRZISTE.md`:
 1. Koji problem rješava i za koga (ko su korisnici)?
 2. Šta je MVP: 3–7 funkcija bez kojih nema smisla?
 3. Šta svjesno **nije** u obimu (bar 2 stvari)?
@@ -52,6 +59,8 @@ Postavi najviše 8 pitanja, grupisano (AskUserQuestion, do 4 po pozivu). Ne pita
    - Bez `--lagano`/`--puno`, odmah poslije odgovora pitaj (AskUserQuestion): **"Lagani ili puni start?"**. Za aplikaciju samo za korisnika, bez roka i bez tuđih podataka preporuči "Lagano" (prva opcija): samo VIZIJA, STATUS, AGENTS i CLAUDE, bez plana sa rokovima. Inače preporuči "Puno". Na "Lagano" nastavi po **Režim lagano**.
 7. Gdje se koristi: samo na ovom računaru, na kućnoj mreži (i telefon u kući) ili na internetu? Nije svaka aplikacija za internet: kad je koristi jedna osoba, a podaci su lični, preporuči ovaj računar. Odgovor ide u VIZIJA.md → `## Gdje se koristi` (čita ga `/objavi`).
 8. Ima li rok ili ograničenje (budžet, postojeći sistem s kojim se povezuje)?
+
+**Dodatna pitanja** *(zašto: loš start najčešće dolazi od praznine koju niko nije pitao, a ne od previše pitanja)*: poslije osnovnih pitanja pitaj dalje kad odgovor ili analiza ostavi prazninu koja mijenja obim, stack, podatke ili model zarade. To je nejasan ili kontradiktoran odgovor, rizik ili pretpostavka iz `docs/TRZISTE.md`, ili praznina iz predaje. Uz svako dodatno pitanje stoji jedna rečenica zašto se pita. Ako odgovor ne bi promijenio nijedan dokument iz faze 5, ne pitaj. Najviše 3 kruga (do 4 pitanja po krugu); ono što ostane otvoreno upiši u STATUS.md → „Blokeri / otvorena pitanja“.
 
 Zatim predloži **rječnik pojmova**: 5–12 ključnih pojmova domene sa definicijom od jedne rečenice i engleskim imenom za kod (npr. "Račun (Invoice): …"). Korisnik ga potvrdi ili ispravi.
 
@@ -177,7 +186,7 @@ Kratko, u tabeli: šta je napravljeno (fajlovi), šta je prvi zadatak iz M1 i ko
 
 *Zašto:* mala lična aplikacija ne treba plan sa rokovima, inventar ni arhitekturu na papiru. Previše dokumenata se ne održava, pa zastari i smeta. Lagani start zadrži ono što štiti (obim, stanje, pravila, tajne, testovi) i ništa više.
 
-1. **Faza 1:** samo pitanja 1–4 i 7 (problem i korisnici, MVP sa 3–5 stavki, van obima, gdje radi, gdje se koristi). Bez rječnika pojmova.
+1. **Faza 1:** samo pitanja 1–4 i 7 (problem i korisnici, MVP sa 3–5 stavki, van obima, gdje radi, gdje se koristi), plus najviše jedan krug dodatnih pitanja. Predaja iz Oblaka se čita isto kao u punom režimu. Bez rječnika pojmova.
 2. **Faza 2:** jedna preporuka stacka i jedna alternativa, svaka u jednoj rečenici. Tabela i ADR otpadaju.
 3. **Faze 3 i 4** otpadaju. Prije faze 5 pokaži sažetak (problem, MVP, van obima, stack) i čekaj jedan "OK".
 4. **Faza 5**, samo ovi fajlovi (ostali iz tabele se ne prave):

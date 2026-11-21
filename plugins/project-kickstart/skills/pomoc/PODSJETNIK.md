@@ -8,6 +8,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | Kad | Kucaš |
 |---|---|
 | Ideja za aplikaciju: ima li kupaca i isplati li se (prije kickstarta) | `/trziste <ideja>`, pa `/isplativost` |
+| Ideja iz Oblaka ideja sa odlukom build | u Oblaku `npm run predaj -- I-NNN <folder>`, pa u tom folderu `/kickstart` (čita analize i pita samo za praznine) |
 | Nov projekat (jednom) | napravi folder `C:\dev\<ime>`, otvori ga, pa `/kickstart <o čemu je aplikacija>` |
 | Početak svakog rada | otvori folder projekta, pa `nastavi` ili `šta je sljedeće?` |
 | Nova mogućnost aplikacije | napiši šta hoćeš (ili `/nova-funkcija <ime>`) |
@@ -58,7 +59,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | `STATUS.md` | trenutno stanje (≤ 30 linija, prepisuje se) |
 | `git log` | historija (ne piše se u .md) |
 | `docs/VIZIJA.md` | problem, **Obim**, **Van obima** (čita ih čuvar obima) |
-| `docs/TRZISTE.md` | (opciono) tržište, niše, isplativost i izvori (`/trziste`, `/isplativost`) |
+| `docs/TRZISTE.md` | (opciono) tržište, niše, isplativost i izvori (`/trziste`, `/isplativost`) ili predaja iz Oblaka ideja (`npm run predaj`) |
 | `docs/POJMOVI.md` | rječnik pojmova domene |
 | `docs/ARHITEKTURA.md` | moduli, folderi, slojevi |
 | `docs/INVENTAR-FUNKCIJA.md` | F-lista = ugovor (redizajn ne smije izgubiti funkciju) |
