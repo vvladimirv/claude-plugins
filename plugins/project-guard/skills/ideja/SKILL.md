@@ -14,6 +14,7 @@ Ideja: `$ARGUMENTS` (ako je prazno, uzmi zadnji zahtjev koji je čuvar obima ozn
 
 1. **Putanja:** `<korijen>/ideje/IDEJE.md`. Korijen je prva linija iz `~/.claude/kickstart-korijeni.txt`, a ako fajl ne postoji, `C:\dev`.
    - Ako folder `ideje` ne postoji, reci to korisniku i stani. Postavlja se jednom (README repoa `claude-plugins`).
+   - **Ideja za novu aplikaciju ili igru za prodaju**, a postoji `<korijen>/Oblak-ideja`: ne upisuj je ovdje. Predloži karticu u Oblaku (`npm run nova-ideja -- "Naslov"` u tom folderu), da prođe provjeru tržišta, ocjenu i odluku. Ako korisnik ipak hoće ovdje, nastavi.
 2. **Dodaj** na vrh sekcije `## Nove`: `- YYYY-MM-DD · <ideja> _(iz: <ime trenutnog projekta>)_`
 3. **Snimi** (u repou ideja, ne u trenutnom projektu):
    ```bash
