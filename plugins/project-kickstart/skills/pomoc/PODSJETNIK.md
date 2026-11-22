@@ -14,6 +14,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | Nova mogućnost aplikacije | napiši šta hoćeš (ili `/nova-funkcija <ime>`) |
 | Promjena izgleda | `/ui-izmjena <šta promijeniti>` |
 | Šta ne valja u izgledu (snimci svih ekrana, pristupačnost) | `/provjera-izgleda` · prijedlog novog izgleda u varijantama: `/mockup-izgleda` |
+| Igra: da li su brojke u balansu (bot + zapisi testera) | `/balans [bot\|testeri\|sve] [tema]` |
 | Prije izdanja ili poslije izmjene obračuna: greške koje obični testovi ne vide | `/dubinska-provjera` |
 | Vidi koliko ste odmakli | `/napredak html` |
 | Samostalan zadatak usput (npr. popravka sa strane) | ništa: Claude sam napravi karticu **pomoćne sesije**, ti klikneš · ručno: `/pomocna <zadatak>` |
