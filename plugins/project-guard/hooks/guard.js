@@ -11,6 +11,7 @@ const size = require('./lib/size');
 const scope = require('./lib/scope');
 const session = require('./lib/session');
 const deps = require('./lib/deps');
+const godotExport = require('./lib/godot-export');
 const sync = require('./lib/sync');
 const branches = require('./lib/branches');
 const portable = require('./lib/portable');
@@ -77,6 +78,7 @@ const HANDLERS = {
     return context('PostToolUse', [
       safe('size-post', () => size.postCheck(input, root)),
       safe('deps', () => deps.postCheck(input, root)),
+      safe('godot-export', () => godotExport.postCheck(input, root)),
     ].filter(Boolean).join('\n') || null);
   },
   UserPromptSubmit: (input, root) => context('UserPromptSubmit', safe('scope-prompt', () => scope.promptCheck(input, root))),
