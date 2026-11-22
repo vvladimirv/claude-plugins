@@ -127,3 +127,31 @@ test('obim: engleske riječi su cijele ("address" nije "add"), a oblici glagola 
   for (const p of ['what is the address field', 'objasni mi sredinu ekrana', 'koji makeup']) assert.strictEqual(ask(p), null, p);
   for (const p of ['added a button?', 'fixes for login', 'dodajte polje', 'sredi ovo']) assert.ok(ask(p), p);
 });
+
+test('Godot: .gd fajl se broji u limit, .godot i addons/ ne', () => {
+  const root = h.project({ marker: true });
+  const big = h.lines(600);
+  assert.strictEqual(h.decision(run(h.pre(root, 'Write', { file_path: path.join(root, 'game/scripts/a.gd'), content: big }))), 'deny');
+  assert.strictEqual(run(h.pre(root, 'Write', { file_path: path.join(root, 'game/.godot/cache.gd'), content: big })), null);
+  assert.strictEqual(run(h.pre(root, 'Write', { file_path: path.join(root, 'game/addons/gut/gut.gd'), content: big })), null);
+  h.write(root, 'game/ui/paleta.gd', h.lines(310));
+  const warn = post(root, 'Write', { file_path: path.join(root, 'game/ui/paleta.gd'), content: h.lines(310) });
+  assert.match(warn.hookSpecificOutput.additionalContext, /310 linija/);
+});
+
+test('Godot: Color(...) van tokens.gd dobija upozorenje, token, ime boje, komentar i test ne', () => {
+  const root = h.project({ marker: true, files: { 'docs/DIZAJN-SISTEM.md': '# DS' } });
+  const ctx = (rel, content) => post(root, 'Write', { file_path: path.join(root, rel), content })?.hookSpecificOutput.additionalContext;
+  assert.match(ctx('game/ui/btn.gd', 'func f():\n\tmodulate = Color(1, 0.2, 0.2)\n'), /Color\(/);
+  assert.match(ctx('game/ui/btn.gd', 'var c = Color("#ff0000")\n'), /tokens\.gd/);
+  assert.match(ctx('game/ui/btn.gd', 'var c = Color8(255, 0, 0)\n'), /tokens\.gd/);
+  assert.match(ctx('game/ui/btn.gd', 'var c = Color.html("#f00")\n'), /tokens\.gd/);
+  assert.strictEqual(ctx('game/ui/tokens.gd', 'const RED = Color(1, 0, 0)\n'), undefined);
+  assert.strictEqual(ctx('game/ui/btn.gd', 'var c = Color(Tokens.RED, 0.5)\nvar d = Color.WHITE\n# Color(1, 0, 0)\n'), undefined);
+  assert.strictEqual(ctx('game/test/test_btn.gd', 'assert_eq(c, Color(1, 0, 0))\n'), undefined);
+});
+
+test('Godot: bez docs/DIZAJN-SISTEM.md nema upozorenja na boju', () => {
+  const root = h.project({ marker: true });
+  assert.strictEqual(post(root, 'Write', { file_path: path.join(root, 'game/a.gd'), content: 'var c = Color(1, 0, 0)\n' }), null);
+});

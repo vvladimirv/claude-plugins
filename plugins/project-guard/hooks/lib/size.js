@@ -4,18 +4,24 @@ const fs = require('fs');
 const path = require('path');
 const { relToRoot, limits, countLines, globToRegex } = require('./common');
 
-const CODE_EXT = /\.(js|jsx|ts|tsx|mjs|cjs|py|rb|go|rs|java|kt|cs|php|vue|svelte|html?|css|scss|sass|less|sh|ps1|swift|dart|c|cc|cpp|h|hpp|lua)$/i;
-const SKIP = /(^|\/)(node_modules|dist|build|out|vendor|fixtures|coverage|__snapshots__|\.next|\.venv|venv|migrations)\/|\.min\.|generated/i;
+const CODE_EXT = /\.(js|jsx|ts|tsx|mjs|cjs|py|rb|go|rs|java|kt|cs|php|vue|svelte|html?|css|scss|sass|less|sh|ps1|swift|dart|c|cc|cpp|h|hpp|lua|gd|gdshader)$/i;
+const SKIP = /(^|\/)(node_modules|dist|build|out|vendor|fixtures|coverage|__snapshots__|\.next|\.venv|venv|migrations|\.godot)\/|\.min\.|generated/i;
+// Treći dodaci Godot projekta (game/addons/...) nisu naš kod, pa ih ne mjerimo ni ne provjeravamo.
+const GODOT_ADDONS = /(^|\/)addons\/.*\.(gd|gdshader)$/i;
 const STYLE_EXT = /\.(css|scss|sass|less|jsx|tsx|vue|svelte|html?)$/i;
 const TOKEN_FILE = /token|theme|variables|palette/i;
 // Mockup i prototip namjerno predlažu nove boje (prijedlog tokena), pa tu nema upozorenja na boju.
 const MOCKUP_DIR = /(^|\/)(mockupi?|mockups?|prototipi?|prototypes?)\//i;
+// GDScript: boja iz brojeva ili teksta (Color(1, 0, 0), Color("#f00"), Color8(...), Color.html(...)).
+// Color(Tokens.X, 0.5) i Color.WHITE ne ulaze: prva je varijanta tokena, druga ima ime.
+const GD_COLOR = /\bColor8?\s*\(\s*(?:["'#]|-?\.?\d)|\bColor\.(?:html|from_string|from_hsv|from_ok_hsl|from_rgba8)\s*\(/;
+const GD_TEST = /(^|\/)(tests?|testovi)\/|(^|\/)test_[^/]*\.gd$|_test\.gd$/i;
 const HARDCODED_COLOR = /(color|background|border|fill|stroke|shadow|outline)[\w-]*\s*[:=]\s*[^;{}\n]*?(#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})\b|rgba?\(|hsla?\()/i;
 
 function target(input, root) {
   const t = input.tool_input || {};
   const rel = relToRoot(t.file_path, root);
-  if (rel === null || !CODE_EXT.test(rel) || SKIP.test(rel)) return null;
+  if (rel === null || !CODE_EXT.test(rel) || SKIP.test(rel) || GODOT_ADDONS.test(rel)) return null;
   const lim = limits(root);
   if (lim.iskljuci.some((g) => globToRegex(g).test(rel))) return null;
   return { rel, abs: path.resolve(root, t.file_path), lim, t };
@@ -90,6 +96,12 @@ function postCheck(input, root) {
   if (STYLE_EXT.test(tg.rel) && !TOKEN_FILE.test(path.basename(tg.rel)) && !MOCKUP_DIR.test(tg.rel)
     && fs.existsSync(path.join(root, 'docs', 'DIZAJN-SISTEM.md')) && HARDCODED_COLOR.test(added || '')) {
     notes.push(`🎨 \`${tg.rel}\`: hardkodovana boja. Koristi token iz fajla tokena (docs/DIZAJN-SISTEM.md); ako token ne postoji, prvo ga dodaj tamo.`);
+  }
+  // Pravilo "boje samo iz tokens.gd": GDScript van fajla tokena i van testova.
+  if (/\.gd$/i.test(tg.rel) && !TOKEN_FILE.test(path.basename(tg.rel)) && !GD_TEST.test(tg.rel)
+    && fs.existsSync(path.join(root, 'docs', 'DIZAJN-SISTEM.md'))
+    && (added || '').split('\n').some((l) => !/^\s*#/.test(l) && GD_COLOR.test(l))) {
+    notes.push(`🎨 \`${tg.rel}\`: boja zadana brojevima ili tekstom (Color(...)). Koristi token iz tokens.gd (docs/DIZAJN-SISTEM.md); ako token ne postoji, prvo ga dodaj tamo.`);
   }
   return notes.length ? notes.join('\n') : null;
 }
