@@ -1,14 +1,14 @@
 # STATUS
 
-**Ažurirano:** 2026-11-21 · kickstart čita predaju iz Oblaka ideja i postavlja dodatna pitanja za praznine; `/ideja` šalje ideje za nove aplikacije u Oblak
+**Ažurirano:** 2026-11-22 · guard prepoznaje Godot: `.gd` u limitu fajla, `Color(...)` van `tokens.gd`, nov dodatak u `addons/` traži ADR
 
 ## Radi
-- Jedan izvor za Claude Code i Codex; guard 0.7.6, kickstart 0.5.5, memory 0.6.3, quality 0.1.1, market 0.1.0; šabloni 0.5.1.
+- Jedan izvor za Claude Code i Codex; guard 0.8.0, kickstart 0.5.5, memory 0.6.3, quality 0.1.1, market 0.1.0; šabloni 0.5.1.
 - `project-quality` (bez hookova): `/dubinska-provjera` (invarijante, mutacije, simulacija perioda, statička analiza; alati po stacku u `ALATI.md`), `/provjera-izgleda` (skripta `snimci.js`: Playwright + axe-core iz projekta ili `~/.cache/provjera-izgleda`, bez npm zavisnosti plugina), `/mockup-izgleda`
 - `project-market` (bez hookova): `/trziste` (konkurenti, potražnja, niše, prijedlozi razvoja; izvor za svaki broj) i `/isplativost` (tri scenarija, prag, presuda); oba pišu `docs/TRZISTE.md`, a `/kickstart` ga čita u intervjuu
 - `project-kickstart`: `/kickstart` (+ `--lagano` za male lične aplikacije, `--postojeci`, `--nadogradi` sa prelaskom lagano → puno), `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`; šabloni sa CI i za Flutter/Dart i runnerom provjera
 - `project-memory`: SessionStart kontekst (STATUS po sekcijama: „Sljedeće“ i „Blokeri“ uvijek cijeli), napredak, „➡️ Sljedeće:“, pomoćne sesije (`/pomocna`, `/kraj-sesije auto`), `/stanje`, `/kraj-sesije`, `/vrati`, `/objavi`, `/napredak`, `/izdanje`, `/docs-audit`
-- `project-guard`: tajne, kapija, brava (i po worktreeu), sinhronizacija, čuvar obima, zavisnosti = ADR (i `pubspec.yaml`), limit fajlova, `/grane`, `/zdravlje`, `/codex-worktree`, samoosvježavanje u cloudu
+- `project-guard`: tajne, kapija, brava (i po worktreeu), sinhronizacija, čuvar obima, zavisnosti = ADR (i `pubspec.yaml`, Godot `addons/`), Godot `.gd` u limitu i pravilu boja, limit fajlova, `/grane`, `/zdravlje`, `/codex-worktree`, samoosvježavanje u cloudu
 - Cloud sesija: `/kraj-sesije`, `/pomocna` i `/grane` koriste i cloud imena alata (arhiviranje radi, model druge sesije ne)
 - Lagani projekat: hookovi bez BLUEPRINT/INVENTAR/ARHITEKTURA/ADR šute, a čuvar obima i kapija rade
 - Codex patch: zaštita svih putanja prije čitanja, projekcija sadržaja, brava, veličina, obim i zavisnosti; nepodržani format je vidljiv.

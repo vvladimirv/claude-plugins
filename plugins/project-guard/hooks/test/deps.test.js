@@ -88,3 +88,44 @@ test('zavisnosti: ADR koji spominje biblioteku, nov manifest i projekat bez docs
   assert.strictEqual(post(bare, 'Bash', { command: 'npm install lodash' }), null);
   assert.strictEqual(post(root, 'Bash', { command: 'npm test' }), null);
 });
+
+function godotProject(files = {}) {
+  const root = h.project({
+    marker: true,
+    files: {
+      'game/project.godot': '[editor_plugins]\nenabled=PackedStringArray("res://addons/gut/plugin.cfg")\n',
+      'game/addons/gut/plugin.cfg': '[plugin]\nname="GUT"\n',
+      'docs/adr/0001-izbor-stacka.md': '# 0001\nGodot 4, gut za testove.',
+      ...files,
+    },
+  });
+  h.git(root, 'init', '-q', '-b', 'main');
+  h.git(root, 'config', 'user.email', 't@t');
+  h.git(root, 'config', 'user.name', 't');
+  h.git(root, 'add', '-A');
+  h.git(root, 'commit', '-qm', 'init');
+  return root;
+}
+
+test('Godot: nov dodatak u addons/ bez ADR-a dobija podsjetnik, postojeći i opisani ne', () => {
+  const root = godotProject();
+  const add = (rel) => { const f = h.write(root, rel, '[plugin]\n'); return post(root, 'Write', { file_path: f, content: 'x' }); };
+  assert.match(ctx(add('game/addons/dialogic/plugin.cfg')), /dialogic/);
+  assert.strictEqual(add('game/addons/dialogic/core.gd'), null, 'jednom po sesiji');
+  assert.strictEqual(add('game/addons/gut/novi.gd'), null, 'dodatak već u HEAD');
+  h.write(root, 'docs/adr/0002-dialogic.md', '# 0002\nDialogic za dijaloge.');
+  assert.strictEqual(post(root, 'Write', { file_path: h.write(root, 'game/addons/dialogic/b.gd'), content: 'x' }, 'B'), null);
+});
+
+test('Godot: uključivanje dodatka u project.godot bez ADR-a dobija podsjetnik', () => {
+  const root = godotProject();
+  const file = path.join(root, 'game/project.godot');
+  fs.writeFileSync(file, '[editor_plugins]\nenabled=PackedStringArray("res://addons/gut/plugin.cfg", "res://addons/limboai/plugin.cfg")\n');
+  const out = ctx(post(root, 'Edit', { file_path: file, old_string: 'x', new_string: 'y' }));
+  assert.match(out, /limboai/);
+  assert.doesNotMatch(out, /gut/);
+});
+
+test('parse: project.godot daje imena uključenih dodataka', () => {
+  assert.deepStrictEqual([...parse('project.godot', '[editor_plugins]\nenabled=PackedStringArray("res://addons/gut/plugin.cfg", "res://addons/Dialogic/plugin.cfg")\n')], ['gut', 'dialogic']);
+});

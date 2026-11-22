@@ -5,7 +5,9 @@ const fs = require('fs');
 const path = require('path');
 const { relToRoot, git, loadState, saveState, noKickstart } = require('./common');
 
-const MANIFEST = /(^|\/)(package\.json|requirements[\w.-]*\.txt|pyproject\.toml|Cargo\.toml|pubspec\.yaml)$/i;
+const MANIFEST = /(^|\/)(package\.json|requirements[\w.-]*\.txt|pyproject\.toml|Cargo\.toml|pubspec\.yaml|project\.godot)$/i;
+// Godot dodatak: svaki fajl u addons/<ime>/. Dodatak nov u odnosu na HEAD je nova zavisnost.
+const GODOT_ADDON = /(^|\/)addons\/([^/]+)\//;
 const ROOT_MANIFESTS = ['package.json', 'requirements.txt', 'pyproject.toml', 'Cargo.toml', 'pubspec.yaml'];
 const INSTALL = /\b(npm|pnpm|yarn|bun)\s+(add|install|i)\s+[^-\s]|\b(pip3?|uv\s+pip)\s+install\s+[^-\s]|\b(poetry|uv)\s+add\b|\bcargo\s+add\b|\b(flutter|dart)\s+pub\s+add\b/i;
 
@@ -61,11 +63,22 @@ function parse(file, text) {
         last = null;
       }
     }
+  } else if (base === 'project.godot') {
+    // Uključeni dodaci: res://addons/<ime>/plugin.cfg u [editor_plugins].
+    for (const m of text.matchAll(/res:\/\/addons\/([^/"]+)\//g)) add(m[1]);
   }
   return names;
 }
 
+function newAddon(root, rel) {
+  const m = rel.match(GODOT_ADDON);
+  if (!m || !git(root, ['rev-parse', '--verify', '-q', 'HEAD'])) return []; // bez commita = početni setup
+  const dir = rel.slice(0, m.index + m[0].length - 1);
+  return git(root, ['ls-tree', 'HEAD', '--', dir + '/']) ? [] : [m[2].toLowerCase()];
+}
+
 function newDeps(root, rel) {
+  if (GODOT_ADDON.test(rel)) return newAddon(root, rel);
   const cur = fs.existsSync(path.join(root, rel)) ? fs.readFileSync(path.join(root, rel), 'utf8') : '';
   const old = git(root, ['show', `HEAD:${rel}`]);
   if (!old) return []; // nov manifest = početni setup (ADR 0001)
@@ -83,7 +96,7 @@ function manifestsToCheck(input, root) {
   const t = input.tool_input || {};
   if (input.tool_name === 'Write' || input.tool_name === 'Edit') {
     const rel = relToRoot(t.file_path, root);
-    return rel && MANIFEST.test(rel) && !rel.includes('node_modules/') ? [rel] : [];
+    return rel && (MANIFEST.test(rel) || GODOT_ADDON.test(rel)) && !rel.includes('node_modules/') ? [rel] : [];
   }
   if ((input.tool_name === 'Bash' || input.tool_name === 'PowerShell') && INSTALL.test(t.command || '')) {
     return ROOT_MANIFESTS.filter((m) => fs.existsSync(path.join(root, m)));
