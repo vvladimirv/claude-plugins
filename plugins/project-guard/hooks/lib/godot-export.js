@@ -9,10 +9,12 @@ const { relToRoot, loadState, saveState } = require('./common');
 const PRESETS = 'export_presets.cfg';
 const TEST_DIR = /(^|\/)tests?\//i;
 // Ekstenzije koje Godot ne uvozi kao resurs: bez include_filter ne ulaze u izvoz. csv je izostavljen
-// jer ga Godot uvozi kao prevod; md jer su to dokumenti.
-const DATA_EXT = /\.(txt|json|xml|dat|bin|ini|yaml|yml|tsv)$/i;
+// jer ga Godot uvozi kao prevod, json jer ga Godot 4 uvozi kao resurs, md jer su to dokumenti.
+const DATA_EXT = /\.(txt|xml|dat|bin|ini|yaml|yml|tsv)$/i;
 const SKIP_DIRS = new Set(['.git', '.godot', '.import', 'addons', 'node_modules']);
-const SKIP_FILES = new Set(['export_presets.cfg', 'project.godot', 'license.txt', 'readme.txt', 'requirements.txt']);
+const SKIP_FILES = new Set(['export_presets.cfg', 'project.godot', 'requirements.txt']);
+// Licence i slični dokumenti (OFL.txt, LICENSE.txt, README.txt...) nisu podaci igre.
+const DOC_FILE = /^(ofl|licen[sc]e|copying|copyright|notice|authors|credits|readme|changelog)([-_.].*)?$/i;
 const MAX_ENTRIES = 20000;
 const MAX_LISTED = 5;
 
@@ -52,7 +54,9 @@ function parsePresets(text) {
 
 const hit = (list, rel) => list.some((re) => re.test('res://' + rel));
 
+// Folder sa `.gdignore` Godot ne vidi, pa ga preskačemo (npr. android/build).
 function walk(dir, base = '', out = []) {
+  if (fs.existsSync(path.join(dir, '.gdignore'))) return out;
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     if (out.length > MAX_ENTRIES) break;
     if (e.name.startsWith('.') || SKIP_DIRS.has(e.name)) continue;
@@ -81,7 +85,7 @@ function analyze(gameDir) {
   const presets = parsePresets(fs.readFileSync(cfg, 'utf8'));
   const files = walk(gameDir);
   const testFiles = files.filter((f) => TEST_DIR.test(f));
-  const data = files.filter((f) => DATA_EXT.test(f) && !TEST_DIR.test(f) && !SKIP_FILES.has(path.basename(f).toLowerCase()));
+  const data = files.filter((f) => DATA_EXT.test(f) && !TEST_DIR.test(f) && !SKIP_FILES.has(path.basename(f).toLowerCase()) && !DOC_FILE.test(path.basename(f)));
   const notes = [];
   for (const p of presets) {
     const testDirs = [...new Set(testFiles.filter((f) => !hit(p.exclude, f)).map((f) => f.replace(/\/[^/]*$/, '')))];

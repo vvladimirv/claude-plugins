@@ -74,3 +74,18 @@ test('projekat bez Godota ili bez export_presets.cfg: tišina', () => {
   const g = h.project({ marker: true, files: { 'game/project.godot': 'x', 'game/maps/a.txt': 'x' } });
   assert.strictEqual(ctx(post(g, 'game/maps/a.txt')), '');
 });
+
+test('folder sa .gdignore se preskače (android/build)', () => {
+  const root = game('maps/*.txt', '*/test/*', { 'game/android/build/res/a.txt': 'x', 'game/android/build/res/test/t.gd': 'x', 'game/android/build/.gdignore': '' });
+  assert.strictEqual(ctx(post(root, 'game/export_presets.cfg')), '');
+});
+
+test('json je resurs u Godotu 4 i ne traži include_filter', () => {
+  const root = game('maps/*.txt', '*/test/*', { 'game/assets/pictures/pictures.json': '{}' });
+  assert.strictEqual(ctx(post(root, 'game/export_presets.cfg')), '');
+});
+
+test('licence (OFL.txt, LICENSE.txt) nisu podaci igre', () => {
+  const root = game('maps/*.txt', '*/test/*', { 'game/fonts/OFL.txt': 'x', 'game/fonts/LICENSE.txt': 'x', 'game/fonts/README.txt': 'x' });
+  assert.strictEqual(ctx(post(root, 'game/export_presets.cfg')), '');
+});
