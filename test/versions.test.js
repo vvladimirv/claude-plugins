@@ -33,7 +33,7 @@ test('pluginovi: izmjena plugina podiže njegovu verziju', () => {
   for (const n of plugin.names()) {
     const r = rec[n] || {};
     assert.ok(r.hash === plugin.hash(n) || r.verzija !== plugin.version(n),
-      `${n} je promijenjen, a verzija je i dalje ${plugin.version(n)}. Podigni verziju (plugin.json, .claude-plugin, .codex-plugin, `
+      `${n} je promijenjen, a verzija je i dalje ${plugin.version(n)}. Podigni verziju (.claude-plugin/plugin.json, `
       + 'marketplace.json), pa pokreni `node test/plugin-hash.js --upisi`.');
     assert.ok(r.hash === plugin.hash(n), `${n}: verzija je podignuta, pokreni \`node test/plugin-hash.js --upisi\`.`);
   }

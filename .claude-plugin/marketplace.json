@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "moji-pluginsi",
-  "description": "Zajednički plugini za Claude Code i Codex",
+  "description": "Lični plugini za Claude Code",
   "owner": {
     "name": "vvladimirv",
     "email": "330362@gmail.com"
@@ -10,35 +10,35 @@
     {
       "name": "project-kickstart",
       "description": "Start projekta: intervju, stack, arhitektura, blueprint, dokumenti, pre-commit i CI, ili lagani start za male aplikacije (/kickstart, /nova-funkcija, /ui-izmjena, /adr, /pomoc; agenti arhitekta i ux-recenzent)",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "source": "./plugins/project-kickstart",
       "category": "development"
     },
     {
       "name": "project-memory",
       "description": "Memorija i napredak: STATUS.md, git log i napredak po blueprintu na startu sesije, upozorenje na veliku sesiju, pomoćne sesije koje same spoje rad (/stanje, /kraj-sesije, /pomocna, /vrati, /napredak, /objavi, /izdanje, /docs-audit)",
-      "version": "0.7.0",
+      "version": "0.8.0",
       "source": "./plugins/project-memory",
       "category": "development"
     },
     {
       "name": "project-guard",
       "description": "Pravila koja mašina provjerava: tajne, kapija kickstarta, brava sesija, limit fajlova, čuvar obima, zavisnosti = ADR, mapa grana (/grane, /zdravlje, /pravila-pauza, /preuzmi-lock, /novi-projekat, /ideja, /codex-worktree, /pravilo-u-hook)",
-      "version": "0.10.0",
+      "version": "0.11.0",
       "source": "./plugins/project-guard",
       "category": "development"
     },
     {
       "name": "project-quality",
       "description": "Dubinske provjere kvaliteta za bilo koji stack: invarijante na hiljadama slučajnih primjera, mutacije testova, simulacija više perioda, statička analiza (/dubinska-provjera), snimci ekrana po ulogama i širinama s pristupačnošću (/provjera-izgleda) HTML mockupi varijanti izgleda (/mockup-izgleda) i balans igre botom i testerima (/balans)",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "source": "./plugins/project-quality",
       "category": "development"
     },
     {
       "name": "project-market",
       "description": "Tržište i isplativost aplikacije prije i tokom razvoja: konkurenti, cijene, potražnja i niše sa izvorima za svaki broj (/trziste), troškovi, prihodi, prag isplativosti u tri scenarija i presuda (/isplativost)",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "source": "./plugins/project-market",
       "category": "development"
     }
