@@ -1,5 +1,6 @@
 # Iste provjere kao prije commita (CLAUDE.md): npm test i claude plugin validate.
-# Pluginovi se auto-updateom šire na sve računare, pa greška na main odmah stiže svuda.
+# Cloud sesije uzimaju main sa GitHuba, a računari ga dobiju kroz git pull i setup, pa greška na main stiže svuda.
+# Testovi na Windowsu i Linuxu su u plugins.yml; ovdje je Linux i validacija marketplacea.
 name: CI
 
 on:

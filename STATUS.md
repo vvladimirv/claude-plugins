@@ -1,40 +1,27 @@
 # STATUS
 
-**Ažurirano:** 2026-11-22 · guard prepoznaje Godot: `.gd` u limitu fajla, `Color(...)` van `tokens.gd`, nov dodatak u `addons/` traži ADR
+**Ažurirano:** 2026-11-28 · Faza 3: usklađivanje pluginova i lični sloj (`claude-licno`)
 
 ## Radi
-- Jedan izvor za Claude Code i Codex; guard 0.9.1, kickstart 0.5.5, memory 0.6.4, quality 0.2.0, market 0.1.0; šabloni 0.5.1.
-- `project-quality` (bez hookova): `/dubinska-provjera` (invarijante, mutacije, simulacija perioda, statička analiza; alati po stacku u `ALATI.md`), `/provjera-izgleda` (skripta `snimci.js`: Playwright + axe-core iz projekta ili `~/.cache/provjera-izgleda`, bez npm zavisnosti plugina), `/mockup-izgleda`, `/balans` (bot alat igre headless + poređenje s prošlim `docs/bot-*.txt` skriptom `uporedi.js` + sabiranje zapisa testera; ne mijenja brojke igre)
-- `project-market` (bez hookova): `/trziste` (konkurenti, potražnja, niše, prijedlozi razvoja; izvor za svaki broj) i `/isplativost` (tri scenarija, prag, presuda); oba pišu `docs/TRZISTE.md`, a `/kickstart` ga čita u intervjuu
-- `project-kickstart`: `/kickstart` (+ `--lagano` za male lične aplikacije, `--postojeci`, `--nadogradi` sa prelaskom lagano → puno), `/nova-funkcija`, `/ui-izmjena`, `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`; šabloni sa CI i za Flutter/Dart i runnerom provjera
-- `project-memory`: SessionStart kontekst (STATUS po sekcijama: „Sljedeće“ i „Blokeri“ uvijek cijeli), napredak, „➡️ Sljedeće:“, pomoćne sesije (`/pomocna`, `/kraj-sesije auto`), `/stanje`, `/kraj-sesije`, `/vrati`, `/objavi`, `/napredak`, `/izdanje`, `/docs-audit`
-- `project-guard`: tajne, kapija, brava (i po worktreeu), sinhronizacija, čuvar obima, zavisnosti = ADR (i `pubspec.yaml`, Godot `addons/`), Godot `.gd` u limitu i pravilu boja, limit fajlova, `/grane`, `/zdravlje`, `/codex-worktree`, samoosvježavanje u cloudu
-- Cloud sesija: `/kraj-sesije`, `/pomocna` i `/grane` koriste i cloud imena alata (arhiviranje radi, model druge sesije ne)
-- Lagani projekat: hookovi bez BLUEPRINT/INVENTAR/ARHITEKTURA/ADR šute, a čuvar obima i kapija rade
-- Codex patch: zaštita svih putanja prije čitanja, projekcija sadržaja, brava, veličina, obim i zavisnosti; nepodržani format je vidljiv.
-- Git šablon provjerava stvarnog vlasnika sesije i svjež dokaz provjera ako projekat ima plan.
-- Samostalan runner i projektna kopija; sadržaj/planski indeks poništavaju stari rezultat; nije nekrivotvoriva potvrda.
-- Skillovi poslovna-pravila, provjera i pregled-izmjene; objedinjeni Codex agent profili, ciljni uređaji iz projekta.
-- Codex token_count parser; zdravstveni pregled razlikuje opaženo izvršavanje od potpune pokrivenosti.
-- Setup koristi javne CLI-jeve i lokalni izvor; profili i projektne konfiguracije imaju backup. Iste izvore usklađuje, posebne izvore čuva; ne odobrava hookove.
-- Codex koristi eksplicitni korisnički registar hookova, jer je CLI prikazivao nule za hookove iz paketa; paketi isključuju dupli Codex unos.
-- CI ovog repoa (GitHub Actions): `npm test` i `claude plugin validate .` na Windowsu i Linuxu; test pazi da kopije funkcija guard → memory ne zaostanu
-- Detalji i ograničenja: docs/UNIVERZALNI-PLUGINI.md.
+- Pet pluginova: guard 0.10.0, kickstart 0.6.0, memory 0.7.0, quality 0.2.1, market 0.1.0; šabloni 0.5.2. Detalji: README i docs/UNIVERZALNI-PLUGINI.md.
+- `project-guard`: tajne, kapija, brava (prepoznaje komande za čitanje: git, diff, petlje, PowerShell), sinhronizacija (i grana bez upstreama sa commitovima kojih nema na GitHubu), lični sloj (pull `claude-licno` i `claude-plugins`, poruka kad treba setup), obim, zavisnosti = ADR, Godot, limit fajlova, `/grane`, `/zdravlje` (pet pluginova + lični sloj)
+- `project-memory`: STATUS u kontekstu (≤ 30 linija, isto pravilo kao `/stanje`), napredak, pomoćne sesije, `/kraj-sesije` (ff-only, push po pravilu projekta, pitanje za lekciju u `claude-licno/znanje/`), `/stanje`, `/vrati`, `/objavi`, `/izdanje`, `/docs-audit`
+- `project-kickstart`: `/kickstart` (`--lagano`, `--postojeci`, `--nadogradi`), `/nova-funkcija`, `/ui-izmjena` (maketa kroz `/mockup-izgleda` kad postoji), `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`
+- `project-quality`: `/dubinska-provjera`, `/provjera-izgleda`, `/mockup-izgleda`, `/balans` · `project-market`: `/trziste`, `/isplativost`
+- Testovi čuvaju: verziju plugina uz svaku izmjenu (`test/plugin-hash.js --upisi`), `model:` u skillovima, kopije funkcija guard → memory. CI: `plugins.yml` (Windows i Linux), `ci.yml` (Linux + `claude plugin validate .`).
+- Spor hook u `~/.claude/pravila.log` sada navodi i sporo pravilo.
 
 ## Sljedeće
-1. Na oba računara `git pull` i `node scripts/setup.js --apply` (instalira i nove `project-quality` i `project-market`), pa novi chat (u Codexu pregledati hookove kroz `/hooks`); prva stvarna proba `/dubinska-provjera` i `/provjera-izgleda` na projektu `Sole-KP`
-2. Prva proba `/trziste <ideja>` i `/isplativost` na stvarnoj ideji; tek onda `/nisa`, `/go-no-go` i agent `analiticar` (odloženo)
-3. Postojeće projekte nadograđivati ciljano: sačuvati njihove komande, dodati plan i Git kontrole kad imaju stvarne testove
-4. Probati `/kraj-sesije` u cloud sesiji sa telefona: kartica bez `cwd` i arhiviranje preko `get_session` id-a
-5. Probati `/kickstart --lagano` na sljedećem malom projektu
-6. `budzet`: M3 (Cloudflare Pages + PWA na Androidu), pa `/izdanje` v1.0; CI uključiti kad se sredi naplata na GitHubu
-7. `/grane pocisti` u `inhome` i ovdje; grane spojenih PR-ova samo na GitHubu (`claude/admiring-curie-t5f1u9`, `claude/sleepy-edison-bnoe2w`, `claude/great-franklin-ehmh5c`) obrisati i uključiti *Automatically delete head branches*
+1. Spojiti PR Faze 3, pa na oba računara `node scripts/setup.js --apply` i novi chat; `/zdravlje` treba pokazati pet pluginova i lični sloj
+2. Odluka o Codexu: prijedlog šta ukloniti (korist i rizik po stavci) je u bilješkama Faze 3; uklanjanje tek uz „da“
+3. Poslije nekoliko dana pogledati `pravila.log`: ako je PreToolUse i dalje > 1 s, zapis kaže koje pravilo
+4. Prva stvarna proba `/dubinska-provjera` i `/provjera-izgleda` na `Sole-KP`; `/trziste` i `/isplativost` na stvarnoj ideji
+5. `/grane pocisti` ovdje i u `inhome`; uključiti *Automatically delete head branches* na GitHubu
 
 ## Blokeri / otvorena pitanja
-- Worktreeovi: odluka (a), ostaje kako je. `/pomocna` već koristi nativni worktree, a `/codex-worktree` ostaje jer nativni ne radi za Codex
-- Cloud: klon `/opt/moji-pluginsi` u ovom okruženju bio je zastario (guard 0.6.1, stari `/kraj-sesije`); u okruženju `moji-pluginsi` zamijeniti setup skriptu verzijom `# v3` iz README.md (i provjeriti da je `CLAUDE_CODE_PLUGIN_DIR_WATCH=1`), pa u novoj sesiji tog okruženja provjeriti „Pluginovi su osvježeni“ i verzije u `claude plugin list`
-- Ostaje iz ranije: ručna proba pomoćne sesije sa glavnom na posebnoj grani; plugini na laptopu (`/zdravlje`); stranica komandi iz PODSJETNIK.md
+- Cloud okruženje `moji-pluginsi`: setup skripta `# v3` iz README.md i `CLAUDE_CODE_PLUGIN_DIR_WATCH=1`, pa provjera verzija u novoj sesiji
+- Drugi računar (laptop) još nije podešen po uputstvu iz OneDrivea (`claude-licno` + setup)
 
 ## Ograničenja
-- Hook nije sandbox za proizvoljne shell/MCP radnje; komande moraju vratiti neuspjeh za nepotpun obavezni prolaz.
-- Korisničko povjerenje hookova i zaštita grane na GitHubu zasebni su koraci; instalacija ih ne odobrava.
+- Hook nije sandbox za proizvoljne shell/MCP radnje; brava prepoznaje uobičajene komande za čitanje, ostalo tretira kao pisanje.
+- Povjerenje hookova i zaštita grane na GitHubu su zasebni koraci; instalacija ih ne odobrava.
