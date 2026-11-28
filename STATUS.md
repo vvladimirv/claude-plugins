@@ -13,11 +13,12 @@
 - Spor hook u `~/.claude/pravila.log` sada navodi i sporo pravilo.
 
 ## Sljedeće
-1. Spojiti PR Faze 3, pa na oba računara `node scripts/setup.js --apply` i novi chat; `/zdravlje` treba pokazati šest pluginova i lični sloj
-2. Odluka o Codexu: prijedlog šta ukloniti (korist i rizik po stavci) je u bilješkama Faze 3; uklanjanje tek uz „da“
-3. Poslije nekoliko dana pogledati `pravila.log`: ako je PreToolUse i dalje > 1 s, zapis kaže koje pravilo
-4. Prva stvarna proba `/dubinska-provjera` i `/provjera-izgleda` na `Sole-KP`; `/trziste` i `/isplativost` na stvarnoj ideji
-5. `/grane pocisti` ovdje i u `inhome`; uključiti *Automatically delete head branches* na GitHubu
+1. Radni stol: spojiti PR #39, `node scripts/setup.js --apply` na oba računara, snimak panela u dva projekta (radi vlasnik). Predaja: `claude-licno/SISTEM.md`
+2. Spojiti PR Faze 3, pa na oba računara `node scripts/setup.js --apply` i novi chat; `/zdravlje` treba pokazati šest pluginova i lični sloj
+3. Odluka o Codexu: prijedlog šta ukloniti (korist i rizik po stavci) je u bilješkama Faze 3; uklanjanje tek uz „da“
+4. Poslije nekoliko dana pogledati `pravila.log`: ako je PreToolUse i dalje > 1 s, zapis kaže koje pravilo
+5. Prva stvarna proba `/dubinska-provjera` i `/provjera-izgleda` na `Sole-KP`; `/trziste` i `/isplativost` na stvarnoj ideji
+6. `/grane pocisti` ovdje i u `inhome`; uključiti *Automatically delete head branches* na GitHubu
 
 ## Blokeri / otvorena pitanja
 - Cloud okruženje `moji-pluginsi`: setup skripta `# v3` iz README.md i `CLAUDE_CODE_PLUGIN_DIR_WATCH=1`, pa provjera verzija u novoj sesiji
