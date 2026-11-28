@@ -136,3 +136,23 @@ test('brava važi i za `cd <repo> && git commit` iz sesije otvorene drugdje', ()
   assert.strictEqual(h.decision(d), 'deny');
   assert.match(d.hookSpecificOutput.permissionDecisionReason, /Brava/);
 });
+
+test('iza GitHuba, a bravu drži druga sesija: pisanje odbija brava, sync ne pokreće git', () => {
+  const { a, b } = withRemote();
+  run({ hook_event_name: 'SessionStart', cwd: a, session_id: 'S1' });
+  pushFromOther(b);
+  git(a, 'fetch', '-q');
+  const now = new Date().toISOString();
+  fs.writeFileSync(path.join(a, '.agent-lock.json'), JSON.stringify({ agent: 'claude', session_id: 'X', since: now, heartbeat: now }));
+  const cp = require('child_process');
+  const calls = [];
+  const orig = cp.execFileSync;
+  cp.execFileSync = function (file, args, ...rest) { calls.push([file, ...(args || [])].join(' ')); return orig.call(this, file, args, ...rest); };
+  try {
+    const d = write(a, 'S1');
+    assert.match(d.hookSpecificOutput.permissionDecisionReason, /Brava/);
+  } finally {
+    cp.execFileSync = orig;
+  }
+  assert.deepEqual(calls.filter((c) => c.startsWith('git ')), []);
+});

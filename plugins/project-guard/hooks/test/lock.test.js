@@ -34,6 +34,27 @@ test('komande: | i ; unutar navodnika i { } blokova ne dijele komandu (PowerShel
   }
 });
 
+test('komande: čitanje iz paralelnih read-only sesija (lažni pozitivi do 0.9.1)', () => {
+  for (const c of ['git status -sb', 'git -C C:/dev/x log --oneline -5', 'git --no-pager diff --stat main...HEAD',
+    'git -C "C:\\dev\\x y" --no-pager show HEAD', 'git remote -v', 'git worktree list --porcelain', 'git rev-list --count HEAD',
+    'git for-each-ref refs/heads', 'git merge-base HEAD main', 'git tag -l "v*"', 'git ls-remote origin', 'git reflog -5',
+    'diff -u a.md b.md', 'gh pr view 3 --json state', 'gh pr list', 'gh repo view',
+    'Get-ChildItem C:\\dev -Directory', 'Get-Content a.md -Encoding UTF8 | Select-Object -First 20',
+    'Select-String -Path *.md -Pattern x', 'Test-Path x', 'Get-Item x',
+    'for f in $(git ls-files \'*.md\'); do wc -l "$f"; done', 'for d in /c/dev/*/; do git -C "$d" status -sb 2>/dev/null | head -1; done',
+    'n=$(git rev-list --count HEAD); echo $n', 'if [ -f x ]; then cat x; fi', 'while read l; do echo $l; done < a.txt',
+    'foreach ($f in Get-ChildItem *.md) { (Get-Content $f -Encoding UTF8).Count }',
+    'if (Test-Path x) { Get-Content x } else { "nema" }', 'try { Get-Content x } catch { "greska" }', '$x = Get-Content a.txt',
+    'Get-ChildItem C:\\dev -Directory | ForEach-Object { git -C $_.FullName status -sb }']) {
+    assert.ok(isReadonlyCommand(c), c);
+  }
+  for (const c of ['for f in $(rm -rf x); do echo $f; done', 'echo "$(git rm x)"', 'for f in *.md; do rm $f; done',
+    'if (Test-Path x) { Remove-Item x }', '$x = (git commit -m y)', 'git --no-pager -C x commit -m a', '(cd x; rm y)',
+    'git tag v1', 'git diff > out.txt', 'if [ -f x ]; then git push; fi', 'while true; do npm install; done']) {
+    assert.ok(!isReadonlyCommand(c), c);
+  }
+});
+
 test('brava: prva sesija uzme bravu, druga ne može pisati ali može čitati', () => {
   const root = h.project({ git: true, marker: true });
   const file = path.join(root, 'src/a.js');

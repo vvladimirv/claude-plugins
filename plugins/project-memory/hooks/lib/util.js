@@ -43,9 +43,9 @@ function projectDir(input) {
   return dir;
 }
 
-function git(cwd, args) {
+function git(cwd, args, timeout = 3000) {
   try {
-    return execFileSync('git', args, { cwd, encoding: 'utf8', timeout: 3000, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    return execFileSync('git', args, { cwd, encoding: 'utf8', timeout, windowsHide: true, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
   } catch {
     return '';
   }

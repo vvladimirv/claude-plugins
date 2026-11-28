@@ -115,13 +115,17 @@ function fetchInBackground(root) {
   }
 }
 
-function behindCount(root) {
-  const n = git(root, ['rev-list', '--count', 'HEAD..@{u}']);
+function behindCount(root, timeout) {
+  const n = git(root, ['rev-list', '--count', 'HEAD..@{u}'], timeout);
   return n === '' ? null : Number(n);
 }
 
+// Tokom rada git dobija najviše 1,5 s: sporiji odgovor znači „ne zna se“, a hook ne koči komandu.
+const HOOK_GIT_MS = 1500;
+
 // wait: na startu sesije fetch se čeka; tokom rada ide u pozadini, a rezultat se vidi pri sljedećoj provjeri.
 function remoteState(root, s, now, wait) {
+  const timeout = wait ? undefined : HOOK_GIT_MS;
   if (!s.fetchedAt || now - s.fetchedAt > FETCH_MS) {
     s.fetchedAt = now;
     if (wait) fetchNow(root, 6000);
@@ -133,13 +137,13 @@ function remoteState(root, s, now, wait) {
     const head = readHead(root);
     const key = `${head}..${up}`;
     if (up === head) s.behind = 0;
-    else if (s.countKey !== key) s.behind = behindCount(root) || 0;
+    else if (s.countKey !== key) s.behind = behindCount(root, timeout) || 0;
     s.countKey = key;
     return;
   }
   const ft = fetchedTime(root);
   if (s.behind > 0 || ft > (s.countedAt || 0)) {
-    s.behind = behindCount(root) || 0;
+    s.behind = behindCount(root, timeout) || 0;
     s.countedAt = ft;
   }
 }
@@ -152,6 +156,7 @@ function check(input, root, now = Date.now()) {
   const cmd = (input.tool_input || {}).command || '';
   if (SYNC_CMD.test(cmd)) return null; // pull/fetch/stash moraju proći
   const sid = input.session_id;
+  if (heldByOther(root, sid, now)) return null; // brava ionako odbija; bez git poziva (bili su do 3,7 s)
   const s = load(sid, root);
   remoteState(root, s, now, false);
   const head = readHead(root);
@@ -160,7 +165,7 @@ function check(input, root, now = Date.now()) {
     return behindMsg(root, s.behind);
   }
   if (s.head && head && s.head !== head) {
-    const news = git(root, ['log', '--oneline', '--no-decorate', '-5', `${s.head}..${head}`]) || '(historija je prepisana)';
+    const news = git(root, ['log', '--oneline', '--no-decorate', '-5', `${s.head}..${head}`], HOOK_GIT_MS) || '(historija je prepisana)';
     s.head = head;
     save(sid, root, s);
     return `🔄 Sinhronizacija: otkad je ova sesija zadnji put gledala \`${path.basename(root)}\`, neko drugi je commitovao:\n${news}\n`
