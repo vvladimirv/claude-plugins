@@ -10,7 +10,7 @@
     {
       "name": "project-kickstart",
       "description": "Start projekta: intervju, stack, arhitektura, blueprint, dokumenti, pre-commit i CI, ili lagani start za male aplikacije (/kickstart, /nova-funkcija, /ui-izmjena, /adr, /pomoc; agenti arhitekta i ux-recenzent)",
-      "version": "0.7.2",
+      "version": "0.7.3",
       "source": "./plugins/project-kickstart",
       "category": "development"
     },
@@ -24,7 +24,7 @@
     {
       "name": "project-guard",
       "description": "Pravila koja mašina provjerava: tajne, kapija kickstarta, brava sesija, limit fajlova, čuvar obima, zavisnosti = ADR, mapa grana (/grane, /zdravlje, /pravila-pauza, /preuzmi-lock, /novi-projekat, /ideja, /codex-worktree, /pravilo-u-hook)",
-      "version": "0.12.2",
+      "version": "0.12.3",
       "source": "./plugins/project-guard",
       "category": "development"
     },
@@ -40,6 +40,13 @@
       "description": "Tržište i isplativost aplikacije prije i tokom razvoja: konkurenti, cijene, potražnja i niše sa izvorima za svaki broj (/trziste), troškovi, prihodi, prag isplativosti u tri scenarija i presuda (/isplativost)",
       "version": "0.1.1",
       "source": "./plugins/project-market",
+      "category": "development"
+    },
+    {
+      "name": "radni-stol",
+      "description": "Panel Radni stol pored chata u desktop aplikaciji: gdje sam stao, dugmad koja upišu komandu u polje (nikad ne šalju) i pregled svih projekata; samo čita (/radni-stol)",
+      "version": "0.1.1",
+      "source": "./plugins/radni-stol",
       "category": "development"
     }
   ]

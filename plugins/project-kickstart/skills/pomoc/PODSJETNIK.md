@@ -14,6 +14,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | Nova mogućnost aplikacije | napiši šta hoćeš (ili `/nova-funkcija <ime>`) | `docs/VIZIJA.md` → F-broj u `docs/INVENTAR-FUNKCIJA.md`, test, kod |
 | Promjena izgleda | `/ui-izmjena <šta promijeniti>` | `docs/DIZAJN-SISTEM.md`, `docs/EKRANI.md` → kod, snimci |
 | Šta ne valja u izgledu (snimci svih ekrana, pristupačnost) | `/provjera-izgleda` · prijedlog novog izgleda u varijantama: `/mockup-izgleda` | aplikacija → izvještaj u `docs/provjere/` · mockup HTML van aplikacije |
+| Hoću da simulirani korisnici mjesecima koriste aplikaciju i paze na pravila | `pusti botove korisnika za ovu aplikaciju` (skill `/botovi-korisnika` sa tvog claude.ai naloga) | aplikacija → botovi i provjera pravila poslije svake radnje |
 | Igra: da li su brojke u balansu (bot + zapisi testera) | `/balans [bot\|testeri\|sve] [tema]` | bot alat, zapisi testera → `docs/bot-*.txt` |
 | Prije izdanja ili poslije izmjene obračuna: greške koje obični testovi ne vide | `/dubinska-provjera` | kod i testovi → izvještaj u `docs/provjere/` |
 | Vidi koliko ste odmakli | `/napredak html` | `docs/BLUEPRINT.md` → pregled |
@@ -21,7 +22,7 @@ Većinu vremena pričaš normalno. Na kraju odgovora Claude napiše `➡️ Slje
 | Ideja za nešto drugo | `/ideja <opis>` | opis → prvo provjera „imam li ovo već“, pa repo `C:\dev\ideje` |
 | Nešto se pokvarilo, a radilo je | `/vrati` (predomislio si se: `/vrati poništi`) | git → zadnje stanje koje je radilo |
 | Ne razumiješ upozorenje | `objasni mi ovo upozorenje i riješi ga` | — |
-| Izgubio si se | `ne znam šta sad, vodi me` ili `/pomoc` | ovaj podsjetnik |
+| Izgubio si se | `ne znam šta sad, vodi me` ili `/pomoc` · u desktop aplikaciji panel **Radni stol** pored chata (`/radni-stol`): gdje si stao i dugmad za ove komande | ovaj podsjetnik |
 | Ne znaš koja grana je gotova, koja čeka koju, gdje je ostao rad | `/grane` (gotove počisti `/grane pocisti`) | git grane → pregled |
 | Novi zadatak paralelno sa ovim | `/grane nova <zadatak>` (kartica nove sesije sa preporukom modela) | zadatak → nova grana i kartica |
 | Plugini kao da ne rade, ili nov računar | `/zdravlje` | instalacija, `pravila.log`, lični sloj → izvještaj |
@@ -95,11 +96,11 @@ Preporuku za sljedeći zadatak daju kartica nove sesije (`/kraj-sesije`, `/grane
 5. Jedan agent = jedan folder (worktree) = jedna grana.
 
 ## Plugini
-Repo: `C:\dev\claude-plugins` (GitHub: vvladimirv/claude-plugins) · instalacija i ažuriranje: `README.md` u tom repou.
+Šest pluginova (guard, memory, kickstart, quality, market, radni-stol). Repo: `C:\dev\claude-plugins` (GitHub: vvladimirv/claude-plugins) · instalacija i ažuriranje: `README.md` u tom repou.
 
 
 ## Instalacija pluginova
-- Jedan repozitorij i pet paketa. `node scripts/setup.js` u repozitoriju prikazuje plan, `--apply` ažurira korisničku Claude instalaciju. Projektne instalacije se ne brišu.
+- Jedan repozitorij i šest paketa. `node scripts/setup.js` u repozitoriju prikazuje plan, `--apply` ažurira korisničku Claude instalaciju. Projektne instalacije se ne brišu.
 - Shell i MCP nisu opći sigurnosni sandbox; nepodržane putanje ne predstavljaju potvrđenu zaštitu.
 - `/zdravlje`: razlikuje opaženo izvršavanje hooka od potpune pokrivenosti; provjerava i svježinu dokaza projekta.
 - `/provjera`: `.agent-checks.json` definiše obavezne komande; stage namjeravanih fajlova → runner → commit. Novi sadržaj ili Git indeks poništava raniji dokaz. Runner provjerava izlazni status, a projektna skripta mora odbiti nula testova i preskočene obavezne grupe.

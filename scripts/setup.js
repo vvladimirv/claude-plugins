@@ -4,7 +4,7 @@ const path = require('node:path');
 const os = require('node:os');
 const { spawnSync } = require('node:child_process');
 const root = path.resolve(__dirname, '..');
-const names = ['project-guard', 'project-kickstart', 'project-memory', 'project-quality', 'project-market'];
+const names = ['project-guard', 'project-kickstart', 'project-memory', 'project-quality', 'project-market', 'radni-stol'];
 
 function operations(source = root) {
   const result = [['claude', ['plugin', 'marketplace', 'add', source, '--scope', 'user']]];
