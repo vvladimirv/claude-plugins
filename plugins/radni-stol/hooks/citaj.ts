@@ -67,6 +67,7 @@ export type Okolina = {
   bezKickstarta: boolean
   igra: boolean
   web: boolean
+  lab: boolean // postoji Lab (kampanja/SKILL.md) na ovom računaru
   vlastiteKomande: string[] // .claude/skills/* i .claude/commands/*.md projekta
   agenti: string[] // .claude/agents/*.md projekta
 }
@@ -120,6 +121,8 @@ export function izaberiDugmad(o: Okolina): Izbor {
   for (const k of o.vlastiteKomande) if (!o.podsjetnik?.includes(k)) dodaj(k, `/${k} `)
   if (o.igra && ima('balans')) dodaj('balans', '/balans')
   if (o.web && !o.igra && ima('provjera-izgleda')) dodaj('provjera-izgleda', '/provjera-izgleda')
+  // Lab radi iz svakog projekta preko putanje (PODSJETNIK); trošak i „da“ traži Claude u chatu.
+  if (o.web && !o.igra && o.lab) dodaj('lab', 'testiraj ovu aplikaciju Labom', 'Testiraj Labom')
   for (const a of o.agenti) dodaj(`agent-${a}`, `pusti agenta ${a}`, `Agent ${a}`)
 
   const vise: Dugme[] = projektna.slice(2)

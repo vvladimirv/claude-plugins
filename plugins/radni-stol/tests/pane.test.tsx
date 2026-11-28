@@ -134,6 +134,7 @@ test('izbor dugmadi: bez-kickstarta, igra, vlastite komande i Više', async () =
     bezKickstarta: false,
     igra: false,
     web: false,
+    lab: false,
     vlastiteKomande: [],
     agenti: [],
   }
@@ -156,7 +157,7 @@ test('izbor dugmadi: bez-kickstarta, igra, vlastite komande i Više', async () =
 test('panel: gdje sam stao, PR-ovi, dugme samo upiše tekst', async ($, on) => {
   svijet(on, {
     status: STATUS,
-    fajlovi: ['package.json'],
+    fajlovi: ['package.json', 'C:/dev/Universal-AI-User-Lab/plugin/skills/kampanja/SKILL.md'],
     folderi: { '.claude/commands': [{ name: 'zapisi.md', kind: 'file' }] },
     gh: JSON.stringify([{ number: 7, title: 'Nova funkcija', url: 'https://github.com/v/lazni/pull/7' }]),
   })
@@ -168,7 +169,6 @@ test('panel: gdje sam stao, PR-ovi, dugme samo upiše tekst', async ($, on) => {
     expect(await ui.find({ type: 'Text', text: /čeka klijenta/ })).toBeDefined()
     expect((await ui.find({ type: 'Text', text: /^Grana/ }))?.text).toBe('Grana feat/proba · necommitovano 2')
     expect(await ui.find({ type: 'Link', text: /#7 Nova funkcija/ })).toBeDefined()
-    expect(await ui.find({ type: 'Text', text: /Lab: dugme dolazi/ })).toBeDefined()
     await ui.unmount()
   }
 
@@ -186,6 +186,9 @@ test('panel: gdje sam stao, PR-ovi, dugme samo upiše tekst', async ($, on) => {
   await ui.press({ key: 'vise' })
   await ui.press({ key: 'v-stanje' })
   expect(upisano.at(-1)).toBe('/stanje ')
+  // Treće projektno dugme (Lab) ide pod Više.
+  await ui.press({ key: 'p-lab' })
+  expect(upisano.at(-1)).toBe('testiraj ovu aplikaciju Labom')
 
   await ui.press({ key: 'projekti' })
   expect(await ui.find({ type: 'Text', text: /M2 u toku/ })).toBeDefined()
@@ -201,6 +204,6 @@ test('bez STATUS.md, gita i GitHuba panel to kaže', async ($, on) => {
   expect(await ui.find({ type: 'Text', text: /nije git repo/ })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: /nema GitHub remote/ })).toBeDefined()
   expect(await ui.find({ key: 'grane' })).toBeUndefined()
-  expect(await ui.find({ type: 'Text', text: /Lab: dugme/ })).toBeUndefined()
+  expect(await ui.find({ type: 'Text', text: /Lab/ })).toBeUndefined()
   await ui.unmount()
 })

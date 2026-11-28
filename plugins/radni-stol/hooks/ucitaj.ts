@@ -8,6 +8,7 @@ import { imeFoldera, izaberiDugmad, komandePodsjetnika, projekti, roditelj, stat
 
 const PODSJETNIK = 'skills/pomoc/PODSJETNIK.md'
 const LICNI_SLOJ = 'C:/dev/claude-licno/projekti.md'
+const LAB = 'C:/dev/Universal-AI-User-Lab/plugin/skills/kampanja/SKILL.md'
 const LOKALNI_PLUGINI = 'C:/dev/claude-plugins/plugins/project-kickstart'
 
 async function procitaj($: EngineInterface, putanja: string): Promise<string | null> {
@@ -97,6 +98,7 @@ export async function ucitaj($: EngineInterface): Promise<Stanje> {
     ),
   )
   const web = webFajlovi.some(Boolean)
+  const lab = await postoji($, LAB)
   const skillovi = await imena($, u('.claude/skills'), 'dir')
   const komande = await imena($, u('.claude/commands'), 'md')
   const agenti = await imena($, u('.claude/agents'), 'md')
@@ -108,11 +110,12 @@ export async function ucitaj($: EngineInterface): Promise<Stanje> {
     bezKickstarta,
     igra,
     web,
+    lab,
     vlastiteKomande: [...new Set([...skillovi, ...komande])],
     agenti,
   })
-  if (web && !igra) {
-    napomene.push('Lab: dugme dolazi kad Lab plugin bude u marketplaceu. Do tada u chatu napiši „testiraj ovu aplikaciju Labom“.')
+  if (web && !igra && !lab) {
+    napomene.push('Lab nije nađen u C:/dev/Universal-AI-User-Lab, pa nema dugmeta za njega.')
   }
 
   let projektiMd = await procitaj($, `${roditelj(cwd)}/claude-licno/projekti.md`)

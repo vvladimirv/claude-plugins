@@ -1,6 +1,6 @@
 {
   "name": "radni-stol",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Panel Radni stol pored chata u desktop aplikaciji: gdje sam stao (STATUS.md, grana, necommitovano, otvoreni PR-ovi), dugmad koja upišu komandu u polje i pregled svih projekata. Samo čita, nikad ne šalje (/radni-stol)",
   "author": {
     "name": "vvladimirv",
