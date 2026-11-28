@@ -112,7 +112,7 @@ test('kraj-sesije auto: STATUS.md ne dira, brava istom naredbom, bez pitanja št
   assert.match(s, /STATUS\.md[^\n]*samo glavna/);
   assert.match(s, /naredbom iz koraka 9/);
   assert.doesNotMatch(s, /node -e/, 'naredba za bravu postoji samo jednom (test/lock-release čita prvu)');
-  assert.match(s, /[Kk]oraci 6, 8 i 9/);
+  assert.match(s, /[Kk]oraci 6, 7a, 8 i 9/);
 });
 
 test('kraj-sesije auto: argument i alati', () => {
@@ -127,4 +127,16 @@ test('kraj-sesije: prije svakog arhiviranja se oslobodi brava (arhiviranje je ne
     const archive = s.indexOf('arhiviraj ovu sesiju');
     assert.ok(release > 0 && release < archive, 'brava se oslobađa prije arhiviranja');
   }
+});
+
+test('kraj-sesije: pull je ff-only, a lekcija za znanje je jedno pitanje samo uz claude-licno', () => {
+  assert.doesNotMatch(step(1), /prvo `git pull --rebase`/);
+  assert.match(step(1), /git pull --ff-only/);
+  const s = text.match(/^7a\. [\s\S]*?(?=^8\. )/m);
+  assert.ok(s, 'kraj-sesije: nema koraka 7a');
+  assert.match(s[0], /claude-licno/);
+  assert.match(s[0], /preskoči/);
+  assert.match(s[0], /Samo uz "Da"/);
+  for (const polje of ['tema', 'izvor', 'provjereno', 'vazi_do', 'povjerljivo']) assert.match(s[0], new RegExp('`' + polje));
+  assert.match(s[0], /znanje\/INDEX\.md/);
 });

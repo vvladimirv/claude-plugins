@@ -8,13 +8,15 @@ const util = require('./lib/util');
 
 const { git } = util;
 
-const MAX_STATUS_LINES = 40;
+// Isto pravilo kao u /stanje (jedan izvor istine): STATUS.md ima najviše 30 linija. Duži se u kontekstu skrati,
+// a napomena traži /stanje, koje ga prepiše iz dnevnika u stanje.
+const MAX_STATUS_LINES = 30;
 const MAX_STATUS_CHARS = 3000;
 const GIT_LOG_COUNT = 10;
 
 // Korisnik nije programer: projekat ga vodi korak po korak, pa svaki završen korak kaže šta je sljedeće.
 const GUIDE = '## Vođenje korisnika\n'
-  + 'Korisnik nije programer i želi da ga projekat vodi. Kad završiš korak ili čekaš korisnika, zadnja linija odgovora je '
+  + 'Korisnik nije programer, uči kroz rad i želi da ga projekat vodi. Kad završiš korak ili čekaš korisnika, zadnja linija odgovora je '
   + '`➡️ Sljedeće:` sa jednom konkretnom stvari: komanda koju kuca (npr. `/kraj-sesije`), šta da proba i kako, '
   + 'ili odluka koju treba donijeti. Bez žargona; nov pojam objasni u pola rečenice.';
 
@@ -28,7 +30,7 @@ const HELPERS_WORKTREE = '## Pomoćne sesije\n'
   + 'gotov i provjeren, sam pokreni `/kraj-sesije auto <bazna grana>`. Inače radi kao glavna (samostalan zadatak ide na '
   + 'karticu po `/pomocna`).';
 
-const CUT_NOTE = '\n… (skraćeno: STATUS.md je predugačak, treba ga skratiti na ≤ 30 linija)';
+const CUT_NOTE = `\n… (skraćeno: STATUS.md ima > ${MAX_STATUS_LINES} linija; predloži \`/stanje\`)`;
 
 // Staro skraćivanje: od vrha, po linijama pa po znakovima.
 function trimFlat(text) {

@@ -14,10 +14,11 @@ allowed-tools: [Read, Write, Edit, Bash, Glob]
 1. Pročitaj `STATUS.md`. Ako ne postoji, napravi ga po strukturi ispod.
 2. Pogledaj šta je novo: `git log --oneline -15` i `git status --short`. Ako postoji `docs/BLUEPRINT.md`, pogledaj trenutni milestone.
 3. **Prepiši** STATUS.md, ne dopisuj ga. Pravila:
-   - najviše 30 linija,
+   - najviše 30 linija (isto ograničenje koristi hook na startu sesije: duži STATUS se u kontekstu skrati),
    - samo sadašnjost: šta radi, šta je sljedeće (≤ 5 stavki, najvažnije prvo), blokeri,
    - bez historije i datuma pojedinih koraka, jer je to u git logu,
    - završeni zadaci izlaze iz "Sljedeće". Ako su bitna funkcija, idu u "Radi" kao jedna linija.
+   - **STATUS je postao dnevnik** (duži od 30 linija, datumi koraka, liste urađenog): prepiši ga u stanje po strukturi ispod. Historiju ne prenosi, jer je u git logu. Ono što nije zapisano nigdje drugo, a još važi, premjesti: odluka u `docs/adr/`, izdanje u `CHANGELOG.md`, pravilo rada u `AGENTS.md`. Ako nisi siguran da je nešto zapisano drugdje, pitaj prije nego ga izbaciš.
 4. Pokaži korisniku kratak diff (šta se promijenilo). Ne commituj: to radi `/kraj-sesije`.
 
 Struktura:

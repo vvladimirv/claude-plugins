@@ -46,7 +46,7 @@ test('necommitovani fajlovi se prijave', () => {
 test('predug STATUS bez sekcija: staro skraćivanje od vrha i napomena', () => {
   const long = Array.from({ length: 100 }, (_, i) => `linija ${i}`).join('\n');
   const out = trimStatus(long);
-  assert.ok(out.split('\n').length <= 41);
+  assert.ok(out.split('\n').length <= 31);
   assert.match(out, /^linija 0\n/);
   assert.match(out, /skraćeno/);
   const wide = Array.from({ length: 10 }, () => 'x'.repeat(500)).join('\n');
@@ -71,7 +71,7 @@ test('dugačak „Radi“ ne guta „Sljedeće“ i „Blokere“: oni idu cijel
 test('„Radi“ sa previše linija: linije „Sljedeće“ ostaju, „Radi“ gubi linije', () => {
   const radi = Array.from({ length: 60 }, (_, i) => `- kratka ${i}`).join('\n');
   const out = trimStatus('# STATUS\n\n## Radi\n' + radi + '\n\n## Sljedeće\n1. a\n2. b\n3. c');
-  assert.ok(out.split('\n').length <= 42, `linija: ${out.split('\n').length}`);
+  assert.ok(out.split('\n').length <= 32, `linija: ${out.split('\n').length}`);
   assert.match(out, /## Sljedeće\n1\. a\n2\. b\n3\. c$/);
   assert.match(out, /skraćeno/);
 });
