@@ -9,13 +9,45 @@ const SKIP = /(^|\/)(node_modules|dist|build|out|vendor|fixtures|coverage|__snap
 // Treći dodaci Godot projekta (game/addons/...) nisu naš kod, pa ih ne mjerimo ni ne provjeravamo.
 const GODOT_ADDONS = /(^|\/)addons\/.*\.(gd|gdshader)$/i;
 const STYLE_EXT = /\.(css|scss|sass|less|jsx|tsx|vue|svelte|html?)$/i;
-const TOKEN_FILE = /token|theme|variables|palette/i;
+// `*_colors.gd`, `colors.css`: fajl palete je izvor boja kao i fajl tokena (`color_goals.gd` nije).
+const TOKEN_FILE = /token|theme|variables|palette|colou?rs(\.|$)/i;
 // Mockup i prototip namjerno predlažu nove boje (prijedlog tokena), pa tu nema upozorenja na boju.
 const MOCKUP_DIR = /(^|\/)(mockupi?|mockups?|prototipi?|prototypes?)\//i;
-// GDScript: boja iz brojeva ili teksta (Color(1, 0, 0), Color("#f00"), Color8(...), Color.html(...)).
-// Color(Tokens.X, 0.5) i Color.WHITE ne ulaze: prva je varijanta tokena, druga ima ime.
-const GD_COLOR = /\bColor8?\s*\(\s*(?:["'#]|-?\.?\d)|\bColor\.(?:html|from_string|from_hsv|from_ok_hsl|from_rgba8)\s*\(/;
-const GD_TEST = /(^|\/)(tests?|testovi)\/|(^|\/)test_[^/]*\.gd$|_test\.gd$/i;
+// GDScript: boja iz brojeva ili teksta (Color(1, 0, 0), Color("#f00"), Color8(...), Color.html("#f00")).
+// Ne ulaze: Color(Tokens.X, 0.5) i Color.WHITE (varijanta tokena, ime boje), crna i bijela sa ili bez
+// alfe (Color(0, 0, 0, 0) providno, Color(1, 1, 1, 0.3) odsjaj) i Color.from_hsv(c.h, ...) iz postojeće boje.
+const GD_COLOR_CALL = /\b(Color8?|Color\.(?:html|from_string|from_hsv|from_ok_hsl|from_rgba8))\s*\(/g;
+const GD_LITERAL = /^\s*(?:["'#]|-?\.?\d)/;
+// Testovi i alati projekta (game/tools/: fixture, mjerenja) nisu UI igre.
+const GD_TEST = /(^|\/)(tests?|testovi|tools)\/|(^|\/)test_[^/]*\.gd$|_test\.gd$/i;
+
+// Argumenti poziva do zagrade koja ga zatvara (podržava ugniježđene zagrade).
+function callArgs(line, from) {
+  let depth = 1;
+  for (let i = from; i < line.length; i++) {
+    if (line[i] === '(') depth++;
+    else if (line[i] === ')' && --depth === 0) return line.slice(from, i);
+  }
+  return line.slice(from);
+}
+
+function isNeutral(fn, args) {
+  if (fn !== 'Color' && fn !== 'Color8') return false;
+  const rgb = args.split(',').slice(0, 3).map((x) => x.trim());
+  if (rgb.length !== 3 || !rgb.every((x) => /^-?\d*\.?\d+$/.test(x))) return false;
+  const v = rgb.map(Number);
+  const max = fn === 'Color8' ? 255 : 1;
+  return (v.every((x) => x === 0) || v.every((x) => x === max));
+}
+
+function gdHardcodedColor(line) {
+  if (/^\s*#/.test(line)) return false;
+  for (const m of line.matchAll(GD_COLOR_CALL)) {
+    const args = callArgs(line, m.index + m[0].length);
+    if (GD_LITERAL.test(args) && !isNeutral(m[1], args)) return true;
+  }
+  return false;
+}
 const HARDCODED_COLOR = /(color|background|border|fill|stroke|shadow|outline)[\w-]*\s*[:=]\s*[^;{}\n]*?(#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})\b|rgba?\(|hsla?\()/i;
 
 function target(input, root) {
@@ -100,10 +132,10 @@ function postCheck(input, root) {
   // Pravilo "boje samo iz tokens.gd": GDScript van fajla tokena i van testova.
   if (/\.gd$/i.test(tg.rel) && !TOKEN_FILE.test(path.basename(tg.rel)) && !GD_TEST.test(tg.rel)
     && fs.existsSync(path.join(root, 'docs', 'DIZAJN-SISTEM.md'))
-    && (added || '').split('\n').some((l) => !/^\s*#/.test(l) && GD_COLOR.test(l))) {
+    && (added || '').split('\n').some(gdHardcodedColor)) {
     notes.push(`🎨 \`${tg.rel}\`: boja zadana brojevima ili tekstom (Color(...)). Koristi token iz tokens.gd (docs/DIZAJN-SISTEM.md); ako token ne postoji, prvo ga dodaj tamo.`);
   }
   return notes.length ? notes.join('\n') : null;
 }
 
-module.exports = { preCheck, postCheck, projectedLines, HARDCODED_COLOR };
+module.exports = { preCheck, postCheck, projectedLines, HARDCODED_COLOR, gdHardcodedColor };

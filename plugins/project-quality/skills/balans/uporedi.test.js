@@ -46,3 +46,38 @@ test('uporedi: različiti formati ne daju lažnu razliku nego poruku', () => {
   assert.equal(r.compared, 0);
   assert.match(render(r), /Nema zajedničkih redova/);
 });
+
+const VI = (p2, s) => `== Poglavlje 2 (cilj ${s} %) ==
+vrsta      | prošlo | 1. pokušaj | pokušaja | iznad cilja (pobjede) | ★ (pobjede)
+Početnik   |  ${p2} % |  25 %      |      2.8 | +6.4 poena                      | 1.3
+Iskusan    |  88 % |  63 %      |      1.8 | +5.2 poena                      | 2.3
+krađe po noći (prosječan + iskusan): 56% 48% 63%
+
+== Zvjezdice kroz kampanju (zbir poslije poglavlja) ==
+vrsta      |    2    3    4 | 3★ do pogl. (median)
+Početnik   |  0.6  0.8  2.1 | 6 (7/8)
+Iskusan    |  2.0  3.9  5.1 | — (0/8)
+
+== Zanati kampanje ==
+Početnik   | ruta 33 (2.6 %) · krađa 67 % | meso 0 (0.0 %) · krađa 0 %
+`;
+
+test('uporedi: tabela sa zaglavljem (virtuelni-igraci.mjs), cilj u zagradi ne mijenja ključ', () => {
+  const m = [...parseReport(VI(50, 84)).values()];
+  const p = m.find(v => v.section === 'Poglavlje 2' && v.label === 'Početnik' && v.name === 'prošlo');
+  assert.deepEqual([p.value, p.pct], [50, true]);
+  assert.ok(m.some(v => v.label === 'Iskusan' && v.name === 'pokušaja' && v.value === 1.8 && !v.pct));
+  assert.ok(m.some(v => v.label === 'Početnik' && v.name === 'iznad cilja' && v.value === 6.4 && v.pct));
+  assert.ok(m.some(v => v.section.startsWith('Zvjezdice') && v.label === 'Iskusan' && v.name === '4' && v.value === 5.1), 'više brojeva u ćeliji po riječima zaglavlja');
+  assert.ok(m.some(v => v.section === 'Zanati kampanje' && v.name === 'krađa' && v.value === 67), 'red sa mjerama nije zaglavlje');
+  const r = compare(VI(50, 84), VI(75, 87));
+  assert.equal(r.changed.length, 1);
+  assert.deepEqual([r.changed[0].section, r.changed[0].label, r.changed[0].name, r.changed[0].delta], ['Poglavlje 2', 'Početnik', 'prošlo', 25]);
+});
+
+test('uporedi: ćelija „staro→novo“ daje novu vrijednost', () => {
+  const t = (x) => `== Prošlo v21 → v22 ==\nvrsta        | P 2 | P 3\nPočetnik     | 50 %→${x} % | 13 %→13 %\n`;
+  const v = [...parseReport(t(63)).values()].find(x => x.name === 'P 2');
+  assert.equal(v.value, 63);
+  assert.equal(compare(t(50), t(63)).changed[0].delta, 13);
+});

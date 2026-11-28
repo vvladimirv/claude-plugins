@@ -2,17 +2,61 @@
 // Poredi dva tekstualna izvještaja bota (docs/bot-*.txt) red po red: ključ = odjeljak + oznaka reda + naziv mjere.
 // Bez zavisnosti. Upotreba: node uporedi.js <stari.txt> <novi.txt> [--prag N] [--json]
 // Mjere sa % porede se u procentnim poenima (prag po zadanom 5), ostale apsolutno (prag 0.25).
+// Čita i tabele sa zaglavljem pod „== Odjeljak ==“ (npr. virtuelni-igraci.mjs) i ćelije „staro→novo“.
 const fs = require('node:fs');
 
 const METRIC = /([\p{L}_+]+(?: [\p{L}_+]+)*)\s+(-?\d+(?:[.,]\d+)?)(\s*%)?/gu;
+const NUM = '[+-]?\\d+(?:[.,]\\d+)?';
+// Ćelija tabele sa zaglavljem: broj, broj %, „+6.4 poena“, „50 %→62 %“ (važi desna strana), niz brojeva ili „—“.
+const NUM_CELL = new RegExp(`^(?:—|-|(?:${NUM}\\s*%?\\s*(?:poena)?\\s*)+|${NUM}\\s*%?\\s*→\\s*${NUM}\\s*%?)$`);
+const num = (x) => parseFloat(x.replace(',', '.'));
+
+const cells = (raw) => raw.split('|').map((c) => c.replace(/\([^)]*\)/g, ' ').replace(/\s+/g, ' ').trim());
+
+// Red tabele „vrsta | prošlo | ...“: vrijednosti po koloni zaglavlja; ćelija sa više brojeva dijeli se
+// po riječima zaglavlja ako ih ima isto toliko („2 3 4“ iznad „0.6 0.8 2.1“).
+function tableValues(header, row) {
+  const out = [];
+  for (let i = 1; i < row.length; i++) {
+    const c = row[i];
+    const right = c.includes('→') ? c.split('→').pop() : c;
+    const nums = right.match(new RegExp(NUM, 'g')) || [];
+    if (!nums.length) continue;
+    const pct = /%|poena/.test(right);
+    const names = header[i].split(' ');
+    if (nums.length > 1 && names.length === nums.length) nums.forEach((n, j) => out.push({ name: names[j], value: num(n), pct }));
+    else out.push({ name: header[i] || `kolona ${i}`, value: num(nums[0]), pct });
+  }
+  return out;
+}
 
 function parseReport(text) {
   const values = new Map();
   const seen = new Map();
   let section = '';
+  let header = null;
+  const put = (label, m) => {
+    const base = `${section}§${label}§${m.name}`;
+    const n = (seen.get(base) || 0) + 1;
+    seen.set(base, n);
+    values.set(n > 1 ? `${base}#${n}` : base, { section, label, name: m.name, value: m.value, pct: m.pct });
+  };
   for (const raw of String(text).split(/\r?\n/)) {
     const line = raw.replace(/\(\d+[^)]*\)/g, ' ');
-    if (!line.trim()) continue;
+    if (!line.trim()) { header = null; continue; }
+    // „== Poglavlje 2 (cilj 84 %) ==“: odjeljak bez zagrade, da promjena cilja ne razdvoji ključeve.
+    const sec = raw.match(/^\s*==+\s*(.*?)\s*==+\s*$/);
+    if (sec) { section = sec[1].replace(/\s*\([^)]*\)/g, '').trim(); header = null; continue; }
+    if (raw.includes('|')) {
+      const cs = cells(raw);
+      if (header && cs.length === header.length && cs[0] && !NUM_CELL.test(cs[0]) && cs.slice(1).some((c) => NUM_CELL.test(c))) {
+        for (const m of tableValues(header, cs)) put(cs[0], m);
+        continue;
+      }
+      // Red sa `|` koji nije red tekuće tabele je kandidat za zaglavlje; potvrdi ga tek sljedeći brojčani red.
+      // Ako ima mjere s imenom (npr. „ruta 33 · krađa 67 %“), čita se i kao obični red ispod.
+      if (cs.length >= 3) header = cs;
+    }
     // reči poput "cilj 85.0 %" i "pobjede 7.0 %": naziv mjere je tekst neposredno ispred broja
     const metrics = [];
     const rest = line.replace(METRIC, (m, name, num, pct) => {
@@ -21,16 +65,12 @@ function parseReport(text) {
     });
     const hasRow = metrics.length > 0 && /\|/.test(raw) || metrics.length > 0 && /^\s+\S/.test(raw);
     if (!hasRow) {
+      if (raw.includes('|')) continue; // zaglavlje tabele nije odjeljak
       if (!/^\s/.test(raw) && !/^(Čitanje|preporuka)/.test(raw.trim())) section = raw.trim().replace(/\s*\([\d.,]+ s\)\s*$/, '');
       continue;
     }
     const label = rest.replace(/[|]/g, ' ').replace(/\s+/g, ' ').trim();
-    for (const m of metrics) {
-      const base = `${section}§${label}§${m.name}`;
-      const n = (seen.get(base) || 0) + 1;
-      seen.set(base, n);
-      values.set(n > 1 ? `${base}#${n}` : base, { section, label, name: m.name, value: m.value, pct: m.pct });
-    }
+    for (const m of metrics) put(label, m);
   }
   return values;
 }
