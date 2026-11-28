@@ -9,7 +9,7 @@ import { ucitaj, ucitajPR } from './ucitaj'
 
 const PANE = 'radni-stol'
 const NASLOV = 'Radni stol'
-const stanje = atom({ plugin: 'radni-stol', key: 'stanje' } as const, null, { shape: 'stanje-3' })
+const stanje = atom({ plugin: 'radni-stol', key: 'stanje' } as const, null, { shape: 'stanje-4' })
 const prs = atom({ plugin: 'radni-stol', key: 'prs' } as const, null, { shape: 'prs-1' })
 const prikaz = atom({ plugin: 'radni-stol', key: 'prikaz' } as const, { vise: false, projekti: false } as Prikaz, {
   shape: 'prikaz-1',
@@ -119,6 +119,7 @@ export const register: Register = on => {
           {s.dugmad.projekat.length > 0 && (
             <Box flexDirection="column">{s.dugmad.projekat.map(d => dugme(d, 'secondary'))}</Box>
           )}
+          {s.dugmad.lab !== null && dugme(s.dugmad.lab, 'secondary')}
           {s.dugmad.vise.length > 0 && (
             <Button key="vise" plain dimColor onPress={prebaci('vise')}>
               {v.vise ? '▾ Manje' : `▸ Više (${s.dugmad.vise.length})`}
