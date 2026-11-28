@@ -104,7 +104,7 @@ const GLAVNA: Glavno[] = [
   },
 ]
 
-export type Izbor = { glavna: Dugme[]; projekat: Dugme[]; vise: Dugme[] }
+export type Izbor = { glavna: Dugme[]; projekat: Dugme[]; lab: Dugme | null; vise: Dugme[] }
 
 export function izaberiDugmad(o: Okolina): Izbor {
   // Bez PODSJETNIKA ne znamo šta postoji: glavna dugmad se ipak pokažu (panel kaže zašto).
@@ -125,7 +125,6 @@ export function izaberiDugmad(o: Okolina): Izbor {
   if (o.igra && ima('balans')) dodaj('balans', '/balans')
   if (o.web && !o.igra && ima('provjera-izgleda')) dodaj('provjera-izgleda', '/provjera-izgleda')
   // Lab radi iz svakog projekta preko putanje (PODSJETNIK); trošak i „da“ traži Claude u chatu.
-  if (o.web && !o.igra && o.lab) dodaj('lab', 'testiraj ovu aplikaciju Labom', 'Testiraj Labom', 'AI testeri probaju aplikaciju')
   for (const a of o.agenti) dodaj(`agent-${a}`, `pusti agenta ${a}`, `Agent ${a}`)
 
   const vise: Dugme[] = projektna.slice(2)
@@ -136,7 +135,32 @@ export function izaberiDugmad(o: Okolina): Izbor {
     const opis = o.opisi[k]
     vise.push({ key: `v-${k}`, label: `/${k}`, text: `/${k} `, ...(opis ? { opis } : {}) })
   }
-  return { glavna, projekat: projektna.slice(0, 2), vise }
+  // Lab ima svoje stalno mjesto (ne broji se u 2 projektna); trošak i „da“ traži Claude u chatu.
+  const lab: Dugme | null =
+    o.web && !o.igra && o.lab
+      ? { key: 'lab', label: 'Testiraj Labom', text: 'testiraj ovu aplikaciju Labom', opis: 'AI testeri probaju aplikaciju' }
+      : null
+  return { glavna, projekat: projektna.slice(0, 2), lab, vise }
+}
+
+// Web aplikacija = ima šta se pokreće u pregledniku: Python web okvir, npm skripta za pokretanje,
+// web biblioteka ili index.html u korijenu. Sam package.json (npr. samo testovi) nije dovoljan.
+export function jeWeb(f: { packageJson: string | null; python: string; indexHtml: boolean }): boolean {
+  if (/\b(flask|django|fastapi|streamlit)\b/i.test(f.python)) return true
+  if (f.indexHtml) return true
+  if (f.packageJson === null) return false
+  try {
+    const j = JSON.parse(f.packageJson) as {
+      scripts?: Record<string, string>
+      dependencies?: Record<string, string>
+      devDependencies?: Record<string, string>
+    }
+    if (Object.keys(j.scripts ?? {}).some(k => /^(dev|start|preview|serve)$/.test(k))) return true
+    const deps = Object.keys({ ...j.dependencies, ...j.devDependencies })
+    return deps.some(d => /^(vite|next|react|react-dom|vue|svelte|express|@sveltejs\/kit)$/.test(d))
+  } catch {
+    return false
+  }
 }
 
 // Kratko: najviše `max` znakova, rez na razmaku, sa „…“.

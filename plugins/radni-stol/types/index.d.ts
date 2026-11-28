@@ -12,7 +12,7 @@ export type Stanje = {
   gitGreska: string // prazno kad git radi
   grana: string
   necommitovano: number | null
-  dugmad: { glavna: Dugme[]; projekat: Dugme[]; vise: Dugme[] }
+  dugmad: { glavna: Dugme[]; projekat: Dugme[]; lab: Dugme | null; vise: Dugme[] }
   napomene: string[] // jedna rečenica za ono što panel nije mogao pročitati
   projekti: Projekat[] | null // null: projekti.md nije nađen
 }

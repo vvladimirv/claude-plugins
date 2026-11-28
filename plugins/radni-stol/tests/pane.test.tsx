@@ -2,6 +2,7 @@ import { expect, test } from 'claude-code/testing'
 
 import {
   izaberiDugmad,
+  jeWeb,
   komandePodsjetnika,
   kratko,
   opisFrontmattera,
@@ -91,6 +92,8 @@ function svijet(on: any, o: Svijet = {}) {
   on('fs.read', (_: any, e: any) => {
     if (o.status !== undefined && uProjektu(e.path) === 'STATUS.md') return { value: o.status }
     if (/PODSJETNIK\.md$/.test(e.path)) return { value: PODSJETNIK }
+    if (uProjektu(e.path) === 'package.json' && fajlovi.has('package.json'))
+      return { value: JSON.stringify({ scripts: { start: 'node server.js' } }) }
     if (uProjektu(e.path) === '.claude/commands/zapisi.md')
       return { value: '---\ndescription: Upiši završenu izmjenu u dnevnik projekta\n---\n\nTekst.' }
     if (kraj(e.path, 'claude-licno/projekti.md')) return { value: PROJEKTI }
@@ -152,6 +155,16 @@ test('opisi: kolona Kad iz PODSJETNIKA, description iz frontmattera, skraćivanj
   expect(k.endsWith('…')).toBe(true)
 })
 
+test('web: po pokretanju aplikacije, ne po samom package.json', async () => {
+  const pj = (j: object) => JSON.stringify(j)
+  expect(jeWeb({ packageJson: pj({ scripts: { test: 'node --test' } }), python: '', indexHtml: false })).toBe(false)
+  expect(jeWeb({ packageJson: pj({ scripts: { dev: 'vite' } }), python: '', indexHtml: false })).toBe(true)
+  expect(jeWeb({ packageJson: pj({ devDependencies: { vite: '5' } }), python: '', indexHtml: false })).toBe(true)
+  expect(jeWeb({ packageJson: null, python: 'Flask==3.0', indexHtml: false })).toBe(true)
+  expect(jeWeb({ packageJson: null, python: 'requests', indexHtml: true })).toBe(true)
+  expect(jeWeb({ packageJson: 'nije json', python: '', indexHtml: false })).toBe(false)
+})
+
 test('izbor dugmadi: bez-kickstarta, igra, vlastite komande i Više', async () => {
   const baza = {
     podsjetnik: komandePodsjetnika(PODSJETNIK),
@@ -211,14 +224,14 @@ test('panel: gdje sam stao, PR-ovi, dugme samo upiše tekst', async ($, on) => {
   await ui.press({ key: 'p-provjera-izgleda' })
   expect(upisano.at(-1)).toBe('/provjera-izgleda')
 
+  // Lab ima svoje mjesto, i uz dva projektna dugmeta je vidljiv bez „Više“.
+  await ui.press({ key: 'lab' })
+  expect(upisano.at(-1)).toBe('testiraj ovu aplikaciju Labom')
   expect(await ui.find({ key: 'v-stanje' })).toBeUndefined()
   await ui.press({ key: 'vise' })
   expect((await ui.find({ type: 'Text', text: /^Igra$/ }))?.text).toBe('Igra')
   await ui.press({ key: 'v-stanje' })
   expect(upisano.at(-1)).toBe('/stanje ')
-  // Treće projektno dugme (Lab) ide pod Više.
-  await ui.press({ key: 'p-lab' })
-  expect(upisano.at(-1)).toBe('testiraj ovu aplikaciju Labom')
 
   await ui.press({ key: 'projekti' })
   expect(await ui.find({ type: 'Text', text: /M2 u toku/ })).toBeDefined()
