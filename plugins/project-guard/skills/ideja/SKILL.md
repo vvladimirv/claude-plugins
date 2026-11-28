@@ -46,7 +46,7 @@ Prva linija odgovora je `Ishod: <naziv>`. Redoslijed provjere: napravljeno, zapi
 Uz svaki ishod napiši `Tražio sam:` sa svim mjestima koja su stvarno pretražena i `Nije bilo dostupno:` (ili „sve dostupno“). Ako nešto nije bilo dostupno, napiši i **provjera nije potpuna**.
 
 ## 4. Upis (ishod „novo“, ili kad vlasnik izabere upis)
-1. **Ideja za novu aplikaciju ili igru za prodaju**, a postoji `<korijen>/Oblak-ideja`: ne upisuj je ovdje. Predloži karticu u Oblaku (`npm run nova-ideja -- "Naslov"` u tom folderu), da prođe provjeru tržišta, ocjenu i odluku. Ako korisnik ipak hoće ovdje, nastavi.
+1. **Ideja za novu aplikaciju ili igru za prodaju**, a postoji `<korijen>/Oblak-ideja`: ne upisuj je ovdje. Nova aplikacija ili igra (za telefon, web ili računar) ide u Oblak, osim ako korisnik kaže da je lična; kad nije jasno, pitaj prije upisa. Predloži karticu u Oblaku (`npm run nova-ideja -- "Naslov"` u tom folderu), da prođe provjeru tržišta, ocjenu i odluku. Ako korisnik ipak hoće ovdje, nastavi.
 2. **Dodaj** na vrh sekcije `## Nove`: `- YYYY-MM-DD · <ideja> _(iz: <ime trenutnog projekta>)_`. Ako neko mjesto nije bilo dostupno, dodaj na kraj istog reda ` · provjera nije potpuna: <šta nije pretraženo>`.
 3. **Snimi** (u repou ideja, ne u trenutnom projektu):
    ```bash
