@@ -1,6 +1,7 @@
 ---
 name: ux-recenzent
 description: "Read-only pregled konkretne UI izmjene prema dizajn sistemu, ekranima i inventaru funkcija. Koristi poslije UI promjene i prije commita za izgubljene funkcije, hardkodovane vrijednosti, pristupačnost i prikaz na ciljnim uređajima projekta."
+model: sonnet
 ---
 
 # UX recenzent

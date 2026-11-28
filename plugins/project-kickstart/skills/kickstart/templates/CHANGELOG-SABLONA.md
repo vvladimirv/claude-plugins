@@ -2,6 +2,9 @@
 
 Nova verzija ide na vrh. Svaka stavka kaže koji fajl u projektu i šta tačno treba dodati. Nadogradnja nikad ne prepisuje sadržaj projekta: samo dodaje ono što fali.
 
+## 0.5.2
+- **docs/DIZAJN-SISTEM.md**, sekcija `## Principi`: princip „Mobitel prvo. Mora raditi na 360 px širine.“ zamijeniti principom o ciljnim uređajima (tekst iz šablona), sa uređajima i širinama iz `docs/VIZIJA.md` (`## Gdje se koristi`). Ako projekat stvarno cilja mobitel, upiši mobitel i 360 px. Ako je princip već prilagođen projektu, ne diraj ga.
+
 ## 0.5.1
 - Spajanje grana: projekat koji je na 0.5.0 a nema stavke iz **0.4.5** (Flutter/Dart blok u `.github/workflows/ci.yml`) dobija ih sada, po uputstvu iz 0.4.5. Ostali ne mijenjaju ništa.
 
