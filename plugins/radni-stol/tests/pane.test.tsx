@@ -64,9 +64,14 @@ type Svijet = {
 
 const upisano: string[] = []
 
-// Engine putanje zna dati apsolutne i sa obrnutim kosim crtama: poredi kraj puta.
+// Engine putanje zna dati apsolutne i sa obrnutim kosim crtama, a na Linuxu `C:/...` stavi
+// ispod svog foldera: poredi od `C:/dev/` nadalje.
 const kraj = (putanja: string, rel: string) => putanja.replace(/\\/g, '/').endsWith(rel)
-const uProjektu = (putanja: string) => putanja.replace(/\\/g, '/').replace(/^C:\/dev\/lazni-projekat\//, '')
+const uProjektu = (putanja: string) =>
+  putanja
+    .replace(/\\/g, '/')
+    .replace(/^.*?(C:\/dev\/)/, '$1')
+    .replace(/^C:\/dev\/lazni-projekat\//, '')
 
 function svijet(on: any, o: Svijet = {}) {
   const fajlovi = new Set(o.fajlovi ?? [])
