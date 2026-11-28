@@ -18,6 +18,7 @@ const portable = require('./lib/portable');
 const checks = require('../scripts/checks');
 const selfupdate = require('./lib/selfupdate');
 const personal = require('./lib/personal');
+const cloud = require('./lib/cloud');
 
 function safe(name, fn, fallback = null) {
   const t = Date.now();
@@ -47,7 +48,7 @@ function preToolUse(input, root) {
   catch (err) { common.logError('secrets', err); return deny('Zaštita tajni nije izvršena. Provjerite pravila.log prije nastavka.'); }
   if (secret) return deny(secret);
   if (common.isPaused()) return null;
-  for (const [name, fn] of [['gate', gate.check], ['size', size.preCheck], ['sync', sync.check], ['lock', lock.check]]) {
+  for (const [name, fn] of [['gate', gate.check], ['size', size.preCheck], ['sync', sync.check], ['lock', lock.check], ['cloud', cloud.check]]) {
     const reason = safe(name, () => fn(input, root));
     if (reason) return deny(reason);
   }

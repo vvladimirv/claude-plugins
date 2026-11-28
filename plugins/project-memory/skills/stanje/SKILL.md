@@ -18,6 +18,12 @@ allowed-tools: [Read, Write, Edit, Bash, Glob]
    - samo sadašnjost: šta radi, šta je sljedeće (≤ 5 stavki, najvažnije prvo), blokeri,
    - bez historije i datuma pojedinih koraka, jer je to u git logu,
    - završeni zadaci izlaze iz "Sljedeće". Ako su bitna funkcija, idu u "Radi" kao jedna linija.
+   - **linija „Zadnja sesija“** (ispod „Ažurirano“, ulazi u 30 linija): prepiši je, ne dodaji drugu. Oblik:
+     `**Zadnja sesija:** <ID> · <računar> · <površina> · grana <grana> · <YYYY-MM-DD>`. ID je `${CLAUDE_SESSION_ID}`, grana `git branch --show-current`, a računar i površinu daje (isto u PowerShellu i bashu):
+     ```bash
+     node -e "const e=process.env;console.log((e.COMPUTERNAME||require('os').hostname())+' · '+(e.CLAUDE_CODE_REMOTE==='true'?'cloud':(e.CLAUDE_CODE_ENTRYPOINT||'nepoznato')))"
+     ```
+     Površina je `CLAUDE_CODE_ENTRYPOINT` (npr. `claude-desktop`, `cli`), a u cloudu (`CLAUDE_CODE_REMOTE=true`) `cloud`. *Zašto:* drugi računar iz STATUS-a vidi gdje je rad stao. Lokalna sesija se nastavlja samo na računaru gdje je nastala (`claude --resume <ID>`), a cloud sesija sa bilo kojeg (`claude --teleport <ID>`). Pomoćna sesija (`/kraj-sesije auto`) STATUS ne piše, pa ni ovu liniju.
    - **STATUS je postao dnevnik** (duži od 30 linija, datumi koraka, liste urađenog): prepiši ga u stanje po strukturi ispod. Historiju ne prenosi, jer je u git logu. Ono što nije zapisano nigdje drugo, a još važi, premjesti: odluka u `docs/adr/`, izdanje u `CHANGELOG.md`, pravilo rada u `AGENTS.md`. Ako nisi siguran da je nešto zapisano drugdje, pitaj prije nego ga izbaciš.
 4. Pokaži korisniku kratak diff (šta se promijenilo). Ne commituj: to radi `/kraj-sesije`.
 
@@ -26,6 +32,7 @@ Struktura:
 # STATUS
 
 **Ažurirano:** YYYY-MM-DD · **Milestone:** Mx: <ime>
+**Zadnja sesija:** <ID> · <računar> · <površina> · grana <grana> · YYYY-MM-DD
 
 ## Radi
 - …
