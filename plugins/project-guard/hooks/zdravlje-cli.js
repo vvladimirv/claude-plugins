@@ -5,7 +5,11 @@ const fs = require('fs');
 const path = require('path');
 const { CLAUDE_HOME, kickstartRoots, isPaused, git, readJson } = require('./lib/common');
 
+const personal = require('./lib/personal');
+
 const DAY = 86400000;
+const PLUGINS = ['project-guard', 'project-memory', 'project-kickstart', 'project-quality', 'project-market'];
+const MARKET = 'moji-pluginsi';
 const ENTRY = /^(\d{4}-\d{2}-\d{2}T[\d:.]+Z) (.+?): (.*)$/;
 
 function tool(cmd, args) {
@@ -14,6 +18,53 @@ function tool(cmd, args) {
   } catch {
     return '';
   }
+}
+
+// Svih pet pluginova: instaliran i uključen, sa verzijom.
+function pluginLines(settings, ok, warn) {
+  const installed = readJson(path.join(CLAUDE_HOME, 'plugins', 'installed_plugins.json'), { plugins: {} }).plugins || {};
+  const enabled = settings.enabledPlugins || {};
+  const have = [];
+  for (const name of PLUGINS) {
+    const key = `${name}@${MARKET}`;
+    const entry = (installed[key] || [])[0];
+    if (!entry) warn.push(`${name} nije instaliran: u ${personal.pluginsRepo()} pokreni node scripts/setup.js --apply`);
+    else if (enabled[key] === false) warn.push(`${name} je isključen (aplikacija → Plugins, ili claude plugin enable ${key})`);
+    else have.push(`${name.replace('project-', '')} ${entry.version}`);
+  }
+  if (have.length) ok.push(`pluginovi: ${have.join(', ')}`);
+}
+
+// Repo prema GitHubu, bez mijenjanja ičega lokalno (ls-remote samo čita). null: ne zna se (bez mreže ili remotea).
+function vsGitHub(repo) {
+  const branch = git(repo, ['rev-parse', '--abbrev-ref', 'HEAD']);
+  const line = branch && branch !== 'HEAD' ? tool('git', ['-C', repo, 'ls-remote', 'origin', `refs/heads/${branch}`]) : '';
+  if (!line) return null;
+  const remote = line.split(/\s+/)[0];
+  if (remote === git(repo, ['rev-parse', 'HEAD'])) return { behind: 0, ahead: 0 };
+  const behind = git(repo, ['rev-list', '--count', `HEAD..${remote}`]);
+  return { behind: behind === '' ? 1 : Number(behind), ahead: Number(git(repo, ['rev-list', '--count', `${remote}..HEAD`])) || 0, unknown: behind === '' };
+}
+
+function repoLine(name, repo, ok, warn) {
+  const s = vsGitHub(repo);
+  if (!s) warn.push(`${name}: stanje prema GitHubu se ne zna (mreža ili origin)`);
+  else if (s.behind) warn.push(`${name} je iza GitHuba${s.unknown ? '' : ` (${s.behind})`}: git -C "${repo}" pull --ff-only`);
+  else if (s.ahead) warn.push(`${name} ima ${s.ahead} commita koji nisu na GitHubu: git -C "${repo}" push`);
+  else ok.push(`${name} je isti kao na GitHubu`);
+}
+
+// Lični sloj: ~/.claude/CLAUDE.md uvozi claude-licno, a repo postoji i nije iza GitHuba.
+function personalLines(ok, warn) {
+  const repo = personal.personalRepo();
+  let md = '';
+  try { md = fs.readFileSync(path.join(CLAUDE_HOME, 'CLAUDE.md'), 'utf8'); } catch { /* nema fajla */ }
+  if (/^@.*claude-licno[\\/]GLOBALNO\.md\s*$/m.test(md)) ok.push('~/.claude/CLAUDE.md uvozi claude-licno');
+  else warn.push('~/.claude/CLAUDE.md ne uvozi claude-licno (README u claude-licno → postavljanje na novom računaru)');
+  if (fs.existsSync(path.join(repo, '.git'))) repoLine('claude-licno', repo, ok, warn);
+  else warn.push(`lični repo nije kloniran u ${repo}: gh repo clone vvladimirv/claude-licno "${repo}"`);
+  const plugins = personal.pluginsRepo();
+  if (fs.existsSync(path.join(plugins, '.git'))) repoLine('claude-plugins', plugins, ok, warn);
 }
 
 // Unosi iz pravila.log u zadnjih `days` dana (jedan unos = linija sa datumom; stack ispod se preskače).
@@ -40,6 +91,8 @@ function report({ root, now = Date.now() } = {}) {
   if (localSource) ok.push('lokalni izvor plugina: ažuriranje kroz git pull i setup');
   else if (auto) ok.push('auto-update plugina uključen');
   else warn.push('auto-update nije uključen za udaljeni izvor: README → Instalacija');
+  pluginLines(settings, ok, warn);
+  personalLines(ok, warn);
 
   let entries = [];
   try {

@@ -10,13 +10,24 @@ const STALE_MS = 20 * 60 * 1000;
 
 // Komande koje ne diraju fajlove projekta. Worktree, grana i njena bazna grana (/codex-worktree) su samo git zapisi,
 // gh komande ovdje samo čitaju GitHub, a `/grane` pregled i spisak za čišćenje samo čitaju git.
-const READONLY = /^(git\s+(status|log|diff|show|branch|remote|rev-parse|ls-files|blame|fetch|worktree|stash\s+list|config\s+(--get|["']?branch\.\S+\.base))\b|git\s*$|gh\s+(auth\s+status|(pr|issue|run|release|repo|workflow)\s+(list|view|status|checks|diff))|ls|dir|cat|type|head|tail|less|more|grep|rg|find|pwd|cd|echo|wc|which|where|sort|uniq|cut|tr|date|sed\s+-n\b(?!.*\s-i)|node\s+(--version|--test)|node\s+"?[^"\s]*grane-cli\.js"?\s+(pregled|pocisti\s+--spisak)|npm\s+(test|run\s+test|ls|--version)|pytest|python3?\s+-m\s+pytest|py\s+-m\s+pytest|\.?[\\/]?scripts[\\/]test\S*|node\s+scripts[\\/]test\S*|claude\s+plugin\s+(list|validate|details)|Get-(ChildItem|Content|Location|Item|Command|Date)|Select-String|Select-Object|Measure-Object|Test-Path|Write-Output|Write-Host|ForEach-Object|Where-Object|Sort-Object|Group-Object|Format-(Table|List|Wide)|Out-String)\b/i;
+const READONLY = /^(git\s+(status|log|diff|show|branch|remote|rev-parse|rev-list|ls-files|ls-tree|ls-remote|blame|fetch|worktree|for-each-ref|merge-base|cat-file|describe|reflog|shortlog|name-rev|check-ignore|grep|count-objects|cherry|range-diff|version|help|stash\s+(list|show)|tag\s+(-l|--list|-n)|config\s+(--get|--list|-l|["']?branch\.\S+\.base))\b|git(\s+tag)?\s*$|gh\s+(auth\s+status|(pr|issue|run|release|repo|workflow)\s+(list|view|status|checks|diff))|ls|dir|cat|type|head|tail|less|more|grep|rg|find|pwd|cd|echo|printf|wc|which|where|sort|uniq|cut|tr|date|diff|cmp|comm|stat|file|tree|du|df|basename|dirname|realpath|readlink|nl|column|jq|read|true|false|sed\s+-n\b(?!.*\s-i)|node\s+(--version|--test)|node\s+"?[^"\s]*grane-cli\.js"?\s+(pregled|pocisti\s+--spisak)|npm\s+(test|run\s+test|ls|--version)|pytest|python3?\s+-m\s+pytest|py\s+-m\s+pytest|\.?[\\/]?scripts[\\/]test\S*|node\s+scripts[\\/]test\S*|claude\s+plugin\s+(list|validate|details)|Get-\w+|Test-(Path|Json|Connection)|Select-(String|Object|Xml)|Measure-\w+|Compare-Object|Resolve-Path|Split-Path|Join-Path|ConvertFrom-\w+|ConvertTo-(Json|Csv|Html|Xml)|Write-(Output|Host|Verbose)|ForEach-Object|Where-Object|Sort-Object|Group-Object|Format-\w+|Out-(String|Host|Null))\b/i;
 const HARMLESS_REDIRECT = /\d?>\s*&\d|\d?>\s*(\/dev\/null|\$null|nul)\b/gi;
-const GIT_DIR = /^git\s+-C\s+("[^"]*"|'[^']*'|\S+)\s*/i;
+// Opcije gita prije podkomande (`git -C <put>`, `git --no-pager`, `git -c x=y`) ne mijenjaju šta komanda radi.
+const GIT_OPT = /^git\s+(?:-C\s+("[^"]*"|'[^']*'|\S+)|-c\s+\S+|--no-pager|-P|--no-optional-locks|--literal-pathspecs)\s*/i;
+// Riječi petlji i uslova (bash i PowerShell) same ne rade ništa; provjerava se komanda iza njih.
+const KEYWORD_PREFIX = /^(?:do|then|else|elif|if|while|until|!)\s+(?!\()/i;
+const KEYWORD_ONLY = /^(?:do|done|then|else|fi|esac)$/i;
+const PS_KEYWORDS = /(^|\s)(?:else|try|catch|finally|begin|process|end)(?=\s|$)/gi;
+// Ulaz iz fajla (`< a.txt`) samo čita; `<<` i `<(` se ne diraju.
+const INPUT_REDIRECT = /\s0?<(?![<(])\s*("[^"]*"|'[^']*'|[^\s<>]+)/g;
+const FOR_HEAD = /^for\s+\w+\s+in\b/i;
+const TEST_EXPR = /^(?:\[\[?\s.*\]\]?|test\s.*)$/;
+const PS_HEAD = /^(?:foreach|if|elseif|while|switch)\s*\((.*)\)$/is;
+const ASSIGN = /^\$?[A-Za-z_][\w:]*\s*=\s*(.*)$/s;
 // PowerShell cmdleti koji pišu, ma gdje u komandi bili (i unutar { } bloka).
 const WRITE_CMDLET = /\b(Set-Content|Add-Content|Out-File|New-Item|Remove-Item|Move-Item|Copy-Item|Rename-Item|Clear-Content|Tee-Object|Export-\w+|Invoke-Expression|iex|Start-Process)\b/i;
 // Izraz bez komande: string ili varijabla, uz operator (`"---"`, `$_ -match 'x'`, `"{0}" -f $a`).
-const EXPR = /^(?:"[^"]*"|'[^']*'|\$[\w:.]+)(?:\s+-(?:f|match|notmatch|like|notlike|eq|ne|gt|ge|lt|le|replace|split|join|contains|in)\b.*)?$/is;
+const EXPR = /^(?:"[^"]*"|'[^']*'|\$[\w:.]+|\((?:[^()]|\([^()]*\))*\)(?:\.\w+)*)(?:\s+-(?:f|match|notmatch|like|notlike|eq|ne|gt|ge|lt|le|replace|split|join|contains|in)\b.*)?$/is;
 
 // Dijeli na &&, ||, ;, | i novi red, ali ne unutar navodnika i { } blokova. null ako navodnik nije zatvoren.
 function splitTop(cmd) {
@@ -32,8 +43,8 @@ function splitTop(cmd) {
       continue;
     }
     if (c === '"' || c === "'") quote = c;
-    else if (c === '{') depth++;
-    else if (c === '}') depth = Math.max(0, depth - 1);
+    else if (c === '{' || c === '(') depth++;
+    else if (c === '}' || c === ')') depth = Math.max(0, depth - 1);
     if (depth === 0 && !quote) {
       const two = cmd.slice(i, i + 2);
       if (two === '&&' || two === '||') {
@@ -86,13 +97,74 @@ function blocks(seg) {
 function exprReadonly(seg) {
   if (!EXPR.test(seg) || seg.includes('$(')) return false;
   const bare = seg.replace(/"[^"]*"|'[^']*'/g, '""');
-  return [...bare.matchAll(/\(\s*([A-Za-z][\w-]*)/g)].every((m) => READONLY.test(m[1]));
+  const groups = [];
+  let depth = 0;
+  let cur = '';
+  for (const c of bare) {
+    if (c === '(' && depth++ === 0) continue;
+    if (c === ')' && depth > 0 && --depth === 0) {
+      groups.push(cur);
+      cur = '';
+      continue;
+    }
+    if (depth > 0) cur += c;
+  }
+  if (depth) return false;
+  return groups.every((g) => !/[A-Za-z]/.test(g.replace(/\$[\w:.]+/g, '')) || allReadonly(g));
+}
+
+// Izdvaja `$( … )` (izvršava se i unutar dvostrukih navodnika, i u bashu i u PowerShellu) i mijenja ga sa "".
+// null ako zagrada nije zatvorena.
+function substitutions(seg) {
+  const inner = [];
+  let rest = '';
+  let single = false;
+  for (let i = 0; i < seg.length; i++) {
+    const c = seg[i];
+    if (!single && c === '$' && seg[i + 1] === '(') {
+      let depth = 1;
+      let quote = null;
+      let j = i + 2;
+      for (; j < seg.length && depth; j++) {
+        const d = seg[j];
+        if (quote) { if (d === quote) quote = null; continue; }
+        if (d === '"' || d === "'") quote = d;
+        else if (d === '(') depth++;
+        else if (d === ')') depth--;
+      }
+      if (depth) return null;
+      inner.push(seg.slice(i + 2, j - 1));
+      rest += '""';
+      i = j - 1;
+      continue;
+    }
+    if (c === "'") single = !single;
+    rest += c;
+  }
+  return { rest, inner };
 }
 
 function segmentReadonly(seg) {
-  const s = seg.replace(/^(\w+=\S*\s+)+/, '').replace(GIT_DIR, 'git ');
-  const { rest, inner } = blocks(s);
-  if (!inner.every((b) => allReadonly(b))) return false;
+  const sub = substitutions(seg);
+  if (!sub || !sub.inner.every((b) => allReadonly(b))) return false;
+  let s = sub.rest.replace(/^(\w+=\S*\s+)+/, '');
+  while (KEYWORD_PREFIX.test(s)) s = s.replace(KEYWORD_PREFIX, '');
+  while (GIT_OPT.test(s)) s = s.replace(GIT_OPT, 'git ');
+  s = s.replace(INPUT_REDIRECT, '').trim();
+  const parts = blocks(s);
+  if (!parts.inner.every((b) => allReadonly(b))) return false;
+  const rest = parts.inner.length ? parts.rest.replace(PS_KEYWORDS, ' ').trim() : parts.rest;
+  if (!rest || KEYWORD_ONLY.test(rest) || FOR_HEAD.test(rest) || TEST_EXPR.test(rest)) return true;
+  const head = rest.match(PS_HEAD);
+  if (head) {
+    const cond = head[1].replace(/^\s*\$\w+\s+in\s+/i, '').trim();
+    return !cond || exprReadonly(cond) || allReadonly(cond);
+  }
+  const assign = rest.match(ASSIGN);
+  if (assign && !/^=/.test(assign[1])) {
+    const value = assign[1].trim();
+    return !value || /^(?:"[^"]*"|'[^']*'|[\w.:\\/-]+)$/.test(value) || exprReadonly(value) || segmentReadonly(value);
+  }
   return READONLY.test(rest) || exprReadonly(rest);
 }
 

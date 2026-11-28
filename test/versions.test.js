@@ -4,6 +4,7 @@ const assert = require('node:assert');
 const fs = require('fs');
 const path = require('path');
 const sablon = require('./sablon-hash');
+const plugin = require('./plugin-hash');
 
 const ROOT = path.join(__dirname, '..');
 const readJson = (rel) => JSON.parse(fs.readFileSync(path.join(ROOT, rel), 'utf8'));
@@ -25,4 +26,15 @@ test('šabloni: izmjena šablona podiže verzija_sablona', () => {
   assert.strictEqual(sablon.hash(), rec.hash, 'Šabloni su promijenjeni. Podigni verzija_sablona u kickstart SKILL.md, '
     + 'dopiši CHANGELOG-SABLONA.md, pa pokreni `node test/sablon-hash.js --upisi`.');
   assert.strictEqual(sablon.skillVersion(), rec.verzija, 'verzija_sablona je podignuta: pokreni `node test/sablon-hash.js --upisi`.');
+});
+
+test('pluginovi: izmjena plugina podiže njegovu verziju', () => {
+  const rec = plugin.record();
+  for (const n of plugin.names()) {
+    const r = rec[n] || {};
+    assert.ok(r.hash === plugin.hash(n) || r.verzija !== plugin.version(n),
+      `${n} je promijenjen, a verzija je i dalje ${plugin.version(n)}. Podigni verziju (plugin.json, .claude-plugin, .codex-plugin, `
+      + 'marketplace.json), pa pokreni `node test/plugin-hash.js --upisi`.');
+    assert.ok(r.hash === plugin.hash(n), `${n}: verzija je podignuta, pokreni \`node test/plugin-hash.js --upisi\`.`);
+  }
 });

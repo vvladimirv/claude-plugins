@@ -29,8 +29,9 @@ Nakon ažuriranja otvori novi chat; u Codexu pregledaj nove ili promijenjene hoo
 Projektne instalacije se ne brišu: postojeći pokazivači na isti izvor usklađuju se uz backup konfiguracije.
 Posebni projektni izvori i aktivne brave ostaju netaknuti. Povjerenje hookova se ne odobrava automatski.
 
-Poslije `git pull` ponovi setup. Lokalni izvor se osvježava ovim postupkom; GitHub auto-update
-ne preuzima izmjene umjesto lokalnog `git pull`. Za drugi računar kloniraj isti repo i pokreni setup.
+Poslije `git pull` ponovi setup. Guard na startu sesije sam povuče čist `claude-plugins` i `claude-licno`
+(samo fast-forward, najviše jednom u 10 min) i jednom linijom javi kad je izvor noviji od instaliranog, pa treba setup.
+Auto-update u aplikaciji sa lokalnim izvorom ne povlači ništa sa GitHuba. Za drugi računar kloniraj isti repo i pokreni setup.
 Ne uređuj instalacijski cache.
 
 Detaljno: [podržane zaštite, ograničenja i dokaz testiranja](docs/UNIVERZALNI-PLUGINI.md).
@@ -81,7 +82,7 @@ claude plugin validate .
 
 - Claude manifesti su izvor verzija; paketiranje generiše Codex manifeste i katalog.
 - Poslije izmjene šablona podigni verziju šablona, upiši changelog i pokreni `node test/sablon-hash.js --upisi`.
-- Testovi koriste privremene projekte; CI na GitHubu (`.github/workflows/ci.yml`) provjerava Windows i Linux na svaki push i pull request.
+- Testovi koriste privremene projekte. Na GitHubu na svaki push i pull request `plugins.yml` pokreće testove na Windowsu i Linuxu, a `ci.yml` testove i `claude plugin validate .` na Linuxu.
 - `.agent-checks.json` definiše obavezne provjere. Stage namjeravanih fajlova, zatim `npm run check`, pa commit.
 - Neobjavljena grana nije isto što i instaliran paket. Setup koristi folder iz kojeg je pokrenut.
 - Probaj plugin bez instalacije, u probnom projektu: `claude --plugin-dir C:devclaude-pluginsplugins<plugin>`.

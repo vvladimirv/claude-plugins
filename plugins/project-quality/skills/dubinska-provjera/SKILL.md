@@ -2,6 +2,7 @@
 name: dubinska-provjera
 description: "Dubinska provjera ispravnosti: pravila koja nikad ne smiju pasti na hiljadama slučajnih primjera, mutacije koje otkrivaju slabe testove, simulacija više perioda i statička analiza, po stacku projekta. Za \"/dubinska-provjera\", obračune, novac, datume i prije izdanja."
 argument-hint: "[invarijante|mutacije|simulacija|staticka|sve] [modul ili oblast]"
+model: sonnet
 ---
 
 # /dubinska-provjera

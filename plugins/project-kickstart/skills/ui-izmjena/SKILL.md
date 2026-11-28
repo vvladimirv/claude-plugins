@@ -17,7 +17,7 @@ Zahtjev: `$ARGUMENTS`
 
 1. **Kontekst:** pročitaj `docs/DIZAJN-SISTEM.md`, `docs/EKRANI.md` i `docs/INVENTAR-FUNKCIJA.md`. Ako ih nema, predloži `/kickstart --postojeci` i stani.
 2. **Obim izmjene:** tabela: pogođeni ekrani → komponente → F-funkcije na tim ekranima. Sve što nije u tabeli se ne dira.
-3. **Mockup** (čekaj OK): prije koda pokaži kako će izgledati: ASCII skica rasporeda ili mali HTML prototip, uz listu tokena koje koristi. Ako treba nov token ili nova komponenta, naglasi to posebno, jer to ide u DIZAJN-SISTEM.md.
+3. **Mockup** (čekaj OK): prije koda pokaži kako će izgledati. Ako je izgled već izabran kroz `/mockup-izgleda`, taj izbor je OK za ovaj korak. Inače, ako postoji komanda `/mockup-izgleda` (plugin project-quality), primijeni je na ekrane iz tabele (za malu izmjenu dovoljna je jedna varijanta) i čekaj izbor. Bez nje: ASCII skica rasporeda ili mali HTML prototip. Uz mockup ide lista tokena koje koristi. Ako treba nov token ili nova komponenta, naglasi to posebno, jer to ide u DIZAJN-SISTEM.md.
 4. **Izmjena:**
    - mijenjaj samo komponente iz tabele,
    - boje, razmaci i fontovi samo iz fajla tokena. Nova vrijednost prvo ide u tokene,

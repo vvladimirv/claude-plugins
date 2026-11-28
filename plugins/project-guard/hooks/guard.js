@@ -17,17 +17,25 @@ const branches = require('./lib/branches');
 const portable = require('./lib/portable');
 const checks = require('../scripts/checks');
 const selfupdate = require('./lib/selfupdate');
+const personal = require('./lib/personal');
 
 function safe(name, fn, fallback = null) {
+  const t = Date.now();
   try {
     return fn();
   } catch (err) {
     common.logError(name, err);
     failures.push(name);
     return fallback;
+  } finally {
+    const ms = Date.now() - t;
+    if (ms >= SLOW_PART_MS) slowParts.push(`${name} ${ms}`);
   }
 }
 let failures = [];
+// Pravila koja su trajala dugo, da se u pravila.log vidi ko je kriv za spor hook.
+const SLOW_PART_MS = 50;
+let slowParts = [];
 
 function deny(reason) {
   return { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'deny', permissionDecisionReason: reason } };
@@ -59,6 +67,7 @@ function sessionStart(input, root) {
   safe('prune', () => common.pruneState());
   const parts = [
     safe('selfupdate', () => selfupdate.sessionMessage(input)),
+    safe('personal', () => personal.sessionMessage(input)),
     safe('location', () => session.locationMessage(root)),
     common.isPaused() ? '## Pravila\nBlokirajuća pravila su pauzirana (`/pravila-pauza`). Zaštita tajni radi.' : null,
     safe('gate', () => gate.sessionMessage(root)),
@@ -99,6 +108,7 @@ const TIMED = new Set(['PreToolUse', 'PostToolUse', 'UserPromptSubmit']);
 
 function evaluate(input) {
   failures = [];
+  slowParts = [];
   input = { ...input, _runtime: input._runtime || (input.tool_name === 'apply_patch' || input.turn_id ? 'codex' : 'claude') };
   const event = input.hook_event_name;
   const handler = HANDLERS[event];
@@ -138,7 +148,9 @@ function evaluate(input) {
     out.systemMessage = `Zaštite nisu potpuno izvršene: ${[...new Set(failures)].join(', ')}. Pogledajte pravila.log; nastavak nije potvrda uspješne provjere.`;
   }
   const ms = Date.now() - started;
-  if (TIMED.has(event) && ms > SLOW_MS) common.logSlow(`${event}${input.tool_name ? ' ' + input.tool_name : ''}`, ms);
+  if (TIMED.has(event) && ms > SLOW_MS) {
+    common.logSlow(`${event}${input.tool_name ? ' ' + input.tool_name : ''}`, ms, slowParts);
+  }
   return out;
 }
 

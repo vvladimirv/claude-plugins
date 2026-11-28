@@ -49,3 +49,40 @@ test('zdravlje: lokalni izvor ne traži GitHub auto-update', () => {
     assert.ok(!r.warn.some(l => /auto-update/.test(l)));
   } finally { fs.rmSync(file); }
 });
+
+test('zdravlje: svih pet pluginova i lični sloj (CLAUDE.md uvoz, claude-licno prema GitHubu)', () => {
+  const { execFileSync } = require('child_process');
+  const plugDir = path.join(h.HOME, 'plugins');
+  fs.mkdirSync(plugDir, { recursive: true });
+  const names = ['project-guard', 'project-memory', 'project-kickstart', 'project-quality'];
+  fs.writeFileSync(path.join(plugDir, 'installed_plugins.json'), JSON.stringify({ plugins:
+    Object.fromEntries(names.map((n) => [`${n}@moji-pluginsi`, [{ version: '1.0.0' }]])) }));
+  fs.writeFileSync(path.join(h.HOME, 'settings.json'), JSON.stringify({ enabledPlugins: { 'project-quality@moji-pluginsi': false } }));
+  const bare = path.join(h.BASE, 'licno-zdravlje.git');
+  execFileSync('git', ['init', '-q', '--bare', '-b', 'main', bare]);
+  const repo = path.join(h.DEV, 'claude-licno');
+  execFileSync('git', ['clone', '-q', bare, repo], { stdio: 'ignore' });
+  const g = (...a) => execFileSync('git', a, { cwd: repo, stdio: 'ignore' });
+  g('config', 'user.email', 't@t'); g('config', 'user.name', 't');
+  fs.writeFileSync(path.join(repo, 'GLOBALNO.md'), 'x\n');
+  g('add', '-A'); g('commit', '-qm', 'prvi'); g('push', '-q', 'origin', 'HEAD:main');
+  try {
+    let r = report({ now: NOW });
+    assert.ok(r.warn.some((l) => /project-market nije instaliran/.test(l)));
+    assert.ok(r.warn.some((l) => /project-quality je isključen/.test(l)));
+    assert.ok(r.ok.some((l) => /pluginovi: guard 1\.0\.0, memory 1\.0\.0, kickstart 1\.0\.0/.test(l)));
+    assert.ok(r.warn.some((l) => /CLAUDE\.md ne uvozi claude-licno/.test(l)));
+    assert.ok(r.ok.includes('claude-licno je isti kao na GitHubu'));
+    fs.writeFileSync(path.join(h.HOME, 'CLAUDE.md'), `@${repo.split(path.sep).join('/')}/GLOBALNO.md\n`);
+    g('commit', '-q', '--allow-empty', '-m', 'lokalno');
+    r = report({ now: NOW });
+    assert.ok(r.ok.includes('~/.claude/CLAUDE.md uvozi claude-licno'));
+    assert.ok(r.warn.some((l) => /claude-licno ima 1 commita koji nisu na GitHubu/.test(l)));
+    g('push', '-q', 'origin', 'HEAD:main');
+    g('reset', '-q', '--hard', 'HEAD~1');
+    r = report({ now: NOW });
+    assert.ok(r.warn.some((l) => /claude-licno je iza GitHuba \(1\)/.test(l)));
+  } finally {
+    for (const p of [plugDir, path.join(h.HOME, 'settings.json'), path.join(h.HOME, 'CLAUDE.md'), repo]) fs.rmSync(p, { recursive: true, force: true });
+  }
+});

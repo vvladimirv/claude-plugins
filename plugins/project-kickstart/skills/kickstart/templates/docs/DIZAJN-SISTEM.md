@@ -16,6 +16,6 @@ Sve vrijednosti su u **jednom fajlu**: `{{PUTANJA_TOKENA}}` (npr. `src/shared/ui
 Ekrani se slažu samo od komponenti iz kataloga. Nova komponenta se prvo upiše ovdje.
 
 ## Principi
-- Mobitel prvo. Mora raditi na 360 px širine.
+- Ciljni uređaji i širine iz `docs/VIZIJA.md` (`## Gdje se koristi`): {{CILJNI_UREDJAJI_I_SIRINE}}. Ne nameći mobilni prikaz desktop aplikaciji (ni obrnuto); 360 px važi samo kad projekat podržava mobitel.
 - Pristupačnost: kontrast AA, fokus vidljiv, sve radi i tastaturom.
 - {{PRINCIP_SPECIFICAN_ZA_PROJEKAT}}

@@ -1,12 +1,13 @@
 # claude-plugins: pravila
 
-Lični marketplace `moji-pluginsi`. Plan razvoja (3 talasa) je u STATUS.md.
+Lični marketplace `moji-pluginsi` (pet pluginova). Stanje i sljedeći koraci su u STATUS.md.
 
 - Dokumenti i poruke su na bosanskom (ijekavica). Kod i identifikatori su na engleskom.
 - Hookovi su **Node skripte** (bez npm zavisnosti). Jedna ulazna skripta po pluginu prima sve događaje (npr. `guard.js`, da se Node pokrene samo jednom), a svako pravilo je svoj modul u `hooks/lib/`. Uz svako pravilo idu testovi (node:test).
 - Hookovi su **fail-open**: greška se upiše u `~/.claude/pravila.log` i izađe se sa 0. Jedini izuzetak su blokade tajni.
 - Hookovi moraju biti brzi (< 200 ms za UserPromptSubmit/PreToolUse) i ubacivati što manje teksta u kontekst.
-- Skillovi imaju `model:` u frontmatteru: haiku za rutinu, sonnet za commit/pregled, a bez `model:` (glavni model) samo za odluke.
+- Skillovi imaju `model:` u frontmatteru: haiku za rutinu, sonnet za commit/pregled, a bez `model:` (glavni model) samo za odluke (`arhitekta`, `kickstart`, `isplativost`). Agenti imaju svoj `model:` (opus za arhitekturu, sonnet za pregled). Test `test/skill-model.test.js` to čuva.
+- Svaka izmjena plugina (skill, hook, agent, PODSJETNIK) podiže njegovu verziju, pa `node test/plugin-hash.js --upisi` (`npm test` pada dok se to ne uradi). Inače instalirana kopija ostane stara pod istim brojem.
 - Šabloni projekta su u `plugins/project-kickstart/skills/kickstart/templates/`. Svaka izmjena šablona podiže `verzija_sablona` u kickstart SKILL.md i dobija stavku u CHANGELOG-SABLONA.md, pa `node test/sablon-hash.js --upisi` (`npm test` pada dok se to ne uradi).
 - Verzija plugina je u `plugin.json` i u `marketplace.json`. Test pazi da su iste.
 - `project-memory` nema `dependencies` na `project-guard` (tvrda zavisnost bi ugasila cijeli memory kad je guard isključen). Memory skill komandu iz guarda pominje samo uslovno, a test `test/bez-guarda.test.js` to čuva.

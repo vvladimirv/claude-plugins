@@ -136,3 +136,36 @@ test('brava važi i za `cd <repo> && git commit` iz sesije otvorene drugdje', ()
   assert.strictEqual(h.decision(d), 'deny');
   assert.match(d.hookSpecificOutput.permissionDecisionReason, /Brava/);
 });
+
+test('iza GitHuba, a bravu drži druga sesija: pisanje odbija brava, sync ne pokreće git', () => {
+  const { a, b } = withRemote();
+  run({ hook_event_name: 'SessionStart', cwd: a, session_id: 'S1' });
+  pushFromOther(b);
+  git(a, 'fetch', '-q');
+  const now = new Date().toISOString();
+  fs.writeFileSync(path.join(a, '.agent-lock.json'), JSON.stringify({ agent: 'claude', session_id: 'X', since: now, heartbeat: now }));
+  const cp = require('child_process');
+  const calls = [];
+  const orig = cp.execFileSync;
+  cp.execFileSync = function (file, args, ...rest) { calls.push([file, ...(args || [])].join(' ')); return orig.call(this, file, args, ...rest); };
+  try {
+    const d = write(a, 'S1');
+    assert.match(d.hookSpecificOutput.permissionDecisionReason, /Brava/);
+  } finally {
+    cp.execFileSync = orig;
+  }
+  assert.deepEqual(calls.filter((c) => c.startsWith('git ')), []);
+});
+
+test('grana bez upstreama sa commitovima kojih nema na origin: start sesije upozori jednom linijom', () => {
+  const { a } = withRemote();
+  git(a, 'switch', '-q', '-c', 'lokalna');
+  fs.writeFileSync(path.join(a, 'lokalno.txt'), 'x');
+  git(a, 'add', '-A');
+  git(a, 'commit', '-qm', 'samo ovdje');
+  const start = run({ hook_event_name: 'SessionStart', cwd: a, session_id: 'U1' });
+  assert.match(start.hookSpecificOutput.additionalContext, /Grana `lokalna` nema parnjaka na GitHubu, a ima 1 commit kojih nema na `origin`/);
+  git(a, 'push', '-q', 'origin', 'lokalna');
+  const again = run({ hook_event_name: 'SessionStart', cwd: a, session_id: 'U2' });
+  assert.doesNotMatch(again?.hookSpecificOutput?.additionalContext || '', /nema parnjaka/, 'commitovi su na origin (i bez upstreama)');
+});

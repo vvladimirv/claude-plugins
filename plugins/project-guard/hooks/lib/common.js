@@ -124,9 +124,10 @@ function limits(root) {
   };
 }
 
-function git(cwd, args) {
+// timeout: tokom rada (PreToolUse) kraći, da zaglavljen git ne koči svaku komandu.
+function git(cwd, args, timeout = 3000) {
   try {
-    return execFileSync('git', args, { cwd, encoding: 'utf8', timeout: 3000, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    return execFileSync('git', args, { cwd, encoding: 'utf8', timeout, windowsHide: true, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
   } catch {
     return '';
   }
@@ -159,8 +160,8 @@ function logError(where, err) {
 }
 
 // Spor hook (bez pokretanja Node-a) ide u isti log, da se vidi da li važi pravilo < 200 ms.
-function logSlow(where, ms) {
-  logError(`sporo/${where}`, `${ms} ms`);
+function logSlow(where, ms, parts = []) {
+  logError(`sporo/${where}`, `${ms} ms${parts.length ? ` (${parts.join(', ')})` : ''}`);
 }
 
 function dataDir() {
