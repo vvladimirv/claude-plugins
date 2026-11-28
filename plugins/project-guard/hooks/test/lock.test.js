@@ -114,3 +114,17 @@ test('brava: bez gita nema brave, a pauza je isključuje', () => {
     h.pause(false);
   }
 });
+
+test('brava: /zdravlje (zdravlje-cli.js) prolazi pod tuđom bravom, pisanje i dalje ne', () => {
+  const root = h.project({ git: true, marker: true });
+  assert.strictEqual(run(h.pre(root, 'Write', { file_path: path.join(root, 'a.js'), content: 'x' }, 'A')), null);
+  const cli = 'C:\\Users\\x\\.claude\\plugins\\cache\\moji-pluginsi\\project-guard\\0.11.1\\hooks\\zdravlje-cli.js';
+  for (const c of [`node "${cli}" --root "${root}"`, `node ${cli.replace(/\\/g, '/')} --root ${root}`, `node "${cli}"`]) {
+    assert.strictEqual(run(h.pre(root, 'Bash', { command: c }, 'B')), null, c);
+    assert.strictEqual(run(h.pre(root, 'PowerShell', { command: c }, 'B')), null, c);
+  }
+  for (const c of [`node "${cli}" --root "${root}" > izvjestaj.txt`, `node "${cli}" --root "${root}"; git commit -am x`,
+    'node C:/x/hooks/zdravlje-cli.jsx', 'node C:/x/hooks/zdravlje.js', 'git commit -am x']) {
+    assert.strictEqual(h.decision(run(h.pre(root, 'Bash', { command: c }, 'B'))), 'deny', c);
+  }
+});
