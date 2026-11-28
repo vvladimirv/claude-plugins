@@ -1,4 +1,4 @@
-export type Dugme = { key: string; label: string; text: string }
+export type Dugme = { key: string; label: string; text: string; opis?: string }
 
 export type StatusDijelovi = { radi: string[]; sljedece: string[]; blokeri: string[] }
 

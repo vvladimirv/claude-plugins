@@ -4,7 +4,16 @@
 import type { EngineInterface } from 'claude-code'
 
 import type { PRovi, Stanje } from '../types'
-import { imeFoldera, izaberiDugmad, komandePodsjetnika, projekti, roditelj, statusDijelovi } from './citaj'
+import {
+  imeFoldera,
+  izaberiDugmad,
+  komandePodsjetnika,
+  opisFrontmattera,
+  opisiPodsjetnika,
+  projekti,
+  roditelj,
+  statusDijelovi,
+} from './citaj'
 
 const PODSJETNIK = 'skills/pomoc/PODSJETNIK.md'
 const LICNI_SLOJ = 'C:/dev/claude-licno/projekti.md'
@@ -103,6 +112,19 @@ export async function ucitaj($: EngineInterface): Promise<Stanje> {
   const komande = await imena($, u('.claude/commands'), 'md')
   const agenti = await imena($, u('.claude/agents'), 'md')
 
+  // Kratki opisi uz dugmad: PODSJETNIK (kolona „Kad“), pa description vlastitih komandi projekta.
+  const opisi: Record<string, string> = podsjetnikMd === null ? {} : opisiPodsjetnika(podsjetnikMd)
+  const opisIz = async (ime: string, putanja: string) => {
+    const t = await procitaj($, u(putanja))
+    const o = t === null ? '' : opisFrontmattera(t)
+    if (o !== '') opisi[ime] = o
+  }
+  await Promise.all([
+    ...skillovi.map(s => opisIz(s, `.claude/skills/${s}/SKILL.md`)),
+    ...komande.map(k => opisIz(k, `.claude/commands/${k}.md`)),
+    ...agenti.map(a => opisIz(`agent-${a}`, `.claude/agents/${a}.md`)),
+  ])
+
   const dugmad = izaberiDugmad({
     podsjetnik: podsjetnikMd === null ? null : komandePodsjetnika(podsjetnikMd),
     git: g.gitGreska === '',
@@ -112,6 +134,7 @@ export async function ucitaj($: EngineInterface): Promise<Stanje> {
     web,
     lab,
     vlastiteKomande: [...new Set([...skillovi, ...komande])],
+    opisi,
     agenti,
   })
   if (web && !igra && !lab) {

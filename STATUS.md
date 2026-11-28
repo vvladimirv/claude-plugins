@@ -3,7 +3,7 @@
 **Ažurirano:** 2026-11-28 · Faza 3: usklađivanje pluginova i lični sloj (`claude-licno`)
 
 ## Radi
-- Šest pluginova: guard 0.12.4, kickstart 0.7.3, memory 0.9.0, quality 0.2.3, market 0.1.1, radni-stol 0.1.1; šabloni 0.5.2. Detalji: README i docs/UNIVERZALNI-PLUGINI.md.
+- Šest pluginova: guard 0.12.4, kickstart 0.7.3, memory 0.9.0, quality 0.2.3, market 0.1.1, radni-stol 0.1.2; šabloni 0.5.2. Detalji: README i docs/UNIVERZALNI-PLUGINI.md.
 - `project-guard`: tajne, kapija, brava (prepoznaje komande za čitanje: git, diff, petlje, PowerShell), sinhronizacija (i grana bez upstreama sa commitovima kojih nema na GitHubu), lični sloj (pull `claude-licno` i `claude-plugins`, poruka kad treba setup), obim, zavisnosti = ADR, Godot, limit fajlova, `/grane`, `/zdravlje` (šest pluginova + lični sloj), jedno upozorenje prije `claude --cloud` bez GitHub remotea ili sa necommitovanim izmjenama
 - `project-memory`: STATUS u kontekstu (≤ 30 linija, isto pravilo kao `/stanje`), napredak, pomoćne sesije, `/kraj-sesije` (ff-only, push po pravilu projekta, linija „Zadnja sesija“ u STATUS-u, pitanje za lekciju u `claude-licno/znanje/`), `/stanje`, `/vrati`, `/objavi`, `/izdanje`, `/docs-audit`
 - `project-kickstart`: `/kickstart` (`--lagano`, `--postojeci`, `--nadogradi`), `/nova-funkcija`, `/ui-izmjena` (maketa kroz `/mockup-izgleda` kad postoji), `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`

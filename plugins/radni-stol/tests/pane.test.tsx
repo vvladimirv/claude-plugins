@@ -1,6 +1,14 @@
 import { expect, test } from 'claude-code/testing'
 
-import { izaberiDugmad, komandePodsjetnika, projekti, statusDijelovi } from '../hooks/citaj'
+import {
+  izaberiDugmad,
+  komandePodsjetnika,
+  kratko,
+  opisFrontmattera,
+  opisiPodsjetnika,
+  projekti,
+  statusDijelovi,
+} from '../hooks/citaj'
 
 const PANE = {
   plugin: 'radni-stol',
@@ -83,6 +91,8 @@ function svijet(on: any, o: Svijet = {}) {
   on('fs.read', (_: any, e: any) => {
     if (o.status !== undefined && uProjektu(e.path) === 'STATUS.md') return { value: o.status }
     if (/PODSJETNIK\.md$/.test(e.path)) return { value: PODSJETNIK }
+    if (uProjektu(e.path) === '.claude/commands/zapisi.md')
+      return { value: '---\ndescription: Upiši završenu izmjenu u dnevnik projekta\n---\n\nTekst.' }
     if (kraj(e.path, 'claude-licno/projekti.md')) return { value: PROJEKTI }
     return { deny: 'nema fajla' }
   })
@@ -131,6 +141,17 @@ test('čitanje: STATUS dijelovi, komande podsjetnika i projekti.md', async () =>
   expect(p[1]?.stanje).toBe('v2 gotov')
 })
 
+test('opisi: kolona Kad iz PODSJETNIKA, description iz frontmattera, skraćivanje', async () => {
+  const o = opisiPodsjetnika(PODSJETNIK)
+  expect(o['kraj-sesije']).toBe('Kraj')
+  expect(o['stanje']).toBe('Igra')
+  expect(opisFrontmattera('---\ndescription: "Kratko"\nmodel: haiku\n---\nx')).toBe('Kratko')
+  expect(opisFrontmattera('bez frontmattera')).toBe('')
+  const k = kratko('Ideja za aplikaciju: ima li kupaca i isplati li se (prije kickstarta)')
+  expect(k.length <= 40).toBe(true)
+  expect(k.endsWith('…')).toBe(true)
+})
+
 test('izbor dugmadi: bez-kickstarta, igra, vlastite komande i Više', async () => {
   const baza = {
     podsjetnik: komandePodsjetnika(PODSJETNIK),
@@ -142,6 +163,7 @@ test('izbor dugmadi: bez-kickstarta, igra, vlastite komande i Više', async () =
     lab: false,
     vlastiteKomande: [],
     agenti: [],
+    opisi: {},
   }
   const obicno = izaberiDugmad(baza)
   expect(obicno.glavna.map(d => d.key)).toEqual(['nastavi', 'kraj', 'napredak', 'ideja', 'grane', 'vrati', 'pomoc', 'botovi'])
@@ -178,6 +200,8 @@ test('panel: gdje sam stao, PR-ovi, dugme samo upiše tekst', async ($, on) => {
   }
 
   const ui = await $.ui.mount({ ...PANE, surface: 'desktop' })
+  expect((await ui.find({ type: 'Text', text: /^testovi, STATUS/ }))?.text).toBe('testovi, STATUS, commit, push')
+  expect((await ui.find({ type: 'Text', text: /^Upiši završenu/ }))?.text).toBe('Upiši završenu izmjenu u dnevnik…')
   await ui.press({ key: 'kraj' })
   expect(upisano.at(-1)).toBe('/kraj-sesije')
   await ui.press({ key: 'botovi' })
@@ -189,6 +213,7 @@ test('panel: gdje sam stao, PR-ovi, dugme samo upiše tekst', async ($, on) => {
 
   expect(await ui.find({ key: 'v-stanje' })).toBeUndefined()
   await ui.press({ key: 'vise' })
+  expect((await ui.find({ type: 'Text', text: /^Igra$/ }))?.text).toBe('Igra')
   await ui.press({ key: 'v-stanje' })
   expect(upisano.at(-1)).toBe('/stanje ')
   // Treće projektno dugme (Lab) ide pod Više.
