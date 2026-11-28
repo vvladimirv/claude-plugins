@@ -9,7 +9,7 @@ import { ucitaj, ucitajPR } from './ucitaj'
 
 const PANE = 'radni-stol'
 const NASLOV = 'Radni stol'
-const stanje = atom({ plugin: 'radni-stol', key: 'stanje' } as const, null, { shape: 'stanje-2' })
+const stanje = atom({ plugin: 'radni-stol', key: 'stanje' } as const, null, { shape: 'stanje-3' })
 const prs = atom({ plugin: 'radni-stol', key: 'prs' } as const, null, { shape: 'prs-1' })
 const prikaz = atom({ plugin: 'radni-stol', key: 'prikaz' } as const, { vise: false, projekti: false } as Prikaz, {
   shape: 'prikaz-1',
@@ -54,6 +54,19 @@ export const register: Register = on => {
     if (!s) return <Text dimColor>Učitavam…</Text>
 
     const upisi = (d: Dugme) => () => $.prompt.fill({ text: d.text })
+    // Dugme i blijed opis u istom redu; opis se pojača dok je miš na dugmetu ili opisu (isti scope).
+    const dugme = (d: Dugme, variant?: 'secondary', dim = false) => (
+      <Box key={`r-${d.key}`} flexDirection="row" gap={1}>
+        <Button key={d.key} variant={variant} dimColor={dim} hover={{ scope: d.key }} onPress={upisi(d)}>
+          {d.label}
+        </Button>
+        {d.opis !== undefined && (
+          <Text key={`o-${d.key}`} dimColor wrap="truncate-end" hover={{ scope: d.key, dimColor: false }}>
+            {d.opis}
+          </Text>
+        )}
+      </Box>
+    )
     const red = (l: string, k: string) => (
       <Text key={k} wrap="wrap">
         {l}
@@ -102,36 +115,16 @@ export const register: Register = on => {
         <Box flexDirection="column" gap={1}>
           <Text bold>Komande</Text>
           <Text dimColor>Dugme samo upiše uputu u polje; pošalješ ti.</Text>
-          <Box flexDirection="row" flexWrap="wrap" gap={1}>
-            {s.dugmad.glavna.map(d => (
-              <Button key={d.key} onPress={upisi(d)}>
-                {d.label}
-              </Button>
-            ))}
-          </Box>
+          <Box flexDirection="column">{s.dugmad.glavna.map(d => dugme(d))}</Box>
           {s.dugmad.projekat.length > 0 && (
-            <Box flexDirection="row" flexWrap="wrap" gap={1}>
-              {s.dugmad.projekat.map(d => (
-                <Button key={d.key} variant="secondary" onPress={upisi(d)}>
-                  {d.label}
-                </Button>
-              ))}
-            </Box>
+            <Box flexDirection="column">{s.dugmad.projekat.map(d => dugme(d, 'secondary'))}</Box>
           )}
           {s.dugmad.vise.length > 0 && (
             <Button key="vise" plain dimColor onPress={prebaci('vise')}>
               {v.vise ? '▾ Manje' : `▸ Više (${s.dugmad.vise.length})`}
             </Button>
           )}
-          {v.vise && (
-            <Box flexDirection="row" flexWrap="wrap" gap={1}>
-              {s.dugmad.vise.map(d => (
-                <Button key={d.key} dimColor onPress={upisi(d)}>
-                  {d.label}
-                </Button>
-              ))}
-            </Box>
-          )}
+          {v.vise && <Box flexDirection="column">{s.dugmad.vise.map(d => dugme(d, 'secondary', true))}</Box>}
           {s.napomene.map((n, i) => (
             <Text key={`n${i}`} dimColor wrap="wrap">
               {n}
