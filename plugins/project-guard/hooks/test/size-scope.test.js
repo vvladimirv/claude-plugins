@@ -151,6 +151,27 @@ test('Godot: Color(...) van tokens.gd dobija upozorenje, token, ime boje, koment
   assert.strictEqual(ctx('game/test/test_btn.gd', 'assert_eq(c, Color(1, 0, 0))\n'), undefined);
 });
 
+test('Godot: crna/bijela sa alfom, boja iz postojeće, paleta i alati ne dobijaju upozorenje', () => {
+  const root = h.project({ marker: true, files: { 'docs/DIZAJN-SISTEM.md': '# DS' } });
+  const ctx = (rel, content) => post(root, 'Write', { file_path: path.join(root, rel), content })?.hookSpecificOutput.additionalContext;
+  const quiet = [
+    'box.bg_color = Color(0, 0, 0, 0)',
+    'draw_circle(c, r, Color(1, 1, 1, 0.6 * (1.0 - k)))',
+    'draw_circle(c, r, Color(1.0, 1.0, 1.0, 0.32))',
+    'var s = Color8(255, 255, 255, 40)',
+    'ci.draw_texture_rect_region(t, r, src, Color(1, 1, 1, alpha))',
+    'return Color.from_hsv(color.h, s, v, 1.0)',
+    'img.set_pixel(x, y, Color.from_hsv(float(x) / SIZE, 0.8, 1.0))',
+  ];
+  for (const l of quiet) assert.strictEqual(ctx('game/ui/btn.gd', l + '\n'), undefined, l);
+  assert.strictEqual(ctx('game/shared/picture/ball_colors.gd', 'const A = [Color("#ff4d6d")]\n'), undefined);
+  assert.strictEqual(ctx('game/tools/make_fixtures.gd', 'var c := Color(0.45, 0.7, 0.95)\n'), undefined);
+  assert.match(ctx('game/ui/mascot.gd', 'draw_circle(o, 4.0, Color(0.6, 0.85, 1.0, 0.9))\n'), /tokens\.gd/);
+  assert.match(ctx('game/ui/probe.gd', 'var c := [Color(0, 0, 0, 0), Color("#e8584a")]\n'), /tokens\.gd/, 'druga boja u redu se i dalje vidi');
+  assert.match(ctx('game/ui/btn.gd', 'var c = Color(0.5, 0.5, 0.5)\n'), /tokens\.gd/, 'siva nije neutralna iznimka');
+  assert.match(ctx('game/ui/color_goals.gd', 'var c = Color.from_hsv(0.3, 0.8, 1.0)\n'), /tokens\.gd/);
+});
+
 test('Godot: bez docs/DIZAJN-SISTEM.md nema upozorenja na boju', () => {
   const root = h.project({ marker: true });
   assert.strictEqual(post(root, 'Write', { file_path: path.join(root, 'game/a.gd'), content: 'var c = Color(1, 0, 0)\n' }), null);

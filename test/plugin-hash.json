@@ -1,7 +1,7 @@
 {
   "project-guard": {
-    "verzija": "0.12.1",
-    "hash": "04b2f46fbb5d5a92"
+    "verzija": "0.12.2",
+    "hash": "1b58e570c4c457e1"
   },
   "project-kickstart": {
     "verzija": "0.7.2",
@@ -16,7 +16,7 @@
     "hash": "eabe28f31c0589ac"
   },
   "project-quality": {
-    "verzija": "0.2.2",
-    "hash": "9fe633fe77c16098"
+    "verzija": "0.2.3",
+    "hash": "80559adb093f2eb8"
   }
 }

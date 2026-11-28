@@ -24,14 +24,14 @@
     {
       "name": "project-guard",
       "description": "Pravila koja mašina provjerava: tajne, kapija kickstarta, brava sesija, limit fajlova, čuvar obima, zavisnosti = ADR, mapa grana (/grane, /zdravlje, /pravila-pauza, /preuzmi-lock, /novi-projekat, /ideja, /codex-worktree, /pravilo-u-hook)",
-      "version": "0.12.1",
+      "version": "0.12.2",
       "source": "./plugins/project-guard",
       "category": "development"
     },
     {
       "name": "project-quality",
       "description": "Dubinske provjere kvaliteta za bilo koji stack: invarijante na hiljadama slučajnih primjera, mutacije testova, simulacija više perioda, statička analiza (/dubinska-provjera), snimci ekrana po ulogama i širinama s pristupačnošću (/provjera-izgleda) HTML mockupi varijanti izgleda (/mockup-izgleda) i balans igre botom i testerima (/balans)",
-      "version": "0.2.2",
+      "version": "0.2.3",
       "source": "./plugins/project-quality",
       "category": "development"
     },
