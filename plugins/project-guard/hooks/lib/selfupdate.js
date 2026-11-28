@@ -1,7 +1,8 @@
 // Cloud sesija: pluginovi su git klon iz setup skripte okruženja (CLAUDE_CODE_PLUGIN_DIRS), a okruženje svakoj
 // novoj sesiji daje snimak napravljen poslije setup skripte, pa klon zastari. Na startu sesije klon se povuče
 // sa GitHuba: samo fast-forward i samo čist klon, pa se ništa ne može izgubiti. Lokalno (van clouda) ne radi ništa:
-// tu verzije donosi auto-update marketplacea, a klon u CLAUDE_CODE_PLUGIN_DIRS je obično razvojni repo.
+// tamo je izvor lokalni folder (`claude-plugins`), koji povlači personal.js, a instalaciju osvježava
+// `node scripts/setup.js --apply`; klon u CLAUDE_CODE_PLUGIN_DIRS je obično razvojni repo.
 
 const fs = require('fs');
 const path = require('path');

@@ -17,6 +17,7 @@ const branches = require('./lib/branches');
 const portable = require('./lib/portable');
 const checks = require('../scripts/checks');
 const selfupdate = require('./lib/selfupdate');
+const personal = require('./lib/personal');
 
 function safe(name, fn, fallback = null) {
   const t = Date.now();
@@ -66,6 +67,7 @@ function sessionStart(input, root) {
   safe('prune', () => common.pruneState());
   const parts = [
     safe('selfupdate', () => selfupdate.sessionMessage(input)),
+    safe('personal', () => personal.sessionMessage(input)),
     safe('location', () => session.locationMessage(root)),
     common.isPaused() ? '## Pravila\nBlokirajuća pravila su pauzirana (`/pravila-pauza`). Zaštita tajni radi.' : null,
     safe('gate', () => gate.sessionMessage(root)),

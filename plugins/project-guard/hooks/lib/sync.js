@@ -201,6 +201,19 @@ function fastForward(root, sid, now) {
   }
 }
 
+// Grana bez parnjaka na GitHubu, a sa commitovima kojih nema ni na jednoj grani `origin`: drugi računar ih ne vidi,
+// pa se dvije historije raziđu (slučaj Oblak-ideja). Samo na startu sesije, jednom linijom.
+function unpublishedMessage(root) {
+  if (readUpstream(root) !== undefined || git(root, ['rev-parse', '--abbrev-ref', '@{u}'])) return null;
+  if (!git(root, ['remote']).split(/\s+/).includes('origin')) return null;
+  const branch = git(root, ['rev-parse', '--abbrev-ref', 'HEAD']);
+  if (!branch || branch === 'HEAD') return null;
+  const n = Number(git(root, ['rev-list', '--count', 'HEAD', '--not', '--remotes=origin'])) || 0;
+  if (!n) return null;
+  return `## Sinhronizacija\n⚠️ Grana \`${branch}\` nema parnjaka na GitHubu, a ima ${n} ${n === 1 ? 'commit' : 'commita'} kojih nema na \`origin\`. `
+    + `Drugi računar i cloud ih ne vide. Kad su testovi zeleni: \`git push -u origin ${branch}\`. Korisniku to reci jednom rečenicom.`;
+}
+
 // SessionStart: zapamti HEAD; repo iza GitHuba povuci ako je čist, inače odmah reci.
 function sessionMessage(input, root, now = Date.now()) {
   if (!isGitRepo(root)) return null;
@@ -216,6 +229,8 @@ function sessionMessage(input, root, now = Date.now()) {
       + `\`git log --oneline -${Math.min(n, 10)}\`. Korisniku reci jednom rečenicom da je projekat osvježen.`;
   } else if (s.behind > 0) {
     msg = '## Sinhronizacija\n' + behindMsg(root, s.behind);
+  } else {
+    msg = unpublishedMessage(root);
   }
   s.head = readHead(root);
   save(sid, root, s);

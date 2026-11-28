@@ -156,3 +156,16 @@ test('iza GitHuba, a bravu drži druga sesija: pisanje odbija brava, sync ne pok
   }
   assert.deepEqual(calls.filter((c) => c.startsWith('git ')), []);
 });
+
+test('grana bez upstreama sa commitovima kojih nema na origin: start sesije upozori jednom linijom', () => {
+  const { a } = withRemote();
+  git(a, 'switch', '-q', '-c', 'lokalna');
+  fs.writeFileSync(path.join(a, 'lokalno.txt'), 'x');
+  git(a, 'add', '-A');
+  git(a, 'commit', '-qm', 'samo ovdje');
+  const start = run({ hook_event_name: 'SessionStart', cwd: a, session_id: 'U1' });
+  assert.match(start.hookSpecificOutput.additionalContext, /Grana `lokalna` nema parnjaka na GitHubu, a ima 1 commit kojih nema na `origin`/);
+  git(a, 'push', '-q', 'origin', 'lokalna');
+  const again = run({ hook_event_name: 'SessionStart', cwd: a, session_id: 'U2' });
+  assert.doesNotMatch(again?.hookSpecificOutput?.additionalContext || '', /nema parnjaka/, 'commitovi su na origin (i bez upstreama)');
+});
