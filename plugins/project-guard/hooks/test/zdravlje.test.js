@@ -50,7 +50,7 @@ test('zdravlje: lokalni izvor ne traži GitHub auto-update', () => {
   } finally { fs.rmSync(file); }
 });
 
-test('zdravlje: svih pet pluginova i lični sloj (CLAUDE.md uvoz, claude-licno prema GitHubu)', () => {
+test('zdravlje: svih šest pluginova i lični sloj (CLAUDE.md uvoz, claude-licno prema GitHubu)', () => {
   const { execFileSync } = require('child_process');
   const plugDir = path.join(h.HOME, 'plugins');
   fs.mkdirSync(plugDir, { recursive: true });

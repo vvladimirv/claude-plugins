@@ -1,11 +1,11 @@
 {
   "project-guard": {
-    "verzija": "0.12.3",
-    "hash": "e2d40d77c5641539"
+    "verzija": "0.12.4",
+    "hash": "15681c4b1bd69468"
   },
   "project-kickstart": {
-    "verzija": "0.7.2",
-    "hash": "7a5a8aaaf23a06b0"
+    "verzija": "0.7.3",
+    "hash": "7ceed243b91a0ce1"
   },
   "project-market": {
     "verzija": "0.1.1",
@@ -18,5 +18,9 @@
   "project-quality": {
     "verzija": "0.2.3",
     "hash": "80559adb093f2eb8"
+  },
+  "radni-stol": {
+    "verzija": "0.1.1",
+    "hash": "c806b820c9d44c5a"
   }
 }

@@ -29,3 +29,7 @@ jobs:
 
       - name: claude plugin validate
         run: claude plugin validate .
+
+      # Testovi panela radni-stol (hooks modul, ne node:test).
+      - name: claude plugin test radni-stol
+        run: claude plugin test plugins/radni-stol

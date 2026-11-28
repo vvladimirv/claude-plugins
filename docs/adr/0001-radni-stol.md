@@ -45,8 +45,10 @@ pored chata, u svakom projektu.
 - Kad nešto ne može pročitati (nema STATUS.md, nije git repo, nema `gh`), kaže to u jednoj
   rečenici umjesto praznog panela.
 
-Dugme „Testiraj ovu aplikaciju kroz Lab“ dolazi tek kad Lab plugin bude u marketplaceu (poslije
-Lab M2); do tada panel kaže zašto još ne ide.
+Dugme „Testiraj Labom“ postoji od prve verzije (izmjena 2026-11-28, odluka vlasnika): samo u web
+projektima i samo kad na računaru postoji Lab (`kampanja/SKILL.md`), jer Lab već radi iz svakog
+projekta preko putanje (PODSJETNIK). Dugme samo upiše „testiraj ovu aplikaciju Labom“; procjenu
+troška i „da“ i dalje traži Claude u chatu.
 
 ## Razmotrene alternative
 | Opcija | Zašto ne |

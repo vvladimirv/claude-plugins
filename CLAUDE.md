@@ -1,6 +1,6 @@
 # claude-plugins: pravila
 
-Lični marketplace `moji-pluginsi` (pet pluginova). Stanje i sljedeći koraci su u STATUS.md.
+Lični marketplace `moji-pluginsi` (šest pluginova). Stanje i sljedeći koraci su u STATUS.md.
 
 - Dokumenti i poruke su na bosanskom (ijekavica). Kod i identifikatori su na engleskom.
 - Hookovi su **Node skripte** (bez npm zavisnosti). Jedna ulazna skripta po pluginu prima sve događaje (npr. `guard.js`, da se Node pokrene samo jednom), a svako pravilo je svoj modul u `hooks/lib/`. Uz svako pravilo idu testovi (node:test).
