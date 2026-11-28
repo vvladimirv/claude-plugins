@@ -1,6 +1,6 @@
 ---
 name: codex-worktree
-description: "Poseban worktree i grana za Codex ili drugi chat; \"spoji <zadatak>\" vraća gotov rad preko PR-a (ili lokalnog merge-a) u granu iz koje je nastao."
+description: "Poseban worktree i grana za Codex ili drugi chat; \"spoji\" sa imenom zadatka vraća gotov rad preko PR-a (ili lokalnog merge-a) u granu iz koje je nastao."
 argument-hint: "<zadatak> | spoji <zadatak>"
 model: haiku
 allowed-tools: [Bash, Read, AskUserQuestion]
