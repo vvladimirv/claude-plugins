@@ -8,7 +8,7 @@ const { CLAUDE_HOME, kickstartRoots, isPaused, git, readJson } = require('./lib/
 const personal = require('./lib/personal');
 
 const DAY = 86400000;
-const PLUGINS = ['project-guard', 'project-memory', 'project-kickstart', 'project-quality', 'project-market'];
+const PLUGINS = ['project-guard', 'project-memory', 'project-kickstart', 'project-quality', 'project-market', 'radni-stol'];
 const MARKET = 'moji-pluginsi';
 const ENTRY = /^(\d{4}-\d{2}-\d{2}T[\d:.]+Z) (.+?): (.*)$/;
 
@@ -20,7 +20,7 @@ function tool(cmd, args) {
   }
 }
 
-// Svih pet pluginova: instaliran i uključen, sa verzijom.
+// Svih šest pluginova: instaliran i uključen, sa verzijom.
 function pluginLines(settings, ok, warn) {
   const installed = readJson(path.join(CLAUDE_HOME, 'plugins', 'installed_plugins.json'), { plugins: {} }).plugins || {};
   const enabled = settings.enabledPlugins || {};

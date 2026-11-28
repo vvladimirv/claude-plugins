@@ -1,6 +1,6 @@
 # Zajednički sistem za Claude Code i Codex
 
-Izvor je ovaj repozitorij. Pet pluginova su odvojeni paketi; svaki radi bez npm zavisnosti.
+Izvor je ovaj repozitorij. Šest pluginova su odvojeni paketi; svaki radi bez npm zavisnosti.
 Claude čita `.claude-plugin`, Codex portable `plugin.json` i `.agents/plugins/marketplace.json` uz kompatibilni `.codex-plugin` manifest.
 `node scripts/package-plugins.js` generiše Codex metapodatke iz Claude manifesta. Test čuva jednake verzije.
 Instalacijski cache nije mjesto za ručne popravke. Izmjena ide u izvor, pa test, verzija i setup.

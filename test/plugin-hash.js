@@ -1,7 +1,7 @@
 // Otisak svakog plugina: izmjena skilla, hooka, agenta ili PODSJETNIKA mora podići verziju plugina (CLAUDE.md).
 // Bez toga `claude plugin update` ne vidi novu verziju, pa instalirana kopija ostane stara pod istim brojem.
 // `node test/plugin-hash.js --upisi` zapiše nove otiske, ali samo za pluginove kojima je verzija podignuta.
-// Testovi plugina (`test/`, `*.test.js`) ne ulaze u otisak: ne mijenjaju ono što se instalira.
+// Testovi plugina (`test/`, `tests/`, `*.test.js`, `*.test.tsx`) ne ulaze u otisak: ne mijenjaju ono što se instalira.
 
 const crypto = require('crypto');
 const fs = require('fs');
@@ -10,7 +10,7 @@ const { execFileSync } = require('child_process');
 
 const PLUGINS = path.join(__dirname, '..', 'plugins');
 const RECORD = path.join(__dirname, 'plugin-hash.json');
-const TEST_FILE = /(^|\/)test\/|\.test\.js$/;
+const TEST_FILE = /(^|\/)tests?\/|\.test\.(js|tsx?)$/;
 
 // Fajlovi koje git prati ili bi pratio (bez ignorisanih), da otisak bude isti na svakom računaru i u CI-ju.
 function files(dir) {
