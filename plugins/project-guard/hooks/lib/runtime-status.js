@@ -11,7 +11,7 @@ function record(input, output) {
     note: output?.systemMessage ? 'Hook je vratio poruku; provjerite log.' : null }));
 }
 function inspect(home, now = Date.now()) {
-  return ['claude', 'codex'].map(runtime => {
+  return ['claude'].map(runtime => {
     const item = common.readJson(path.join(home, 'runtime-status', runtime + '.json'), null);
     return { runtime, observed: Boolean(item), fresh: Boolean(item && now - Date.parse(item.at) < 7 * 86400000),
       version: item?.version, at: item?.at };

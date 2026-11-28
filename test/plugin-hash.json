@@ -1,22 +1,22 @@
 {
   "project-guard": {
-    "verzija": "0.10.0",
-    "hash": "b388f068b5a22d99"
+    "verzija": "0.11.0",
+    "hash": "9d17bd5afea5710f"
   },
   "project-kickstart": {
-    "verzija": "0.6.0",
-    "hash": "6e90c80eda08b1c5"
+    "verzija": "0.7.0",
+    "hash": "3336c4d9b7b178d9"
   },
   "project-market": {
-    "verzija": "0.1.0",
-    "hash": "047ee42faf8e82b9"
+    "verzija": "0.1.1",
+    "hash": "857f85c0c1d714a2"
   },
   "project-memory": {
-    "verzija": "0.7.0",
-    "hash": "84723870bc0c94b4"
+    "verzija": "0.8.0",
+    "hash": "8cb181323decef7a"
   },
   "project-quality": {
-    "verzija": "0.2.1",
-    "hash": "abbca39871c148a8"
+    "verzija": "0.2.2",
+    "hash": "9fe633fe77c16098"
   }
 }

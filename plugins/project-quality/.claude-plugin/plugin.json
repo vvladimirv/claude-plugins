@@ -1,6 +1,6 @@
 {
   "name": "project-quality",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Dubinske provjere kvaliteta za bilo koji stack: invarijante na hiljadama slučajnih primjera, mutacije testova, simulacija više perioda, statička analiza (/dubinska-provjera), snimci ekrana po ulogama i širinama s pristupačnošću (/provjera-izgleda) HTML mockupi varijanti izgleda (/mockup-izgleda) i balans igre botom i testerima (/balans)",
   "author": {
     "name": "vvladimirv",

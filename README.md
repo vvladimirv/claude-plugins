@@ -1,6 +1,6 @@
 # moji-pluginsi
 
-Lični plugini za Claude Code i Codex za ispravan start i vođenje projekata.
+Lični plugini za Claude Code za ispravan start i vođenje projekata.
 
 | Plugin | Šta daje |
 |---|---|
@@ -12,9 +12,9 @@ Lični plugini za Claude Code i Codex za ispravan start i vođenje projekata.
 
 Svakodnevni podsjetnik (šta je automatski, a šta radiš ti): [PODSJETNIK.md](plugins/project-kickstart/skills/pomoc/PODSJETNIK.md). U Claude Codeu ga prikazuje `/pomoc`.
 
-## Zajednička instalacija za Claude Code i Codex
+## Instalacija
 
-Izvor je jedan repozitorij za sve projekte. Potrebni su Node.js 18+ za hookove, git i CLI izabranog alata;
+Izvor je jedan repozitorij za sve projekte. Potrebni su Node.js 18+ za hookove, git i Claude Code CLI;
 razvojni testovi koriste Node.js 24. Projektna pravila ostaju u projektima.
 
 ```powershell
@@ -22,10 +22,9 @@ node scripts/setup.js
 node scripts/setup.js --apply
 ```
 
-Prva komanda samo prikazuje plan. Druga osvježava korisničke instalacije oba alata iz ovog lokalnog foldera
-kroz njihove CLI-jeve. `--claude` ili `--codex` ograničava instalaciju. Codex profili se ažuriraju uz backup.
-Setup registruje Codex hookove u korisnički `hooks.json`, bez duplog učitavanja iz paketa i bez mijenjanja povjerenja.
-Nakon ažuriranja otvori novi chat; u Codexu pregledaj nove ili promijenjene hookove kroz `/hooks`.
+Prva komanda samo prikazuje plan. Druga osvježava korisničku Claude instalaciju iz ovog lokalnog foldera
+kroz `claude` CLI (`--claude` se prihvata, ali više nije potreban). Nakon ažuriranja otvori novi chat.
+Codex dio (manifesti, hookovi, profili agenata) uklonjen je 2026-11-28; vraća se iz git historije ako zatreba.
 Projektne instalacije se ne brišu: postojeći pokazivači na isti izvor usklađuju se uz backup konfiguracije.
 Posebni projektni izvori i aktivne brave ostaju netaknuti. Povjerenje hookova se ne odobrava automatski.
 
@@ -76,11 +75,10 @@ Sesije za bilo koji projekat pokreći u tom okruženju. Provjera u sesiji: `clau
 
 ```powershell
 npm test
-node scripts/package-plugins.js
 claude plugin validate .
 ```
 
-- Claude manifesti su izvor verzija; paketiranje generiše Codex manifeste i katalog.
+- Verzija plugina je u `.claude-plugin/plugin.json` i u `.claude-plugin/marketplace.json`.
 - Poslije izmjene šablona podigni verziju šablona, upiši changelog i pokreni `node test/sablon-hash.js --upisi`.
 - Testovi koriste privremene projekte. Na GitHubu na svaki push i pull request `plugins.yml` pokreće testove na Windowsu i Linuxu, a `ci.yml` testove i `claude plugin validate .` na Linuxu.
 - `.agent-checks.json` definiše obavezne provjere. Stage namjeravanih fajlova, zatim `npm run check`, pa commit.

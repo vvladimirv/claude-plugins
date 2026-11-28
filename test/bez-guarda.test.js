@@ -42,7 +42,7 @@ test('bez-guarda: memory hookovi ne učitavaju fajlove guarda', () => {
 });
 
 test('bez-guarda: memory manifesti nemaju dependencies', () => {
-  for (const m of ['.claude-plugin/plugin.json', '.codex-plugin/plugin.json', 'plugin.json']) {
+  for (const m of ['.claude-plugin/plugin.json']) {
     const json = JSON.parse(fs.readFileSync(path.join(MEMORY, m), 'utf8'));
     assert.strictEqual(json.dependencies, undefined, `${m}: tvrda zavisnost gasi memory kad je guard isključen`);
   }
