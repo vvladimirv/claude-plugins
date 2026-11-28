@@ -7,6 +7,7 @@ import type { PRovi, Stanje } from '../types'
 import {
   imeFoldera,
   izaberiDugmad,
+  jeWeb,
   komandePodsjetnika,
   opisFrontmattera,
   opisiPodsjetnika,
@@ -101,12 +102,15 @@ export async function ucitaj($: EngineInterface): Promise<Stanje> {
   const podsjetnikMd = await nadjiPodsjetnik($)
   if (podsjetnikMd === null) napomene.push('PODSJETNIK.md nije nađen, pa su prikazana samo osnovna dugmad.')
 
-  const [blueprint = false, bezKickstarta = false, igra = false, ...webFajlovi] = await Promise.all(
-    ['docs/BLUEPRINT.md', '.claude/bez-kickstarta', 'project.godot', 'package.json', 'requirements.txt', 'pyproject.toml'].map(
+  const [blueprint = false, bezKickstarta = false, igra = false, indexHtml = false] = await Promise.all(
+    ['docs/BLUEPRINT.md', '.claude/bez-kickstarta', 'project.godot', 'index.html'].map(
       p => postoji($, u(p)),
     ),
   )
-  const web = webFajlovi.some(Boolean)
+  const [packageJson, requirements, pyproject] = await Promise.all(
+    ['package.json', 'requirements.txt', 'pyproject.toml'].map(p => procitaj($, u(p))),
+  )
+  const web = jeWeb({ packageJson: packageJson ?? null, python: `${requirements ?? ''} ${pyproject ?? ''}`, indexHtml })
   const lab = await postoji($, LAB)
   const skillovi = await imena($, u('.claude/skills'), 'dir')
   const komande = await imena($, u('.claude/commands'), 'md')
