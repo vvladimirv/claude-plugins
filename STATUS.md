@@ -3,9 +3,9 @@
 **Ažurirano:** 2026-11-28 · Faza 3: usklađivanje pluginova i lični sloj (`claude-licno`)
 
 ## Radi
-- Pet pluginova: guard 0.10.0, kickstart 0.6.0, memory 0.7.0, quality 0.2.1, market 0.1.0; šabloni 0.5.2. Detalji: README i docs/UNIVERZALNI-PLUGINI.md.
-- `project-guard`: tajne, kapija, brava (prepoznaje komande za čitanje: git, diff, petlje, PowerShell), sinhronizacija (i grana bez upstreama sa commitovima kojih nema na GitHubu), lični sloj (pull `claude-licno` i `claude-plugins`, poruka kad treba setup), obim, zavisnosti = ADR, Godot, limit fajlova, `/grane`, `/zdravlje` (pet pluginova + lični sloj)
-- `project-memory`: STATUS u kontekstu (≤ 30 linija, isto pravilo kao `/stanje`), napredak, pomoćne sesije, `/kraj-sesije` (ff-only, push po pravilu projekta, pitanje za lekciju u `claude-licno/znanje/`), `/stanje`, `/vrati`, `/objavi`, `/izdanje`, `/docs-audit`
+- Pet pluginova: guard 0.12.0, kickstart 0.7.1, memory 0.9.0, quality 0.2.2, market 0.1.1; šabloni 0.5.2. Detalji: README i docs/UNIVERZALNI-PLUGINI.md.
+- `project-guard`: tajne, kapija, brava (prepoznaje komande za čitanje: git, diff, petlje, PowerShell), sinhronizacija (i grana bez upstreama sa commitovima kojih nema na GitHubu), lični sloj (pull `claude-licno` i `claude-plugins`, poruka kad treba setup), obim, zavisnosti = ADR, Godot, limit fajlova, `/grane`, `/zdravlje` (pet pluginova + lični sloj), jedno upozorenje prije `claude --cloud` bez GitHub remotea ili sa necommitovanim izmjenama
+- `project-memory`: STATUS u kontekstu (≤ 30 linija, isto pravilo kao `/stanje`), napredak, pomoćne sesije, `/kraj-sesije` (ff-only, push po pravilu projekta, linija „Zadnja sesija“ u STATUS-u, pitanje za lekciju u `claude-licno/znanje/`), `/stanje`, `/vrati`, `/objavi`, `/izdanje`, `/docs-audit`
 - `project-kickstart`: `/kickstart` (`--lagano`, `--postojeci`, `--nadogradi`), `/nova-funkcija`, `/ui-izmjena` (maketa kroz `/mockup-izgleda` kad postoji), `/adr`, `/pomoc`, agenti `arhitekta` i `ux-recenzent`
 - `project-quality`: `/dubinska-provjera`, `/provjera-izgleda`, `/mockup-izgleda`, `/balans` · `project-market`: `/trziste`, `/isplativost`
 - Testovi čuvaju: verziju plugina uz svaku izmjenu (`test/plugin-hash.js --upisi`), `model:` u skillovima, kopije funkcija guard → memory. CI: `plugins.yml` (Windows i Linux), `ci.yml` (Linux + `claude plugin validate .`).
